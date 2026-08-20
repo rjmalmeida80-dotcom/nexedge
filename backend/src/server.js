@@ -184,6 +184,7 @@ app.use('/api/recorrente',       require('./routes/recorrente'));
 app.use('/api/crm',              require('./routes/crm'));
 app.use('/api/assinaturas',      require('./routes/assinaturas'));
 app.use('/api/openbanking',      require('./routes/openbanking'));
+app.use('/api/perfil-empresa', require('./routes/perfil_empresa'));
 app.use('/api/portal-fornecedor', require('./routes/portalFornecedor'));
 
 // ─── Tratamento de erros ──────────────────────────────────────────────────────
@@ -245,6 +246,11 @@ async function start() {
       const { migrar: migrarV11 } = require('./config/migrate_v11');
       await migrarV11();
     } catch(e) { console.warn('⚠️  migrate_v11 (não bloqueante):', e.message); }
+    // Migrações automáticas v12 (ERP Adaptativo)
+    try {
+      const { migrar: migrarV12 } = require('./config/migrate_v12');
+      await migrarV12();
+    } catch(e) { console.warn('⚠️  migrate_v12 (não bloqueante):', e.message); }
 
     app.listen(PORT, () => {
       console.log(`✅ NexEdge — Servidor na porta ${PORT}`);
@@ -264,3 +270,6 @@ async function start() {
 start();
 
 module.exports = app;
+
+
+
