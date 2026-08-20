@@ -1,0 +1,63 @@
+-- Migração aplicada em 16/08/2026 - NexEdge v9
+
+-- Tabelas novas
+CREATE TABLE IF NOT EXISTS viatura_multa (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), viatura_id UUID NOT NULL REFERENCES viatura(id) ON DELETE CASCADE, empresa_id UUID NOT NULL REFERENCES empresa(id), condutor_id UUID REFERENCES funcionario(id), data_multa DATE NOT NULL, local VARCHAR(200), infracao VARCHAR(300), valor NUMERIC(10,2) NOT NULL DEFAULT 0, pontos_perdidos INTEGER DEFAULT 0, numero_processo VARCHAR(100), estado VARCHAR(20) DEFAULT 'pendente', data_pagamento DATE, notas TEXT, criado_em TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS perfil_custom (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), empresa_id UUID NOT NULL REFERENCES empresa(id), nome VARCHAR(100) NOT NULL, descricao TEXT, cor VARCHAR(20) DEFAULT '#185FA5', ativo BOOLEAN DEFAULT true, criado_em TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS perfil_permissao (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), perfil_id UUID NOT NULL REFERENCES perfil_custom(id) ON DELETE CASCADE, modulo VARCHAR(50) NOT NULL, pode_ver BOOLEAN DEFAULT false, pode_editar BOOLEAN DEFAULT false, pode_aprovar BOOLEAN DEFAULT false, pode_apagar BOOLEAN DEFAULT false, UNIQUE(perfil_id, modulo));
+CREATE TABLE IF NOT EXISTS utilizador_perfil (utilizador_id UUID NOT NULL REFERENCES utilizador(id) ON DELETE CASCADE, perfil_id UUID NOT NULL REFERENCES perfil_custom(id) ON DELETE CASCADE, PRIMARY KEY (utilizador_id, perfil_id));
+CREATE TABLE IF NOT EXISTS grupo_empresarial (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), nome VARCHAR(200) NOT NULL, descricao TEXT, criado_em TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS area_negocio (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), empresa_id UUID NOT NULL REFERENCES empresa(id), nome VARCHAR(100) NOT NULL, descricao TEXT, ativo BOOLEAN DEFAULT true, cor VARCHAR(20) DEFAULT '#6B7280', responsavel_id UUID, criado_em TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS nivel_hierarquico (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), empresa_id UUID NOT NULL REFERENCES empresa(id), nome VARCHAR(100) NOT NULL, nivel INTEGER DEFAULT 1, descricao TEXT, cor VARCHAR(20) DEFAULT '#6B7280', ativo BOOLEAN DEFAULT true, criado_em TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS centro_custo (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), empresa_id UUID NOT NULL REFERENCES empresa(id), nome VARCHAR(100) NOT NULL, codigo VARCHAR(20), ativo BOOLEAN DEFAULT true, descricao TEXT, responsavel_id UUID, criado_em TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS categoria_contrato (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), empresa_id UUID NOT NULL REFERENCES empresa(id), nome VARCHAR(100) NOT NULL, criado_em TIMESTAMPTZ DEFAULT NOW());
+
+-- Colunas novas em tabelas existentes
+ALTER TABLE crm_empresa ADD COLUMN IF NOT EXISTS setor VARCHAR(100);
+ALTER TABLE crm_empresa ADD COLUMN IF NOT EXISTS dimensao VARCHAR(50);
+ALTER TABLE crm_empresa ADD COLUMN IF NOT EXISTS tags JSONB DEFAULT '[]';
+ALTER TABLE crm_empresa ADD COLUMN IF NOT EXISTS cidade VARCHAR(100);
+ALTER TABLE crm_empresa ADD COLUMN IF NOT EXISTS actualizado_em TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE crm_contacto ADD COLUMN IF NOT EXISTS linkedin VARCHAR(200);
+ALTER TABLE crm_contacto ADD COLUMN IF NOT EXISTS decisor BOOLEAN DEFAULT false;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS diuturnidades NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS estagio_iefp BOOLEAN DEFAULT false;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS estagio_nivel VARCHAR(50);
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS estagio_orientador_id UUID;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS estagio_comparticipacao NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS ett BOOLEAN DEFAULT false;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS ett_empresa VARCHAR(200);
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS ett_data_fim DATE;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS responsavel_direto_id UUID;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS isencao_horario NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS area_negocio_id UUID;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS centro_custo_id UUID;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS nivel_hierarquico_id UUID;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS deficiencia BOOLEAN DEFAULT false;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS deficiencia_dependente BOOLEAN DEFAULT false;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS irs_jovem BOOLEAN DEFAULT false;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS irs_jovem_ano INTEGER DEFAULT 1;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS tipo_subsidio_alimentacao VARCHAR(20) DEFAULT 'dinheiro';
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS regime_trabalho VARCHAR(30) DEFAULT 'presencial';
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS dias_presenca_semana INTEGER DEFAULT 5;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS turno VARCHAR(20) DEFAULT 'fixo';
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS horario_entrada VARCHAR(10) DEFAULT '09:00';
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS horario_saida VARCHAR(10) DEFAULT '18:00';
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS subsidio_turno NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS subsidio_risco NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS subsidio_chefia NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS comissoes_fixas NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS abono_falhas NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS dias_teletrabalho_mes INTEGER DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS kms_viatura_propria NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS ajudas_custo_nacionais_dias NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS ajudas_custo_inter_dias NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS seguro_saude_empresa NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS seguro_saude_funcionario NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS seguro_saude_seguradora VARCHAR(100);
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS seguro_saude_apolice VARCHAR(50);
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS seguro_saude_agregado BOOLEAN DEFAULT false;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS seguro_saude_num_agregado INTEGER DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS seguro_saude_desconto_agregado NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS vale_educacao NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS vale_infancia NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE funcionario ADD COLUMN IF NOT EXISTS telemovel_empresa NUMERIC(10,2) DEFAULT 0;
