@@ -185,6 +185,7 @@ app.use('/api/crm',              require('./routes/crm'));
 app.use('/api/assinaturas',      require('./routes/assinaturas'));
 app.use('/api/openbanking',      require('./routes/openbanking'));
 app.use('/api/perfil-empresa', require('./routes/perfil_empresa'));
+app.use('/api/itsm',          require('./routes/itsm'));
 app.use('/api/portal-fornecedor', require('./routes/portalFornecedor'));
 
 // ─── Tratamento de erros ──────────────────────────────────────────────────────
