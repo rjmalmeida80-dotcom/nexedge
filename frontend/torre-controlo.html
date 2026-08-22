@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NexEdge — Torre de Controlo Logística</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030712;--s1:#0F172A;--s2:#1E293B;--s3:#334155;--b1:rgba(255,255,255,.06);--t1:#F8FAFC;--t2:#94A3B8;--t3:#475569;--gr:#10B981;--re:#EF4444;--am:#F59E0B;--bl:#3B82F6;--pu:#8B5CF6;--cy:#06B6D4}
+html,body{background:var(--bg);color:var(--t1);font-family:Inter,sans-serif;min-height:100vh}
+body{display:flex;flex-direction:column}
+.header{background:linear-gradient(135deg,#0F172A,#1E293B);border-bottom:1px solid rgba(16,185,129,.15);padding:0 24px;height:56px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:20}
+.header-logo{font-size:16px;font-weight:800;letter-spacing:-0.5px;display:flex;align-items:center;gap:8px}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(16,185,129,.4)}50%{opacity:.8;box-shadow:0 0 0 6px rgba(16,185,129,0)}}
+.header-tabs{display:flex;gap:2px;margin-left:24px}
+.htab{padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--t2);border:none;background:none;font-family:inherit;transition:all .15s}
+.htab:hover{background:rgba(255,255,255,.06);color:var(--t1)}
+.htab.act{background:rgba(16,185,129,.15);color:#10b981;font-weight:600}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#10b981;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);padding:4px 10px;border-radius:20px}
+.btn{padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.btn-primary{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.btn-secondary{background:rgba(255,255,255,.06);color:var(--t2);border:1px solid rgba(255,255,255,.08)}
+.btn-ia{background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff}
+.content{flex:1;padding:20px;overflow-y:auto}
+
+/* KPI GRID */
+.kpi-mega{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px}
+.kpi{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kpi-cor,#10b981)}
+.kpi-val{font-size:28px;font-weight:900;letter-spacing:-1.5px;margin-bottom:2px}
+.kpi-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--t3)}
+.kpi-delta{font-size:11px;font-weight:500;margin-top:4px}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.card-h{padding:14px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-title{font-size:13px;font-weight:600;color:var(--t1)}
+.card-body{padding:18px}
+
+/* ALERTA */
+.alerta{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--b1)}
+.alerta:last-child{border-bottom:none}
+.alerta-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:9999px;font-size:10px;font-weight:600}
+
+/* IA PAINEL */
+.ia-output{background:var(--s2);border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:20px;white-space:pre-wrap;font-size:13px;line-height:1.8;color:var(--t2);margin-top:16px;max-height:500px;overflow-y:auto}
+
+/* RISCO */
+.risco-card{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start}
+.risco-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+
+/* SIMULADOR */
+.cenario-btn{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:16px;cursor:pointer;transition:all .15s;text-align:left}
+.cenario-btn:hover{border-color:rgba(139,92,246,.4);background:rgba(139,92,246,.08)}
+.cenario-btn.sel{border-color:#8b5cf6;background:rgba(139,92,246,.12)}
+
+/* SUSTENT */
+.co2-gauge{text-align:center;padding:32px}
+.co2-num{font-size:56px;font-weight:900;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-2px}
+
+/* TABELA */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:8px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1px solid var(--b1)}
+td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.03);color:var(--t2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+.empty{text-align:center;padding:40px;color:var(--t3);font-size:13px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}
+select,input{background:var(--s2);border:1px solid var(--b1);color:var(--t1);border-radius:8px;padding:8px 12px;font-family:inherit;font-size:13px;outline:none}
+select:focus,input:focus{border-color:#8b5cf6}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">
+    <div class="logo-dot"></div>
+    NexEdge Torre de Controlo
+  </div>
+  <div class="header-tabs">
+    <button class="htab act" onclick="tab('dashboard',this)">📊 Visão Geral</button>
+    <button class="htab" onclick="tab('agente-plan',this)">🤖 Agente Planeamento</button>
+    <button class="htab" onclick="tab('excepcoes',this)">⚠️ Excepções</button>
+    <button class="htab" onclick="tab('riscos',this)">🛡 Risk Engine</button>
+    <button class="htab" onclick="tab('rentabilidade',this)">💰 Rentabilidade</button>
+    <button class="htab" onclick="tab('simulador',this)">🔮 What If?</button>
+    <button class="htab" onclick="tab('sustentabilidade',this)">🌱 CO₂</button>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><div class="logo-dot" style="width:6px;height:6px;margin:0"></div>LIVE</div>
+    <button class="btn btn-secondary" onclick="carregar()">↺ Actualizar</button>
+    <a href="/" style="text-decoration:none"><button class="btn btn-secondary">← ERP</button></a>
+  </div>
+</div>
+
+<div class="content" id="conteudo"><div class="empty">⟳ A carregar Torre de Controlo...</div></div>
+
+<script>
+const API = '/api/torre';
+let tabAtual = 'dashboard', refreshInterval = null;
+
+function getToken(){
+  try{const t=localStorage.getItem('access_token');if(t)return t;const r=localStorage.getItem('rh-auth');if(r)return JSON.parse(r)?.state?.token;}catch(e){}return null;
+}
+
+async function apiFetch(path,opts={}){
+  const token=getToken();
+  const r=await fetch(path,{...opts,headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{}),...(opts.headers||{})}});
+  if(!r.ok)throw new Error(await r.text());
+  return r.json();
+}
+
+function fmtN(n,d=0){return n!=null?parseFloat(n).toLocaleString('pt-PT',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';}
+function fmtEur(v){return v!=null?new Intl.NumberFormat('pt-PT',{style:'currency',currency:'EUR',minimumFractionDigits:0}).format(v):'—';}
+
+function tab(t,el){
+  tabAtual=t;
+  document.querySelectorAll('.htab').forEach(x=>x.classList.remove('act'));
+  if(el)el.classList.add('act');
+  if(refreshInterval){clearInterval(refreshInterval);refreshInterval=null;}
+  document.getElementById('conteudo').innerHTML='<div class="empty">⟳ A carregar...</div>';
+  carregar();
+}
+
+async function carregar(){
+  try{
+    if(tabAtual==='dashboard') await rDashboard();
+    else if(tabAtual==='agente-plan') await rAgentePlan();
+    else if(tabAtual==='excepcoes') await rExcepcoes();
+    else if(tabAtual==='riscos') await rRiscos();
+    else if(tabAtual==='rentabilidade') await rRentabilidade();
+    else if(tabAtual==='simulador') await rSimulador();
+    else if(tabAtual==='sustentabilidade') await rSustentabilidade();
+  }catch(e){
+    document.getElementById('conteudo').innerHTML=`<div class="empty">⚠️ ${e.message}</div>`;
+  }
+}
+
+// ── DASHBOARD ──
+async function rDashboard(){
+  const d = await apiFetch(API+'/dashboard');
+  const l=d.logistica||{}, w=d.wms||{}, f=d.frota||{}, fin=d.financeiro||{};
+
+  document.getElementById('conteudo').innerHTML=`
+    <div class="kpi-mega">
+      <div class="kpi" style="--kpi-cor:#3b82f6">
+        <div class="kpi-val" style="color:#3b82f6">${l.em_transito||0}</div>
+        <div class="kpi-label">🚚 Em Trânsito</div>
+      </div>
+      <div class="kpi" style="--kpi-cor:#10b981">
+        <div class="kpi-val" style="color:#10b981">${l.entregues_hoje||0}</div>
+        <div class="kpi-label">✅ Entregues Hoje</div>
+      </div>
+      <div class="kpi" style="--kpi-cor:#ef4444">
+        <div class="kpi-val" style="color:#ef4444">${l.atrasadas||0}</div>
+        <div class="kpi-label">⏰ Atrasadas</div>
+      </div>
+      <div class="kpi" style="--kpi-cor:#f59e0b">
+        <div class="kpi-val" style="color:#f59e0b">${l.problemas||0}</div>
+        <div class="kpi-label">⚠️ Problemas</div>
+      </div>
+      <div class="kpi" style="--kpi-cor:#10b981">
+        <div class="kpi-val" style="color:#10b981">${d.taxa_prazo_7d||0}%</div>
+        <div class="kpi-label">📊 Taxa Prazo 7d</div>
+      </div>
+      <div class="kpi" style="--kpi-cor:#8b5cf6">
+        <div class="kpi-val" style="color:#8b5cf6">${f.disponiveis||0}/${f.total_motoristas||0}</div>
+        <div class="kpi-label">👤 Motoristas Livres</div>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-h"><div class="card-title">🚚 Logística</div><span style="font-size:11px;color:var(--t3)">${new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'})}</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+          ${statLinha('Novas',l.novas||0,'#3b82f6')}
+          ${statLinha('Em Preparação',l.em_preparacao||0,'#f59e0b')}
+          ${statLinha('Em Trânsito',l.em_transito||0,'#06b6d4')}
+          ${statLinha('Em Entrega',l.em_entrega||0,'#8b5cf6')}
+          ${statLinha('Entregues Hoje',l.entregues_hoje||0,'#10b981')}
+          ${statLinha('Problemas',l.problemas||0,'#ef4444')}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><div class="card-title">🏭 WMS Armazém</div></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+          ${statLinha('Produtos em Stock',fmtN(w.produtos_em_stock),'#10b981')}
+          ${statLinha('Unidades',fmtN(w.unidades_stock),'#3b82f6')}
+          ${statLinha('Valor Stock',fmtEur(w.valor_stock),'#8b5cf6')}
+          ${statLinha('Alertas Stock',w.alertas_stock||0,parseInt(w.alertas_stock||0)>0?'#ef4444':'#10b981')}
+          ${statLinha('Pickings Pendentes',w.pickings_pendentes||0,'#f59e0b')}
+          ${statLinha('Recepções Abertas',w.recepcoes_abertas||0,'#06b6d4')}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><div class="card-title">⚠️ Alertas Activos (${d.alertas?.length||0})</div></div>
+        ${d.alertas?.length ? d.alertas.slice(0,6).map(a=>`
+          <div class="alerta">
+            <div class="alerta-dot" style="background:${a.prioridade==='critica'||a.prioridade==='alta'?'#ef4444':'#f59e0b'}"></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.tipo?.replace(/_/g,' ')}</div>
+              <div style="font-size:11px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.detalhe||a.referencia||'—'}</div>
+            </div>
+            <span class="badge" style="background:${a.prioridade==='critica'?'rgba(239,68,68,.15)':'rgba(245,158,11,.15)'};color:${a.prioridade==='critica'?'#ef4444':'#f59e0b'};flex-shrink:0">${a.prioridade}</span>
+          </div>`).join('') : '<div class="empty" style="padding:24px">✅ Sem alertas</div>'}
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h">
+          <div class="card-title">📈 Evolução 7 dias</div>
+        </div>
+        <div class="card-body">
+          ${d.evolucao_diaria?.length ? `
+            <div style="display:flex;align-items:flex-end;gap:6px;height:80px;margin-bottom:8px">
+              ${d.evolucao_diaria.map(e=>{
+                const max=Math.max(...d.evolucao_diaria.map(x=>parseInt(x.encomendas||0)),1);
+                const h=Math.round(parseInt(e.encomendas||0)/max*100);
+                return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+                  <div style="width:100%;background:#10b981;border-radius:3px 3px 0 0;height:${h}%;min-height:2px"></div>
+                  <div style="font-size:9px;color:var(--t3)">${e.dia?.slice(5)}</div>
+                </div>`;
+              }).join('')}
+            </div>
+            <div style="font-size:11px;color:var(--t3);text-align:center">Encomendas por dia</div>
+          ` : '<div style="color:var(--t3);text-align:center;font-size:13px">Sem dados</div>'}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><div class="card-title">💰 Financeiro</div></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+          ${statLinha('Faturas Pendentes',fmtN(fin.faturas_pendentes),'#f59e0b')}
+          ${statLinha('Valor Pendente',fmtEur(fin.valor_pendente),'#ef4444')}
+          ${statLinha('Recebido Hoje',fmtEur(fin.recebido_hoje),'#10b981')}
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-ia" onclick="document.querySelector('[onclick*=agente-plan]').click()">🤖 Planear com IA</button>
+            <button class="btn btn-secondary" onclick="document.querySelector('[onclick*=excepcoes]').click()">⚠️ Ver Excepções</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  // Auto-refresh a cada 30s
+  refreshInterval = setInterval(()=>{if(tabAtual==='dashboard')rDashboard();}, 30000);
+}
+
+// ── AGENTE PLANEAMENTO ──
+async function rAgentePlan(){
+  document.getElementById('conteudo').innerHTML=`
+    <div class="card">
+      <div class="card-h">
+        <div class="card-title">🤖 Agente de Planeamento Logístico</div>
+        <div style="font-size:11px;color:var(--t3)">Powered by Claude AI</div>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;gap:12px;margin-bottom:16px;align-items:flex-end">
+          <div>
+            <label style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--t3);display:block;margin-bottom:4px">Data do Plano</label>
+            <input type="date" id="plan-data" value="${new Date().toISOString().slice(0,10)}"/>
+          </div>
+          <button class="btn btn-ia" id="btn-planear" onclick="executarPlaneamento()">🤖 Gerar Plano Automático</button>
+        </div>
+        <div style="font-size:12px;color:var(--t3);background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.15);border-radius:10px;padding:12px;margin-bottom:16px">
+          O Agente vai analisar todas as encomendas pendentes, motoristas disponíveis e capacidades, e criar um plano de trabalho óptimo com atribuições, sequências de entrega e alertas.
+        </div>
+        <div id="plan-output"></div>
+      </div>
+    </div>`;
+}
+
+async function executarPlaneamento(){
+  const btn=document.getElementById('btn-planear');
+  btn.disabled=true; btn.textContent='⟳ A planear...';
+  document.getElementById('plan-output').innerHTML='<div style="color:var(--t2);font-size:13px;text-align:center;padding:20px">🤖 O agente está a analisar encomendas, motoristas e rotas...</div>';
+  try{
+    const r=await apiFetch(API+'/agente/planear',{method:'POST',body:JSON.stringify({data:document.getElementById('plan-data')?.value})});
+    document.getElementById('plan-output').innerHTML=`
+      <div style="display:flex;gap:12px;margin-bottom:12px">
+        <div style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:10px 16px;font-size:13px">
+          📦 <strong>${r.dados?.encomendas||0}</strong> encomendas
+        </div>
+        <div style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:10px 16px;font-size:13px">
+          👤 <strong>${r.dados?.motoristas||0}</strong> motoristas disponíveis
+        </div>
+      </div>
+      <div class="ia-output">${r.plano||r.mensagem||'Sem resposta'}</div>`;
+  }catch(e){
+    document.getElementById('plan-output').innerHTML=`<div style="color:#ef4444">Erro: ${e.message}</div>`;
+  }
+  btn.disabled=false; btn.textContent='🤖 Gerar Plano Automático';
+}
+
+// ── EXCEPÇÕES ──
+async function rExcepcoes(){
+  document.getElementById('conteudo').innerHTML=`
+    <div class="card">
+      <div class="card-h">
+        <div class="card-title">⚠️ Agente de Excepções</div>
+        <div style="font-size:11px;color:var(--t3)">Detecta e resolve problemas automaticamente</div>
+      </div>
+      <div class="card-body">
+        <button class="btn btn-ia" id="btn-exc" onclick="executarExcepcoes()" style="margin-bottom:16px">⚠️ Analisar Excepções Agora</button>
+        <div id="exc-output"></div>
+      </div>
+    </div>`;
+}
+
+async function executarExcepcoes(){
+  const btn=document.getElementById('btn-exc');
+  btn.disabled=true; btn.textContent='⟳ A analisar...';
+  document.getElementById('exc-output').innerHTML='<div style="color:var(--t2);text-align:center;padding:20px">🔍 A identificar excepções em todos os módulos...</div>';
+  try{
+    const r=await apiFetch(API+'/agente/excepcoes',{method:'POST',body:'{}'});
+    const exc=r.excepcoes||{};
+    document.getElementById('exc-output').innerHTML=`
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:10px 14px;font-size:13px">⏰ <strong>${exc.atrasadas||0}</strong> atrasadas</div>
+        <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:10px 14px;font-size:13px">⚠️ <strong>${exc.problemas||0}</strong> alertas WMS</div>
+        <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:10px 14px;font-size:13px">📦 <strong>${exc.stock_critico||0}</strong> stock crítico</div>
+      </div>
+      <div class="ia-output">${r.analise||'Nenhuma excepção crítica detectada.'}</div>`;
+  }catch(e){
+    document.getElementById('exc-output').innerHTML=`<div style="color:#ef4444">Erro: ${e.message}</div>`;
+  }
+  btn.disabled=false; btn.textContent='⚠️ Analisar Excepções Agora';
+}
+
+// ── RISCOS ──
+async function rRiscos(){
+  const d=await apiFetch(API+'/riscos');
+  const COR_RISCO={critica:'#ef4444',alta:'#f59e0b',media:'#3b82f6',baixa:'#10b981'};
+  const ICO_RISCO={sla_breach:'⏰',stock_critico:'📦',sem_recursos:'👤',validade_proxima:'🗓',outro:'⚠️'};
+
+  document.getElementById('conteudo').innerHTML=`
+    <div class="grid-2">
+      <div>
+        <div style="text-align:center;padding:24px 0;margin-bottom:20px">
+          <div style="font-size:72px;font-weight:900;color:${d.nivel==='critico'?'#ef4444':d.nivel==='alto'?'#f59e0b':d.nivel==='medio'?'#3b82f6':'#10b981'};letter-spacing:-3px">${d.score}</div>
+          <div style="font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-top:4px;color:${d.nivel==='critico'?'#ef4444':d.nivel==='alto'?'#f59e0b':'#10b981'}">Risco ${d.nivel?.toUpperCase()}</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:4px">Score de risco global</div>
+        </div>
+        ${d.riscos?.length===0?'<div class="empty">✅ Nenhum risco identificado</div>':d.riscos?.map(r=>`
+          <div class="risco-card">
+            <div class="risco-icon" style="background:${COR_RISCO[r.prioridade]||'#6b7280'}15">${ICO_RISCO[r.tipo]||'⚠️'}</div>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                <span style="font-size:13px;font-weight:600">${r.titulo}</span>
+                <span class="badge" style="background:${COR_RISCO[r.prioridade]}15;color:${COR_RISCO[r.prioridade]}">${r.prioridade}</span>
+              </div>
+              <div style="font-size:12px;color:var(--t3);margin-bottom:4px">💥 ${r.impacto}</div>
+              <div style="font-size:12px;color:#10b981">→ ${r.acao}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:0">
+          <div class="card-h"><div class="card-title">📊 Matriz de Risco</div></div>
+          <div class="card-body">
+            <table>
+              <thead><tr><th>Risco</th><th>Prioridade</th><th>Impacto</th></tr></thead>
+              <tbody>${d.riscos?.map(r=>`<tr>
+                <td style="font-weight:500">${r.titulo}</td>
+                <td><span class="badge" style="background:${COR_RISCO[r.prioridade]||'#6b7280'}15;color:${COR_RISCO[r.prioridade]||'#6b7280'}">${r.prioridade}</span></td>
+                <td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.impacto}</td>
+              </tr>`).join('')||'<tr><td colspan="3" class="empty">Sem riscos</td></tr>'}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── RENTABILIDADE ──
+async function rRentabilidade(){
+  document.getElementById('conteudo').innerHTML=`
+    <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center">
+      <select id="rent-agrupar" onchange="carregarRentabilidade()">
+        <option value="cliente">Por Cliente</option>
+        <option value="pais">Por País</option>
+        <option value="motorista">Por Motorista</option>
+      </select>
+      <select id="rent-periodo" onchange="carregarRentabilidade()">
+        <option value="7">7 dias</option>
+        <option value="30" selected>30 dias</option>
+        <option value="90">90 dias</option>
+      </select>
+      <div id="rent-status" style="font-size:12px;color:var(--t3)">A carregar...</div>
+    </div>
+    <div id="rent-output"><div class="empty">⟳ A calcular...</div></div>`;
+  carregarRentabilidade();
+}
+
+async function carregarRentabilidade(){
+  const agrupar=document.getElementById('rent-agrupar')?.value||'cliente';
+  const periodo=document.getElementById('rent-periodo')?.value||30;
+  document.getElementById('rent-status').textContent='A calcular...';
+  try{
+    const d=await apiFetch(API+'/rentabilidade?agrupar='+agrupar+'&periodo='+periodo);
+    document.getElementById('rent-status').textContent=`${d.dados?.length||0} resultados · ${d.periodo_dias} dias`;
+    document.getElementById('rent-output').innerHTML=`
+      <div class="card">
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>${agrupar}</th><th>Encomendas</th><th>Receita</th><th>Custo Frete</th><th>Margem</th><th>Margem %</th></tr></thead>
+          <tbody>${d.dados?.map(r=>`<tr>
+            <td style="font-weight:500">${r.dimensao||'—'}</td>
+            <td>${fmtN(r.encomendas)}</td>
+            <td style="color:#10b981;font-weight:600">${fmtEur(r.receita||r.receita_estimada)}</td>
+            <td style="color:#ef4444">${fmtEur(r.custo_estimado_frete)}</td>
+            <td style="font-weight:700;color:${parseFloat(r.margem||0)>0?'#10b981':'#ef4444'}">${fmtEur(r.margem)}</td>
+            <td><span class="badge" style="background:${parseFloat(r.margem_pct||0)>20?'rgba(16,185,129,.15)':parseFloat(r.margem_pct||0)>0?'rgba(245,158,11,.15)':'rgba(239,68,68,.15)'};color:${parseFloat(r.margem_pct||0)>20?'#10b981':parseFloat(r.margem_pct||0)>0?'#f59e0b':'#ef4444'}">${fmtN(r.margem_pct,1)}%</span></td>
+          </tr>`).join('')||'<tr><td colspan="6" class="empty">Sem dados</td></tr>'}</tbody>
+        </table></div>
+      </div>
+      ${d.analise_ia?`<div class="ia-output">${d.analise_ia}</div>`:''}`;
+  }catch(e){document.getElementById('rent-output').innerHTML=`<div style="color:#ef4444">Erro: ${e.message}</div>`;}
+}
+
+// ── SIMULADOR WHAT IF ──
+async function rSimulador(){
+  const cenarios=[
+    {id:'aumento_volume',icon:'📈',titulo:'Aumento de Volume',desc:'Simula um aumento de encomendas',param:{percentagem:40}},
+    {id:'pico_sazonal',icon:'🎄',titulo:'Pico Sazonal',desc:'Black Friday / Natal',param:{percentagem:200}},
+    {id:'perda_motoristas',icon:'👤',titulo:'Perda de Motoristas',desc:'Ex: greve, doença',param:{percentagem:30}},
+    {id:'fechar_armazem',icon:'🏭',titulo:'Encerramento Armazém',desc:'Manutenção ou sinistro',param:{dias:7}},
+    {id:'greve',icon:'✊',titulo:'Greve Transportadoras',desc:'Impacto na subcontratação',param:{dias:3}},
+    {id:'novo_pais',icon:'🌍',titulo:'Expansão Novo País',desc:'Entrar num novo mercado',param:{pais:'Itália'}},
+  ];
+
+  document.getElementById('conteudo').innerHTML=`
+    <div style="margin-bottom:20px">
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px">🔮 Simulador de Cenários "What If?"</div>
+      <div style="font-size:12px;color:var(--t3)">Selecciona um cenário para simular o impacto na tua operação logística com análise completa por IA.</div>
+    </div>
+    <div class="grid-3" style="margin-bottom:16px">
+      ${cenarios.map(c=>`
+        <div class="cenario-btn" id="cen-${c.id}" onclick="selecionarCenario('${c.id}')">
+          <div style="font-size:28px;margin-bottom:8px">${c.icon}</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px">${c.titulo}</div>
+          <div style="font-size:12px;color:var(--t3)">${c.desc}</div>
+        </div>`).join('')}
+    </div>
+    <div id="sim-output"></div>`;
+  window._cenarios=cenarios;
+}
+
+let cenarioSel=null;
+function selecionarCenario(id){
+  document.querySelectorAll('.cenario-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('cen-'+id)?.classList.add('sel');
+  cenarioSel=id;
+  const cen=window._cenarios?.find(c=>c.id===id);
+  document.getElementById('sim-output').innerHTML=`
+    <div class="card">
+      <div class="card-h"><div class="card-title">🔮 ${cen?.titulo}</div></div>
+      <div class="card-body">
+        <button class="btn btn-ia" id="btn-sim" onclick="executarSimulacao('${id}')">🔮 Simular Este Cenário</button>
+        <div id="sim-resultado" style="margin-top:16px"></div>
+      </div>
+    </div>`;
+}
+
+async function executarSimulacao(id){
+  const btn=document.getElementById('btn-sim');
+  btn.disabled=true; btn.textContent='⟳ A simular...';
+  document.getElementById('sim-resultado').innerHTML='<div style="color:var(--t2);text-align:center;padding:20px">🔮 A IA está a simular o cenário com os dados actuais da empresa...</div>';
+  try{
+    const cen=window._cenarios?.find(c=>c.id===id);
+    const r=await apiFetch(API+'/simular',{method:'POST',body:JSON.stringify({cenario:id,parametros:cen?.param})});
+    document.getElementById('sim-resultado').innerHTML=`<div class="ia-output">${r.simulacao||r.mensagem||'Sem resultado'}</div>`;
+  }catch(e){
+    document.getElementById('sim-resultado').innerHTML=`<div style="color:#ef4444">Erro: ${e.message}</div>`;
+  }
+  btn.disabled=false; btn.textContent='🔮 Simular Este Cenário';
+}
+
+// ── SUSTENTABILIDADE ──
+async function rSustentabilidade(){
+  document.getElementById('conteudo').innerHTML='<div class="empty">⟳ A calcular emissões...</div>';
+  try{
+    const d=await apiFetch(API+'/sustentabilidade?periodo=30');
+    const paises={'PT':'🇵🇹','CH':'🇨🇭','FR':'🇫🇷','DE':'🇩🇪','ES':'🇪🇸'};
+
+    document.getElementById('conteudo').innerHTML=`
+      <div class="grid-3">
+        <div class="card" style="text-align:center">
+          <div class="card-body">
+            <div style="font-size:13px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">CO₂ Total (30 dias)</div>
+            <div style="font-size:56px;font-weight:900;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-2px">${fmtN(d.co2_total_kg)}</div>
+            <div style="font-size:14px;color:var(--t2);margin-top:4px">kg CO₂</div>
+          </div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div class="card-body">
+            <div style="font-size:13px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Equivalente Árvores</div>
+            <div style="font-size:56px;font-weight:900;color:#10b981;letter-spacing:-2px">${fmtN(d.equivalente_arvores)}</div>
+            <div style="font-size:14px;color:var(--t2);margin-top:4px">🌳 árvores/ano para compensar</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div class="card-title">CO₂ por País</div></div>
+          <div class="card-body">
+            ${Object.entries(d.co2_por_pais||{}).sort(([,a],[,b])=>b-a).map(([pais,co2])=>`
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                <span style="font-size:18px">${paises[pais]||'🌍'}</span>
+                <div style="flex:1">
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+                    <span>${pais}</span><span style="font-weight:600">${fmtN(co2,0)}kg</span>
+                  </div>
+                  <div style="height:5px;background:var(--s3);border-radius:3px;overflow:hidden">
+                    <div style="height:100%;background:#10b981;width:${d.co2_total_kg?(co2/d.co2_total_kg*100):0}%;border-radius:3px"></div>
+                  </div>
+                </div>
+              </div>`).join('')||'<div style="color:var(--t3);font-size:12px">Sem dados</div>'}
+          </div>
+        </div>
+      </div>
+      ${d.recomendacoes_ia?`
+        <div class="card">
+          <div class="card-h"><div class="card-title">🌱 Recomendações de Sustentabilidade — IA</div></div>
+          <div class="card-body"><div class="ia-output">${d.recomendacoes_ia}</div></div>
+        </div>`:''}`;
+  }catch(e){document.getElementById('conteudo').innerHTML=`<div class="empty">⚠️ ${e.message}</div>`;}
+}
+
+function statLinha(label,valor,cor){
+  return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+    <span style="font-size:12px;color:var(--t3)">${label}</span>
+    <span style="font-size:14px;font-weight:700;color:${cor}">${valor}</span>
+  </div>`;
+}
+
+carregar();
+</script>
+</body>
+</html>
