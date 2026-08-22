@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Projectos — NexEdge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#F1F5F9;--s1:#fff;--s2:#F8FAFC;--s3:#E2E8F0;--b1:rgba(0,0,0,.07);--t1:#0F172A;--t2:#475569;--t3:#94A3B8;--in:#4F46E5;--gr:#10B981;--re:#EF4444;--am:#F59E0B;--bl:#3B82F6}
+    body{font-family:Inter,-apple-system,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex}
+    .sb{width:220px;background:linear-gradient(180deg,#0F0F1E,#1A1A2E);border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;bottom:0;left:0}
+    .sb-logo{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:10px}
+    .sb-ic{width:30px;height:30px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px}
+    .sb-tx{color:#fff;font-weight:700;font-size:13px}
+    .sb-nav{flex:1;padding:8px 6px;overflow-y:auto}
+    .sb-sec{font-size:9px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.2);padding:10px 8px 4px;text-transform:uppercase}
+    .sb-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.45);font-size:12.5px;font-weight:400;border:none;border-left:2px solid transparent;background:none;width:100%;text-align:left;font-family:inherit;transition:all .12s;margin:1px 0;text-decoration:none}
+    .sb-item:hover{background:rgba(79,70,229,.1);color:rgba(255,255,255,.85)}
+    .sb-item.act{background:rgba(79,70,229,.2);border-left-color:#6366f1;color:#fff;font-weight:500}
+    .main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{height:54px;background:#fff;border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:10}
+    .topbar-title{font-size:15px;font-weight:700}
+    .content{padding:24px;flex:1}
+    .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+    .kpi{background:#fff;border:1px solid var(--b1);border-radius:14px;padding:18px 20px}
+    .kpi-val{font-size:26px;font-weight:800;letter-spacing:-1px;margin-bottom:2px}
+    .kpi-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
+    .card{background:#fff;border:1px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:16px}
+    .card-h{padding:14px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .card-title{font-size:13px;font-weight:600}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+    .proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+    .proj-card{background:#fff;border:1px solid var(--b1);border-radius:14px;padding:20px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+    .proj-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+    .proj-bar{position:absolute;top:0;left:0;right:0;height:4px;border-radius:14px 14px 0 0}
+    .proj-name{font-size:14px;font-weight:700;margin-bottom:4px;margin-top:8px}
+    .proj-client{font-size:11px;color:var(--t3);margin-bottom:12px}
+    .proj-stats{display:flex;gap:12px;flex-wrap:wrap}
+    .proj-stat{font-size:11px;color:var(--t2);display:flex;align-items:center;gap:4px}
+    .progress-wrap{height:5px;background:var(--s3);border-radius:3px;margin-top:12px;overflow:hidden}
+    .progress-fill{height:100%;border-radius:3px;transition:width .5s}
+    .badge{display:inline-flex;padding:2px 8px;border-radius:9999px;font-size:10px;font-weight:600}
+    .btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+    .btn-primary{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;box-shadow:0 2px 8px rgba(79,70,229,.3)}
+    .btn-secondary{background:var(--s2);color:var(--t2);border:1px solid var(--s3)}
+    .btn-sm{padding:5px 12px;font-size:12px}
+    .btn-danger{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
+    .fi{padding:9px 12px;border:1.5px solid var(--s3);border-radius:9px;font-size:13px;color:var(--t1);outline:none;font-family:inherit;background:#fff;width:100%;transition:border-color .15s}
+    .fi:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+    .fl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);display:block;margin-bottom:5px}
+    .fg{margin-bottom:14px}
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+    .modal{background:#fff;border-radius:16px;width:100%;max-width:600px;overflow:hidden}
+    .modal-h{padding:18px 24px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center}
+    .modal-title{font-size:15px;font-weight:700}
+    .modal-close{background:none;border:none;cursor:pointer;color:var(--t3);font-size:22px;line-height:1;padding:0}
+    .modal-b{padding:24px}
+    .modal-f{padding:14px 24px;border-top:1px solid var(--b1);display:flex;gap:8px;justify-content:flex-end}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1px solid var(--b1);background:var(--s2)}
+    td{padding:10px 14px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#fafafa}
+    .tab-bar{display:flex;gap:2px;border-bottom:1px solid var(--b1);margin-bottom:20px}
+    .tab{padding:9px 16px;font-size:12px;font-weight:500;cursor:pointer;background:none;border:none;border-bottom:2px solid transparent;color:var(--t3);transition:all .15s;font-family:inherit}
+    .tab.act{border-bottom-color:#4f46e5;color:#4f46e5;font-weight:600}
+    /* Kanban */
+    .kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;overflow-x:auto;padding-bottom:8px}
+    .kanban-col{background:var(--s2);border-radius:12px;padding:12px;min-width:200px}
+    .kanban-col-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+    .kanban-card{background:#fff;border:1px solid var(--b1);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+    .kanban-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);transform:translateY(-1px)}
+    .kanban-card-title{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:6px}
+    .kanban-card-meta{font-size:10px;color:var(--t3);display:flex;gap:8px;align-items:center}
+    /* Gantt */
+    .gantt-wrap{overflow-x:auto;border:1px solid var(--b1);border-radius:12px}
+    .gantt-header{display:flex;background:var(--s2);border-bottom:1px solid var(--b1)}
+    .gantt-tasks-col{width:260px;flex-shrink:0;border-right:1px solid var(--b1);padding:10px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+    .gantt-timeline{flex:1;display:flex;overflow:hidden}
+    .gantt-month{flex:1;text-align:center;padding:10px 4px;font-size:10px;font-weight:600;color:var(--t3);border-right:1px solid var(--b1);min-width:80px}
+    .gantt-row{display:flex;border-bottom:1px solid var(--b1)}
+    .gantt-row:last-child{border-bottom:none}
+    .gantt-task-name{width:260px;flex-shrink:0;border-right:1px solid var(--b1);padding:10px 14px;font-size:12px;color:var(--t1);display:flex;align-items:center;gap:8px}
+    .gantt-bars{flex:1;position:relative;height:40px}
+    .gantt-bar{position:absolute;height:20px;top:10px;border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;cursor:pointer}
+    .gantt-today{position:absolute;top:0;bottom:0;width:2px;background:rgba(239,68,68,.5);z-index:2}
+    .empty{text-align:center;padding:48px;color:var(--t3);font-size:13px}
+    textarea.fi{resize:vertical;min-height:70px}
+    select.fi{cursor:pointer}
+    ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:4px}
+  </style>
+</head>
+<body>
+<div class="sb">
+  <div class="sb-logo"><div class="sb-ic">N</div><div class="sb-tx">nexedge</div></div>
+  <nav class="sb-nav">
+    <div class="sb-sec">PROJECTOS</div>
+    <button class="sb-item act" id="nav-lista" onclick="mostrarVista('lista',this)">📋 Todos os Projectos</button>
+    <button class="sb-item" id="nav-kanban" onclick="mostrarVista('kanban-geral',this)">🗂 Kanban Geral</button>
+    <div class="sb-sec" id="sb-proj-sec" style="display:none">PROJECTO ACTUAL</div>
+    <button class="sb-item" id="nav-detalhe" style="display:none" onclick="mostrarVista('detalhe',this)">📊 Detalhe</button>
+    <button class="sb-item" id="nav-tarefas" style="display:none" onclick="mostrarVista('tarefas',this)">✅ Tarefas</button>
+    <button class="sb-item" id="nav-gantt" style="display:none" onclick="mostrarVista('gantt',this)">📅 Gantt</button>
+    <button class="sb-item" id="nav-equipa" style="display:none" onclick="mostrarVista('equipa',this)">👥 Equipa</button>
+    <div class="sb-sec">PLATAFORMA</div>
+    <a class="sb-item" href="http://localhost:5173/" style="color:rgba(255,255,255,.45);text-decoration:none">← ERP</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">📋 Projectos</div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn btn-secondary btn-sm" onclick="mostrarVista('lista',document.getElementById('nav-lista'))">Todos</button>
+      <button class="btn btn-primary" onclick="modalNovoProjecto()">+ Novo Projecto</button>
+    </div>
+  </div>
+  <div class="content" id="conteudo">
+    <div class="empty">A carregar...</div>
+  </div>
+</div>
+
+<div id="modal-area"></div>
+
+<script>
+const API = '/api';
+let projectoActual = null;
+let vistaActual = 'lista';
+let utilizadores = [];
+
+function getToken() {
+  try {
+    const t = localStorage.getItem('access_token'); if(t) return t;
+    const r = localStorage.getItem('rh-auth'); if(r) return JSON.parse(r)?.state?.token;
+  } catch(e){}
+  return null;
+}
+
+async function apiFetch(path, opts={}) {
+  const token = getToken();
+  const r = await fetch(API + path, {
+    ...opts,
+    headers: { 'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{}), ...(opts.headers||{}) }
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function fmtD(d) { return d ? new Date(d).toLocaleDateString('pt-PT') : '—'; }
+function fmtEur(v) { return new Intl.NumberFormat('pt-PT',{style:'currency',currency:'EUR',minimumFractionDigits:0}).format(v||0); }
+function fmtH(min) { return min ? Math.round(min/60*10)/10 + 'h' : '0h'; }
+
+const COR_EST = { planeamento:'#6b7280', ativo:'#10b981', em_pausa:'#f59e0b', concluido:'#6366f1', cancelado:'#ef4444' };
+const COR_PRI = { critica:'#ef4444', alta:'#f97316', media:'#f59e0b', baixa:'#10b981' };
+const COR_TAR = { a_fazer:'#94a3b8', em_progresso:'#3b82f6', em_revisao:'#f59e0b', concluida:'#10b981', cancelada:'#ef4444', bloqueada:'#ef4444' };
+
+function badge(cor, label) { return `<span class="badge" style="background:${cor}15;color:${cor};border:1px solid ${cor}25">${label}</span>`; }
+
+function mostrarVista(vista, el) {
+  vistaActual = vista;
+  document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('act'));
+  if(el) el.classList.add('act');
+  document.getElementById('conteudo').innerHTML = '<div class="empty">⟳ A carregar...</div>';
+  carregar();
+}
+
+async function carregar() {
+  try {
+    if(vistaActual==='lista') await rLista();
+    else if(vistaActual==='kanban-geral') await rKanbanGeral();
+    else if(vistaActual==='detalhe') await rDetalhe();
+    else if(vistaActual==='tarefas') await rTarefas();
+    else if(vistaActual==='gantt') await rGantt();
+    else if(vistaActual==='equipa') await rEquipa();
+  } catch(e) {
+    document.getElementById('conteudo').innerHTML = `<div class="empty">⚠️ ${e.message}</div>`;
+  }
+}
+
+// ── LISTA DE PROJECTOS ──
+async function rLista() {
+  const projs = await apiFetch('/projectos');
+  const c = document.getElementById('conteudo');
+  document.getElementById('topbar-title').textContent = '📋 Todos os Projectos';
+
+  if (!projs.length) {
+    c.innerHTML = `<div class="empty"><div style="font-size:40px;margin-bottom:12px">📋</div>Nenhum projecto criado ainda.<br><br><button class="btn btn-primary" onclick="modalNovoProjecto()">Criar primeiro projecto</button></div>`;
+    return;
+  }
+
+  // KPIs
+  const ativos = projs.filter(p=>p.estado==='ativo').length;
+  const totalOrc = projs.reduce((s,p)=>s+parseFloat(p.orcamento||0),0);
+  const totalTarefas = projs.reduce((s,p)=>s+parseInt(p.total_tarefas||0),0);
+  const totalHoras = projs.reduce((s,p)=>s+parseInt(p.horas_registadas_min||0),0);
+
+  c.innerHTML = `
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-val" style="color:#4f46e5">${projs.length}</div><div class="kpi-label">Total Projectos</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:#10b981">${ativos}</div><div class="kpi-label">Activos</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:#f59e0b">${totalTarefas}</div><div class="kpi-label">Tarefas</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:#3b82f6">${fmtH(totalHoras)}</div><div class="kpi-label">Horas Registadas</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:#10b981">${fmtEur(totalOrc)}</div><div class="kpi-label">Orçamento Total</div></div>
+    </div>
+    <div class="proj-grid">
+      ${projs.map(p => `
+        <div class="proj-card" onclick="abrirProjecto('${p.id}','${p.nome.replace(/'/g,"\\'")}')">
+          <div class="proj-bar" style="background:${p.cor||'#4f46e5'}"></div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:4px">
+            ${badge(COR_EST[p.estado]||'#6b7280', p.estado.replace('_',' '))}
+            ${badge(COR_PRI[p.prioridade]||'#6b7280', p.prioridade)}
+          </div>
+          <div class="proj-name">${p.nome}</div>
+          <div class="proj-client">${p.cliente_nome||'Interno'} ${p.responsavel_nome?'· '+p.responsavel_nome:''}</div>
+          <div class="proj-stats">
+            <span class="proj-stat">✅ ${p.tarefas_concluidas||0}/${p.total_tarefas||0} tarefas</span>
+            <span class="proj-stat">⏱ ${fmtH(p.horas_registadas_min)}</span>
+            <span class="proj-stat">👥 ${p.num_membros||0}</span>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-fill" style="width:${p.percentagem_conclusao||0}%;background:${p.cor||'#4f46e5'}"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px">
+            <span style="font-size:10px;color:var(--t3)">${fmtD(p.data_inicio)} → ${fmtD(p.data_fim_prevista)}</span>
+            <span style="font-size:11px;font-weight:600;color:${p.cor||'#4f46e5'}">${p.percentagem_conclusao||0}%</span>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function abrirProjecto(id, nome) {
+  projectoActual = { id, nome };
+  document.getElementById('sb-proj-sec').style.display = '';
+  ['nav-detalhe','nav-tarefas','nav-gantt','nav-equipa'].forEach(x => document.getElementById(x).style.display='');
+  document.getElementById('nav-detalhe').textContent = '📊 ' + nome.slice(0,20);
+  mostrarVista('tarefas', document.getElementById('nav-tarefas'));
+}
+
+// ── TAREFAS (KANBAN) ──
+async function rTarefas() {
+  if (!projectoActual) return rLista();
+  const data = await apiFetch(`/projectos/${projectoActual.id}`);
+  document.getElementById('topbar-title').textContent = '✅ ' + data.nome;
+
+  const colunas = [
+    { id:'a_fazer', label:'A Fazer', cor:'#94a3b8' },
+    { id:'em_progresso', label:'Em Progresso', cor:'#3b82f6' },
+    { id:'em_revisao', label:'Em Revisão', cor:'#f59e0b' },
+    { id:'concluida', label:'Concluída', cor:'#10b981' },
+    { id:'bloqueada', label:'Bloqueada', cor:'#ef4444' },
+  ];
+
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px;gap:8px">
+      <button class="btn btn-secondary btn-sm" onclick="mostrarVista('gantt',document.getElementById('nav-gantt'))">📅 Ver Gantt</button>
+      <button class="btn btn-primary" onclick="modalNovaTarefa()">+ Nova Tarefa</button>
+    </div>
+    <div class="kanban">
+      ${colunas.map(col => {
+        const tarefas = (data.tarefas||[]).filter(t=>t.estado===col.id);
+        return `<div class="kanban-col">
+          <div class="kanban-col-h">
+            <span style="color:${col.cor}">${col.label}</span>
+            <span style="background:${col.cor}15;color:${col.cor};padding:1px 6px;border-radius:9999px;font-size:10px">${tarefas.length}</span>
+          </div>
+          ${tarefas.map(t => `
+            <div class="kanban-card" onclick="modalEditarTarefa(${JSON.stringify(t).replace(/"/g,'&quot;')})">
+              <div class="kanban-card-title">${t.titulo}</div>
+              <div class="kanban-card-meta">
+                ${badge(COR_PRI[t.prioridade]||'#6b7280', t.prioridade)}
+                ${t.responsavel_nome?`<span>👤 ${t.responsavel_nome.split(' ')[0]}</span>`:''}
+                ${t.data_fim_prevista?`<span>📅 ${fmtD(t.data_fim_prevista)}</span>`:''}
+              </div>
+              ${t.estimativa_horas?`<div style="font-size:10px;color:var(--t3);margin-top:4px">⏱ ${t.estimativa_horas}h estimadas</div>`:''}
+            </div>`).join('')}
+          <button onclick="modalNovaTarefa('${col.id}')" style="width:100%;padding:7px;border:1.5px dashed var(--s3);border-radius:8px;background:none;color:var(--t3);cursor:pointer;font-size:12px;font-family:inherit;margin-top:4px">+ Adicionar</button>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// ── GANTT ──
+async function rGantt() {
+  if (!projectoActual) return rLista();
+  const data = await apiFetch(`/projectos/${projectoActual.id}/gantt`);
+  document.getElementById('topbar-title').textContent = '📅 Gantt — ' + projectoActual.nome;
+
+  const tarefas = (data.tarefas||[]).filter(t => t.data_inicio_prevista || t.data_fim_prevista);
+  if (!tarefas.length) {
+    document.getElementById('conteudo').innerHTML = `<div class="empty">Sem tarefas com datas definidas.<br><br><button class="btn btn-primary" onclick="mostrarVista('tarefas',document.getElementById('nav-tarefas'))">← Ver Tarefas</button></div>`;
+    return;
+  }
+
+  // Calcular intervalo de datas
+  const todas_datas = tarefas.flatMap(t => [t.data_inicio_prevista, t.data_fim_prevista].filter(Boolean)).map(d=>new Date(d));
+  const minData = new Date(Math.min(...todas_datas));
+  const maxData = new Date(Math.max(...todas_datas));
+  minData.setDate(1);
+  maxData.setMonth(maxData.getMonth()+1); maxData.setDate(0);
+
+  // Gerar meses
+  const meses = [];
+  let cur = new Date(minData);
+  while (cur <= maxData) {
+    meses.push(new Date(cur));
+    cur.setMonth(cur.getMonth()+1);
+  }
+  if (!meses.length) meses.push(new Date());
+
+  const totalDias = (maxData - minData) / (1000*60*60*24) || 1;
+  const hoje = new Date();
+  const hojePos = Math.max(0, Math.min(100, (hoje - minData) / (maxData - minData) * 100));
+
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+      <button class="btn btn-secondary btn-sm" onclick="mostrarVista('tarefas',document.getElementById('nav-tarefas'))">← Kanban</button>
+    </div>
+    <div class="gantt-wrap">
+      <div class="gantt-header">
+        <div class="gantt-tasks-col">Tarefa</div>
+        <div class="gantt-timeline">
+          ${meses.map(m=>`<div class="gantt-month">${m.toLocaleDateString('pt-PT',{month:'short',year:'2-digit'})}</div>`).join('')}
+        </div>
+      </div>
+      ${tarefas.map(t => {
+        const inicio = t.data_inicio_prevista ? new Date(t.data_inicio_prevista) : minData;
+        const fim = t.data_fim_prevista ? new Date(t.data_fim_prevista) : inicio;
+        const left = Math.max(0,(inicio-minData)/(maxData-minData)*100);
+        const width = Math.max(1,(fim-inicio)/(maxData-minData)*100);
+        const cor = COR_TAR[t.estado]||'#6366f1';
+        return `<div class="gantt-row">
+          <div class="gantt-task-name">
+            <span style="width:8px;height:8px;border-radius:50%;background:${cor};flex-shrink:0"></span>
+            <span style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.titulo}</span>
+          </div>
+          <div class="gantt-bars">
+            <div class="gantt-today" style="left:${hojePos}%"></div>
+            <div class="gantt-bar" style="left:${left}%;width:${width}%;background:${cor}" title="${t.titulo}\n${fmtD(t.data_inicio_prevista)} → ${fmtD(t.data_fim_prevista)}">
+              ${width > 8 ? t.titulo.slice(0,20) : ''}
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+      ${(data.milestones||[]).map(m => {
+        const pos = m.data_prevista ? Math.max(0,(new Date(m.data_prevista)-minData)/(maxData-minData)*100) : 0;
+        return `<div class="gantt-row" style="background:#fafafa">
+          <div class="gantt-task-name"><span style="color:#f59e0b">◆</span> <span style="font-size:11px;font-style:italic">${m.titulo}</span></div>
+          <div class="gantt-bars">
+            <div style="position:absolute;left:${pos}%;top:5px;width:24px;height:24px;background:#f59e0b;transform:rotate(45deg);border-radius:3px" title="Milestone: ${m.titulo} — ${fmtD(m.data_prevista)}"></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// ── DETALHE ──
+async function rDetalhe() {
+  if (!projectoActual) return rLista();
+  const data = await apiFetch(`/projectos/${projectoActual.id}/relatorio`);
+  document.getElementById('topbar-title').textContent = '📊 ' + data.projecto?.nome;
+  const p = data.projecto || {};
+  const s = data.stats || {};
+
+  document.getElementById('conteudo').innerHTML = `
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-val" style="color:#4f46e5">${data.progresso_tarefas||0}%</div><div class="kpi-label">Progresso</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:#10b981">${s.concluidas||0}/${s.total_tarefas||0}</div><div class="kpi-label">Tarefas</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:${(s.atrasadas||0)>0?'#ef4444':'#10b981'}">${s.atrasadas||0}</div><div class="kpi-label">Atrasadas</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:#3b82f6">${fmtH(data.horas?.total_min)}</div><div class="kpi-label">Horas</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:#10b981">${fmtEur(p.orcamento)}</div><div class="kpi-label">Orçamento</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">Informação do Projecto</div>
+          <button class="btn btn-secondary btn-sm" onclick="modalEditarProjecto()">Editar</button>
+        </div>
+        <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px">
+          ${[['Estado',badge(COR_EST[p.estado]||'#6b7280',p.estado?.replace('_',' '))],
+             ['Prioridade',badge(COR_PRI[p.prioridade]||'#6b7280',p.prioridade)],
+             ['Responsável',p.responsavel_nome||'—'],
+             ['Cliente',p.cliente_nome||'Interno'],
+             ['Início',fmtD(p.data_inicio)],
+             ['Fim Previsto',fmtD(p.data_fim_prevista)],
+             ['Progresso Tempo',`${data.progresso_tempo||0}%`],
+          ].map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--b1)">
+            <span style="font-size:12px;color:var(--t3)">${k}</span>
+            <span style="font-size:12px;font-weight:500">${v}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">Horas por Pessoa</div></div>
+        <div style="padding:16px 20px">
+          ${(data.horas_por_pessoa||[]).length ? data.horas_por_pessoa.map(h=>`
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--b1)">
+              <span style="font-size:12px;color:var(--t2)">${h.nome_completo}</span>
+              <span style="font-size:12px;font-weight:600">${fmtH(h.total_min)}</span>
+            </div>`).join('') : '<div style="text-align:center;padding:20px;color:var(--t3)">Sem horas registadas</div>'}
+        </div>
+      </div>
+    </div>
+    ${(data.tarefas_atrasadas||[]).length ? `
+    <div class="card" style="border-color:#ef444425">
+      <div class="card-h" style="background:#fef2f2"><div class="card-title" style="color:#ef4444">⚠️ Tarefas Atrasadas</div></div>
+      <table><thead><tr><th>Tarefa</th><th>Prazo</th></tr></thead>
+      <tbody>${data.tarefas_atrasadas.map(t=>`<tr>
+        <td>${t.titulo}</td>
+        <td style="color:#ef4444;font-weight:500">${fmtD(t.data_fim_prevista)}</td>
+      </tr>`).join('')}</tbody></table>
+    </div>` : ''}`;
+}
+
+// ── EQUIPA ──
+async function rEquipa() {
+  if (!projectoActual) return rLista();
+  const data = await apiFetch(`/projectos/${projectoActual.id}`);
+  document.getElementById('topbar-title').textContent = '👥 Equipa — ' + data.nome;
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div class="card">
+      <div class="card-h">
+        <div class="card-title">Membros do Projecto</div>
+        <button class="btn btn-primary btn-sm" onclick="modalAdicionarMembro()">+ Adicionar</button>
+      </div>
+      <table><thead><tr><th>Nome</th><th>Email</th><th>Papel</th><th>Acção</th></tr></thead>
+      <tbody>${(data.membros||[]).map(m=>`<tr>
+        <td style="font-weight:500">${m.nome_completo}</td>
+        <td style="font-size:11px;color:var(--t3)">${m.email}</td>
+        <td>${badge(m.papel==='gestor'?'#6366f1':'#10b981', m.papel)}</td>
+        <td><button onclick="removerMembro('${m.utilizador_id}')" class="btn btn-danger btn-sm">Remover</button></td>
+      </tr>`).join('')||'<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--t3)">Sem membros</td></tr>'}</tbody>
+      </table>
+    </div>`;
+}
+
+// ── KANBAN GERAL ──
+async function rKanbanGeral() {
+  const projs = await apiFetch('/projectos');
+  document.getElementById('topbar-title').textContent = '🗂 Kanban Geral';
+  const colunas = ['planeamento','ativo','em_pausa','concluido','cancelado'];
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `<div class="kanban">
+    ${colunas.map(col => {
+      const ps = projs.filter(p=>p.estado===col);
+      return `<div class="kanban-col">
+        <div class="kanban-col-h"><span style="color:${COR_EST[col]}">${col.replace('_',' ')}</span><span style="background:${COR_EST[col]}15;color:${COR_EST[col]};padding:1px 6px;border-radius:9999px;font-size:10px">${ps.length}</span></div>
+        ${ps.map(p=>`<div class="kanban-card" onclick="abrirProjecto('${p.id}','${p.nome.replace(/'/g,"\\'")}')">
+          <div style="width:100%;height:3px;background:${p.cor||'#4f46e5'};border-radius:2px;margin-bottom:8px"></div>
+          <div class="kanban-card-title">${p.nome}</div>
+          <div class="kanban-card-meta">
+            <span>✅ ${p.tarefas_concluidas||0}/${p.total_tarefas||0}</span>
+            <span>⏱ ${fmtH(p.horas_registadas_min)}</span>
+          </div>
+          <div class="progress-wrap" style="margin-top:8px">
+            <div class="progress-fill" style="width:${p.percentagem_conclusao||0}%;background:${p.cor||'#4f46e5'}"></div>
+          </div>
+        </div>`).join('')}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ── MODAIS ──
+function modalNovoProjecto() {
+  document.getElementById('modal-area').innerHTML = `
+    <div class="modal-ov" id="m-novo-proj">
+      <div class="modal">
+        <div class="modal-h"><div class="modal-title">Novo Projecto</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+        <div class="modal-b">
+          <div class="fg"><label class="fl">Nome *</label><input class="fi" id="np-nome" placeholder="Nome do projecto"/></div>
+          <div class="fg"><label class="fl">Descrição</label><textarea class="fi" id="np-desc" placeholder="Descrição..."></textarea></div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Estado</label>
+              <select class="fi" id="np-estado"><option value="planeamento">Planeamento</option><option value="ativo">Activo</option></select></div>
+            <div class="fg"><label class="fl">Prioridade</label>
+              <select class="fi" id="np-pri"><option value="media">Média</option><option value="alta">Alta</option><option value="critica">Crítica</option><option value="baixa">Baixa</option></select></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Data Início</label><input class="fi" id="np-inicio" type="date"/></div>
+            <div class="fg"><label class="fl">Data Fim Prevista</label><input class="fi" id="np-fim" type="date"/></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Orçamento (€)</label><input class="fi" id="np-orc" type="number" placeholder="0"/></div>
+            <div class="fg"><label class="fl">Valor/Hora (€)</label><input class="fi" id="np-hora" type="number" placeholder="0"/></div>
+          </div>
+          <div class="fg"><label class="fl">Cor</label><input class="fi" id="np-cor" type="color" value="#4F46E5" style="height:40px;padding:4px"/></div>
+        </div>
+        <div class="modal-f">
+          <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="criarProjecto()">Criar Projecto</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function criarProjecto() {
+  const nome = document.getElementById('np-nome')?.value?.trim();
+  if (!nome) return alert('Nome obrigatório');
+  try {
+    const r = await apiFetch('/projectos', { method:'POST', body: JSON.stringify({
+      nome, descricao: document.getElementById('np-desc')?.value||'',
+      estado: document.getElementById('np-estado')?.value||'planeamento',
+      prioridade: document.getElementById('np-pri')?.value||'media',
+      data_inicio: document.getElementById('np-inicio')?.value||null,
+      data_fim_prevista: document.getElementById('np-fim')?.value||null,
+      orcamento: parseFloat(document.getElementById('np-orc')?.value)||0,
+      valor_hora: parseFloat(document.getElementById('np-hora')?.value)||0,
+      cor: document.getElementById('np-cor')?.value||'#4F46E5',
+    })});
+    fecharModal();
+    abrirProjecto(r.id, r.nome);
+  } catch(e) { alert('Erro: '+e.message); }
+}
+
+function modalNovaTarefa(estadoInicial='a_fazer') {
+  document.getElementById('modal-area').innerHTML = `
+    <div class="modal-ov">
+      <div class="modal">
+        <div class="modal-h"><div class="modal-title">Nova Tarefa</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+        <div class="modal-b">
+          <div class="fg"><label class="fl">Título *</label><input class="fi" id="nt-titulo" placeholder="Título da tarefa"/></div>
+          <div class="fg"><label class="fl">Descrição</label><textarea class="fi" id="nt-desc"></textarea></div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Estado</label>
+              <select class="fi" id="nt-estado">
+                <option value="a_fazer" ${estadoInicial==='a_fazer'?'selected':''}>A Fazer</option>
+                <option value="em_progresso" ${estadoInicial==='em_progresso'?'selected':''}>Em Progresso</option>
+                <option value="em_revisao" ${estadoInicial==='em_revisao'?'selected':''}>Em Revisão</option>
+                <option value="concluida" ${estadoInicial==='concluida'?'selected':''}>Concluída</option>
+                <option value="bloqueada" ${estadoInicial==='bloqueada'?'selected':''}>Bloqueada</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Prioridade</label>
+              <select class="fi" id="nt-pri"><option value="media">Média</option><option value="alta">Alta</option><option value="critica">Crítica</option><option value="baixa">Baixa</option></select></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Data Início</label><input class="fi" id="nt-inicio" type="date"/></div>
+            <div class="fg"><label class="fl">Data Fim</label><input class="fi" id="nt-fim" type="date"/></div>
+          </div>
+          <div class="fg"><label class="fl">Estimativa (horas)</label><input class="fi" id="nt-horas" type="number" placeholder="0"/></div>
+        </div>
+        <div class="modal-f">
+          <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="criarTarefa()">Criar Tarefa</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function criarTarefa() {
+  const titulo = document.getElementById('nt-titulo')?.value?.trim();
+  if (!titulo || !projectoActual) return alert('Título obrigatório');
+  try {
+    await apiFetch(`/projectos/${projectoActual.id}/tarefas`, { method:'POST', body: JSON.stringify({
+      titulo, descricao: document.getElementById('nt-desc')?.value||'',
+      estado: document.getElementById('nt-estado')?.value||'a_fazer',
+      prioridade: document.getElementById('nt-pri')?.value||'media',
+      data_inicio_prevista: document.getElementById('nt-inicio')?.value||null,
+      data_fim_prevista: document.getElementById('nt-fim')?.value||null,
+      estimativa_horas: parseFloat(document.getElementById('nt-horas')?.value)||null,
+    })});
+    fecharModal();
+    carregar();
+  } catch(e) { alert('Erro: '+e.message); }
+}
+
+function modalEditarTarefa(t) {
+  document.getElementById('modal-area').innerHTML = `
+    <div class="modal-ov">
+      <div class="modal">
+        <div class="modal-h"><div class="modal-title">Editar Tarefa</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+        <div class="modal-b">
+          <div class="fg"><label class="fl">Título</label><input class="fi" id="et-titulo" value="${t.titulo||''}"/></div>
+          <div class="fg"><label class="fl">Descrição</label><textarea class="fi" id="et-desc">${t.descricao||''}</textarea></div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Estado</label>
+              <select class="fi" id="et-estado">
+                ${['a_fazer','em_progresso','em_revisao','concluida','bloqueada','cancelada'].map(e=>`<option value="${e}" ${t.estado===e?'selected':''}>${e.replace('_',' ')}</option>`).join('')}
+              </select></div>
+            <div class="fg"><label class="fl">Prioridade</label>
+              <select class="fi" id="et-pri">
+                ${['critica','alta','media','baixa'].map(p=>`<option value="${p}" ${t.prioridade===p?'selected':''}>${p}</option>`).join('')}
+              </select></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Data Início</label><input class="fi" id="et-inicio" type="date" value="${t.data_inicio_prevista?.slice(0,10)||''}"/></div>
+            <div class="fg"><label class="fl">Data Fim</label><input class="fi" id="et-fim" type="date" value="${t.data_fim_prevista?.slice(0,10)||''}"/></div>
+          </div>
+          <div class="fg"><label class="fl">Estimativa (horas)</label><input class="fi" id="et-horas" type="number" value="${t.estimativa_horas||''}"/></div>
+        </div>
+        <div class="modal-f">
+          <button class="btn btn-danger btn-sm" onclick="eliminarTarefa('${t.id}')">Eliminar</button>
+          <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="guardarTarefa('${t.id}','${projectoActual?.id}')">Guardar</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function guardarTarefa(tarefaId, projId) {
+  try {
+    await apiFetch(`/projectos/${projId}/tarefas/${tarefaId}`, { method:'PUT', body: JSON.stringify({
+      titulo: document.getElementById('et-titulo')?.value,
+      descricao: document.getElementById('et-desc')?.value,
+      estado: document.getElementById('et-estado')?.value,
+      prioridade: document.getElementById('et-pri')?.value,
+      data_inicio_prevista: document.getElementById('et-inicio')?.value||null,
+      data_fim_prevista: document.getElementById('et-fim')?.value||null,
+      estimativa_horas: parseFloat(document.getElementById('et-horas')?.value)||null,
+    })});
+    fecharModal(); carregar();
+  } catch(e) { alert('Erro: '+e.message); }
+}
+
+async function eliminarTarefa(id) {
+  if (!confirm('Eliminar tarefa?')) return;
+  await apiFetch(`/projectos/${projectoActual.id}/tarefas/${id}`, { method:'DELETE' });
+  fecharModal(); carregar();
+}
+
+async function removerMembro(userId) {
+  if (!confirm('Remover membro?')) return;
+  await apiFetch(`/projectos/${projectoActual.id}/membros/${userId}`, { method:'DELETE' });
+  carregar();
+}
+
+function fecharModal() { document.getElementById('modal-area').innerHTML = ''; }
+
+// Init
+carregar();
+</script>
+</body>
+</html>

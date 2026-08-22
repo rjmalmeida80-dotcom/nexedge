@@ -27,6 +27,8 @@ const ESPECIAIS = {
   '/chatbot-widget.js':  path.join(__dirname, 'chatbot-widget.js'),
   '/relatorios-bi':      path.join(__dirname, 'relatorios-bi.html'),
   '/relatorios-bi/':     path.join(__dirname, 'relatorios-bi.html'),
+  '/projectos':          path.join(__dirname, 'projectos.html'),
+  '/projectos/':         path.join(__dirname, 'projectos.html'),
 };
 
 http.createServer((req, res) => {
