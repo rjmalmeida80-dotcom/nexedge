@@ -3,3 +3,5 @@ node_modules/
 *.log 
 frontend/dist/ 
 backend/.env 
+backend/node 
+backend/pm2 
