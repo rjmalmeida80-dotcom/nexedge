@@ -28,6 +28,8 @@ const ESPECIAIS = {
   '/relatorios-bi':      path.join(__dirname, 'relatorios-bi.html'),
   '/relatorios-bi/':     path.join(__dirname, 'relatorios-bi.html'),
   '/projectos':          path.join(__dirname, 'projectos.html'),
+  '/logistica': path.join(__dirname, 'logistica.html'),
+  '/logistica/': path.join(__dirname, 'logistica.html'),
   '/projectos/':         path.join(__dirname, 'projectos.html'),
 };
 

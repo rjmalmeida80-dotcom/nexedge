@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NexEdge Logística</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#F1F5F9;--s1:#fff;--s2:#F8FAFC;--s3:#E2E8F0;--b1:rgba(0,0,0,.07);--t1:#0F172A;--t2:#475569;--t3:#94A3B8;--in:#4F46E5;--gr:#10B981;--re:#EF4444;--am:#F59E0B;--bl:#3B82F6;--or:#F97316}
+    body{font-family:Inter,-apple-system,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex}
+    .sb{width:230px;background:linear-gradient(180deg,#0A0A18 0%,#1A1A2E 100%);border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;bottom:0;left:0;overflow-y:auto}
+    .logo{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
+    .logo-ic{width:34px;height:34px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0}
+    .logo-tx{color:#fff;font-weight:700;font-size:13px}
+    .logo-sub{font-size:9px;background:rgba(79,70,229,.3);color:#a5b4fc;padding:2px 7px;border-radius:4px;margin-top:2px}
+    .sb-nav{flex:1;padding:8px 6px}
+    .sb-sec{font-size:9px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.2);padding:12px 8px 4px;text-transform:uppercase}
+    .sb-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.45);font-size:12.5px;font-weight:400;border:none;border-left:2px solid transparent;background:none;width:100%;text-align:left;font-family:inherit;transition:all .12s;margin:1px 0;text-decoration:none}
+    .sb-item:hover{background:rgba(79,70,229,.12);color:rgba(255,255,255,.85)}
+    .sb-item.act{background:rgba(79,70,229,.22);border-left-color:#6366f1;color:#fff;font-weight:600}
+    .sb-badge{background:#ef4444;color:#fff;border-radius:9999px;padding:1px 6px;font-size:9px;font-weight:700;margin-left:auto}
+    .main{margin-left:230px;flex:1;display:flex;flex-direction:column}
+    .topbar{height:56px;background:#fff;border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+    .topbar-title{font-size:15px;font-weight:700;color:var(--t1)}
+    .content{padding:24px;flex:1}
+    .kpi-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:24px}
+    .kpi{background:#fff;border:1px solid var(--b1);border-radius:12px;padding:16px;cursor:pointer;transition:all .15s;border-top:3px solid transparent}
+    .kpi:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    .kpi-val{font-size:24px;font-weight:800;letter-spacing:-1px;margin-bottom:2px}
+    .kpi-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em}
+    .card{background:#fff;border:1px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+    .card-h{padding:14px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .card-title{font-size:13px;font-weight:600;color:var(--t1)}
+    .card-body{padding:20px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+    table{width:100%;border-collapse:collapse;font-size:12.5px}
+    th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1px solid var(--b1);background:var(--s2)}
+    td{padding:11px 14px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#fafafa;cursor:pointer}
+    .badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:9999px;font-size:10px;font-weight:600}
+    .btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+    .btn-primary{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;box-shadow:0 2px 8px rgba(79,70,229,.3)}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(79,70,229,.4)}
+    .btn-secondary{background:var(--s2);color:var(--t2);border:1px solid var(--s3)}
+    .btn-sm{padding:5px 12px;font-size:12px}
+    .btn-danger{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
+    .btn-success{background:rgba(16,185,129,.1);color:#10b981;border:1px solid rgba(16,185,129,.2)}
+    .fi{padding:9px 12px;border:1.5px solid var(--s3);border-radius:9px;font-size:13px;color:var(--t1);outline:none;font-family:inherit;background:#fff;width:100%;transition:border-color .15s}
+    .fi:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+    .fl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);display:block;margin-bottom:5px}
+    .fg{margin-bottom:14px}
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+    .modal{background:#fff;border-radius:16px;width:100%;max-width:640px;overflow:hidden;animation:fadeIn .2s ease-out}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+    .modal-h{padding:18px 24px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center;background:var(--s2)}
+    .modal-title{font-size:15px;font-weight:700}
+    .modal-close{background:none;border:none;cursor:pointer;color:var(--t3);font-size:22px;line-height:1}
+    .modal-b{padding:24px;max-height:70vh;overflow-y:auto}
+    .modal-f{padding:14px 24px;border-top:1px solid var(--b1);display:flex;gap:8px;justify-content:flex-end;background:var(--s2)}
+    .timeline{position:relative;padding-left:24px}
+    .timeline::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:2px;background:var(--s3)}
+    .timeline-item{position:relative;margin-bottom:16px}
+    .timeline-dot{position:absolute;left:-20px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--in);border:2px solid #fff;box-shadow:0 0 0 2px var(--in)}
+    .timeline-content{background:var(--s2);border-radius:8px;padding:10px 14px}
+    .timeline-estado{font-size:12px;font-weight:600;color:var(--t1)}
+    .timeline-data{font-size:11px;color:var(--t3)}
+    .timeline-notas{font-size:12px;color:var(--t2);margin-top:3px}
+    .search-bar{display:flex;gap:8px;margin-bottom:16px}
+    .tracking-page{background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:14px;padding:24px;color:#fff;margin-bottom:16px}
+    .progress-steps{display:flex;align-items:center;gap:4px;margin-top:16px}
+    .step{flex:1;text-align:center;font-size:10px;font-weight:600;opacity:.5}
+    .step.done{opacity:1}
+    .step.active{opacity:1;color:#fbbf24}
+    .step-dot{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.2);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:11px}
+    .step.done .step-dot{background:rgba(255,255,255,.9);color:#4f46e5}
+    .step.active .step-dot{background:#fbbf24;color:#1e1b4b}
+    .step-line{width:20px;height:2px;background:rgba(255,255,255,.2);flex-shrink:0}
+    .step-line.done{background:rgba(255,255,255,.6)}
+    .empty{text-align:center;padding:48px;color:var(--t3);font-size:13px}
+    textarea.fi{resize:vertical;min-height:70px}
+    select.fi{cursor:pointer}
+    ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:4px}
+  </style>
+</head>
+<body>
+
+<div class="sb">
+  <div class="logo">
+    <div class="logo-ic">🚚</div>
+    <div>
+      <div class="logo-tx">NexEdge</div>
+      <div class="logo-sub">LOGÍSTICA</div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">OPERAÇÕES</div>
+    <button class="sb-item act" onclick="tab('dashboard',this)">📊 Dashboard</button>
+    <button class="sb-item" onclick="tab('encomendas',this)">📦 Encomendas <span class="sb-badge" id="badge-problemas" style="display:none">!</span></button>
+    <button class="sb-item" onclick="tab('recolhas',this)">📥 Recolhas</button>
+    <button class="sb-item" onclick="tab('rotas',this)">🗺 Rotas</button>
+    <button class="sb-item" onclick="tab('tracking',this)">🔍 Tracking</button>
+    <div class="sb-sec">RECURSOS</div>
+    <button class="sb-item" onclick="tab('motoristas',this)">👤 Motoristas</button>
+    <button class="sb-item" onclick="tab('veiculos',this)">🚐 Veículos</button>
+    <div class="sb-sec">ANÁLISE</div>
+    <button class="sb-item" onclick="tab('analytics',this)">📈 Analytics</button>
+    <div class="sb-sec">PLATAFORMA</div>
+    <a class="sb-item" href="http://localhost:5173/" style="text-decoration:none;color:rgba(255,255,255,.45)">← ERP</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">📊 Dashboard Logística</div>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <input class="fi" id="search-global" placeholder="🔍 Tracking rápido (ORD-...)" style="width:220px;padding:7px 12px" onkeydown="if(event.key==='Enter')trackingRapido(this.value)"/>
+      <button class="btn btn-primary" onclick="modalNovaEncomenda()">+ Nova Encomenda</button>
+    </div>
+  </div>
+  <div class="content" id="conteudo">
+    <div class="empty">A carregar...</div>
+  </div>
+</div>
+
+<div id="modal-area"></div>
+
+<script>
+const API = '/api/logistica';
+let tabAtual = 'dashboard';
+
+function getToken() {
+  try {
+    const t = localStorage.getItem('access_token'); if(t) return t;
+    const r = localStorage.getItem('rh-auth'); if(r) return JSON.parse(r)?.state?.token;
+  } catch(e){}
+  return null;
+}
+
+async function apiFetch(path, opts={}) {
+  const token = getToken();
+  const r = await fetch((path.startsWith('http')?'':API) + path, {
+    ...opts,
+    headers: { 'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{}), ...(opts.headers||{}) }
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function fmtD(d) { return d?new Date(d).toLocaleDateString('pt-PT'):'—'; }
+function fmtDT(d) { return d?new Date(d).toLocaleString('pt-PT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—'; }
+function fmtEur(v,m='EUR') { return new Intl.NumberFormat('pt-PT',{style:'currency',currency:m,minimumFractionDigits:2}).format(v||0); }
+
+const COR_EST = {
+  nova:'#6366f1', confirmada:'#3b82f6', em_preparacao:'#f59e0b',
+  pronta_recolha:'#8b5cf6', recolhida:'#06b6d4', em_transito:'#f97316',
+  em_entrega:'#10b981', entregue:'#10b981', problema:'#ef4444', cancelada:'#6b7280'
+};
+const ICONE_EST = {
+  nova:'🆕', confirmada:'✅', em_preparacao:'⚙️', pronta_recolha:'📦',
+  recolhida:'📥', em_transito:'🚚', em_entrega:'🏃', entregue:'✅', problema:'⚠️', cancelada:'❌'
+};
+const LABEL_EST = {
+  nova:'Nova', confirmada:'Confirmada', em_preparacao:'Em Preparação',
+  pronta_recolha:'Pronta p/ Recolha', recolhida:'Recolhida', em_transito:'Em Trânsito',
+  em_entrega:'Em Entrega', entregue:'Entregue', problema:'Problema', cancelada:'Cancelada'
+};
+const FLAG = { PT:'🇵🇹', CH:'🇨🇭', FR:'🇫🇷', DE:'🇩🇪', ES:'🇪🇸' };
+
+function badge(est) {
+  const cor = COR_EST[est]||'#6b7280';
+  return `<span class="badge" style="background:${cor}15;color:${cor};border:1px solid ${cor}25">${ICONE_EST[est]||''} ${LABEL_EST[est]||est}</span>`;
+}
+
+function tab(t, el) {
+  tabAtual = t;
+  document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('act'));
+  if(el) el.classList.add('act');
+  document.getElementById('conteudo').innerHTML = '<div class="empty">⟳ A carregar...</div>';
+  carregar();
+}
+
+async function carregar() {
+  try {
+    if(tabAtual==='dashboard') await rDashboard();
+    else if(tabAtual==='encomendas') await rEncomendas();
+    else if(tabAtual==='recolhas') await rRecolhas();
+    else if(tabAtual==='rotas') await rRotas();
+    else if(tabAtual==='tracking') await rTracking();
+    else if(tabAtual==='motoristas') await rMotoristas();
+    else if(tabAtual==='veiculos') await rVeiculos();
+    else if(tabAtual==='analytics') await rAnalytics();
+  } catch(e) {
+    document.getElementById('conteudo').innerHTML = `<div class="empty">⚠️ ${e.message}</div>`;
+  }
+}
+
+// ── DASHBOARD ──
+async function rDashboard() {
+  const d = await apiFetch('/dashboard');
+  document.getElementById('topbar-title').textContent = '📊 Dashboard Logística';
+  if (d.kpis?.problemas > 0) {
+    const b = document.getElementById('badge-problemas');
+    b.style.display=''; b.textContent = d.kpis.problemas;
+  }
+
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div class="kpi-grid">
+      ${kpi('📦','Total',d.kpis?.total||0,'#6366f1')}
+      ${kpi('🆕','Novas',d.kpis?.novas||0,'#3b82f6')}
+      ${kpi('⚙️','Preparação',d.kpis?.em_preparacao||0,'#f59e0b')}
+      ${kpi('🚚','Em Trânsito',d.kpis?.em_transito||0,'#f97316')}
+      ${kpi('✅','Entregues Hoje',d.kpis?.entregues_hoje||0,'#10b981')}
+      ${kpi('⚠️','Problemas',d.kpis?.problemas||0,d.kpis?.problemas>0?'#ef4444':'#6b7280')}
+      ${kpi('⏰','Atrasadas',d.kpis?.atrasadas||0,d.kpis?.atrasadas>0?'#ef4444':'#6b7280')}
+    </div>
+
+    <div class="grid-3">
+      <div class="card" style="grid-column:span 2">
+        <div class="card-h">
+          <div class="card-title">📦 Encomendas Recentes</div>
+          <button class="btn btn-secondary btn-sm" onclick="tab('encomendas',null)">Ver todas</button>
+        </div>
+        ${d.urgentes?.length ? `<div style="overflow-x:auto"><table>
+          <thead><tr><th>Número</th><th>Destinatário</th><th>Estado</th><th>Motorista</th><th>Acção</th></tr></thead>
+          <tbody>${d.urgentes.map(e=>`<tr onclick="verEncomenda('${e.id||e.numero}')">
+            <td style="font-family:monospace;font-weight:600;color:#4f46e5">${e.numero}</td>
+            <td><div style="font-weight:500">${e.destinatario_nome}</div><div style="font-size:11px;color:var(--t3)">${e.destinatario_morada||''}</div></td>
+            <td>${badge(e.estado)}</td>
+            <td>${e.motorista_nome||'<span style="color:var(--t3)">Sem motorista</span>'}</td>
+            <td><button class="btn btn-sm btn-primary" onclick="event.stopPropagation();mudarEstado('${e.id||e.numero}')">Actualizar</button></td>
+          </tr>`).join('')}</tbody>
+        </table></div>` : `<div class="empty"><div style="font-size:32px;margin-bottom:8px">🎉</div>Sem problemas activos!</div>`}
+      </div>
+
+      <div class="card">
+        <div class="card-h"><div class="card-title">👤 Motoristas Disponíveis</div></div>
+        <div class="card-body" style="padding:0">
+          ${d.motoristas_disponiveis?.length ? d.motoristas_disponiveis.map(m=>`
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--b1)">
+              <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0">${m.nome[0]}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.nome}</div>
+                <div style="font-size:11px;color:var(--t3)">${m.matricula||'Sem veículo'} ${m.entregas_activas>0?`· ${m.entregas_activas} entregas`:''}</div>
+              </div>
+              <span class="badge" style="background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.2)">● Disponível</span>
+            </div>`).join('') : '<div class="empty" style="padding:24px">Sem motoristas disponíveis</div>'}
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">📊 Por Estado</div></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+          ${d.por_estado?.map(e=>`
+            <div style="display:flex;align-items:center;gap:10px">
+              ${badge(e.estado)}
+              <div style="flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden">
+                <div style="height:100%;border-radius:3px;background:${COR_EST[e.estado]||'#6366f1'};width:${d.kpis?.total>0?(e.total/d.kpis.total*100):0}%"></div>
+              </div>
+              <span style="font-size:12px;font-weight:600;color:var(--t1);min-width:24px;text-align:right">${e.total}</span>
+            </div>`).join('')||'<div style="color:var(--t3);text-align:center;padding:16px">Sem dados</div>'}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">📅 Hoje</div></div>
+        <div class="card-body">
+          ${[
+            ['📦 Criadas hoje', d.hoje?.criadas_hoje||0, '#6366f1'],
+            ['✅ Entregues hoje', d.hoje?.entregues_hoje||0, '#10b981'],
+            ['⏱ Tempo médio entrega', d.hoje?.tempo_medio_entrega_h ? d.hoje.tempo_medio_entrega_h+'h' : '—', '#f59e0b'],
+          ].map(([l,v,c])=>`
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--b1)">
+              <span style="font-size:13px;color:var(--t2)">${l}</span>
+              <span style="font-size:20px;font-weight:700;color:${c}">${v}</span>
+            </div>`).join('')}
+          <div style="margin-top:16px">
+            <div style="font-size:11px;color:var(--t3);margin-bottom:8px">PAÍSES ACTIVOS</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              ${Object.entries(d.paises||{}).map(([k,p])=>`
+                <span style="background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:4px 10px;font-size:12px">
+                  ${FLAG[k]||''} ${p.nome} <span style="color:var(--t3)">${p.moeda}</span>
+                </span>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── ENCOMENDAS ──
+async function rEncomendas() {
+  document.getElementById('topbar-title').textContent = '📦 Encomendas';
+  const encs = await apiFetch('/encomendas');
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div class="search-bar">
+      <input class="fi" id="filtro-estado" placeholder="Todos os estados" style="width:180px" list="estados-list" oninput="filtrarEncomendas()"/>
+      <datalist id="estados-list">
+        ${Object.entries(LABEL_EST).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}
+      </datalist>
+      <input class="fi" id="filtro-search" placeholder="Pesquisar número, nome..." oninput="filtrarEncomendas()" style="flex:1"/>
+      <button class="btn btn-primary" onclick="modalNovaEncomenda()">+ Nova</button>
+    </div>
+    <div class="card">
+      <div class="card-h">
+        <div class="card-title">Todas as Encomendas <span style="color:var(--t3);font-weight:400">(${encs.length})</span></div>
+      </div>
+      <div style="overflow-x:auto" id="tbl-enc">
+        ${tblEncomendas(encs)}
+      </div>
+    </div>`;
+  window._encs = encs;
+}
+
+function filtrarEncomendas() {
+  const estado = document.getElementById('filtro-estado')?.value;
+  const search = document.getElementById('filtro-search')?.value?.toLowerCase();
+  let f = window._encs||[];
+  if (estado && LABEL_EST[estado]) f = f.filter(e=>e.estado===estado);
+  if (search) f = f.filter(e=>e.numero?.toLowerCase().includes(search)||e.destinatario_nome?.toLowerCase().includes(search));
+  document.getElementById('tbl-enc').innerHTML = tblEncomendas(f);
+}
+
+function tblEncomendas(encs) {
+  if (!encs.length) return '<div class="empty"><div style="font-size:32px;margin-bottom:8px">📦</div>Sem encomendas</div>';
+  return `<table>
+    <thead><tr><th>Número</th><th>Destinatário</th><th>País</th><th>Peso</th><th>Estado</th><th>Motorista</th><th>Entrega Prevista</th><th>Acções</th></tr></thead>
+    <tbody>${encs.map(e=>`<tr onclick="verEncomenda('${e.id}')">
+      <td style="font-family:monospace;font-weight:700;color:#4f46e5;font-size:12px">${e.numero}</td>
+      <td><div style="font-weight:500">${e.destinatario_nome}</div><div style="font-size:11px;color:var(--t3)">${e.destinatario_localidade||''}</div></td>
+      <td>${FLAG[e.destinatario_pais]||''} ${e.destinatario_pais}</td>
+      <td style="font-size:12px">${e.peso_kg}kg · ${e.num_volumes} vol.</td>
+      <td>${badge(e.estado)}</td>
+      <td style="font-size:12px">${e.motorista_nome||'<span style="color:var(--t3)">—</span>'}</td>
+      <td style="font-size:12px;${e.dias_atraso>0?'color:#ef4444;font-weight:600':''}">${fmtD(e.data_entrega_prevista)}${e.dias_atraso>0?` ⚠️ +${Math.round(e.dias_atraso)}d`:''}</td>
+      <td>
+        <button onclick="event.stopPropagation();mudarEstadoModal('${e.id}','${e.estado}')" class="btn btn-sm btn-secondary">Estado</button>
+      </td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+// ── MOTORISTAS ──
+async function rMotoristas() {
+  document.getElementById('topbar-title').textContent = '👤 Motoristas';
+  const mots = await apiFetch('/motoristas');
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="modalNovoMotorista()">+ Novo Motorista</button>
+    </div>
+    <div class="grid-3">
+      ${mots.map(m=>`
+        <div class="card" style="cursor:pointer" onclick="">
+          <div class="card-body">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+              <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;flex-shrink:0">${m.nome[0]}</div>
+              <div>
+                <div style="font-size:14px;font-weight:700">${m.nome}</div>
+                <div style="font-size:12px;color:var(--t3)">${m.telefone||'Sem telefone'}</div>
+              </div>
+              <div style="margin-left:auto">${m.estado==='disponivel'?'<span class="badge" style="background:rgba(16,185,129,.12);color:#10b981">● Disponível</span>':'<span class="badge" style="background:rgba(107,114,128,.12);color:#6b7280">● '+m.estado+'</span>'}</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              ${stat('🚐 Veículo', m.matricula||'—')}
+              ${stat('📦 Entregas activas', m.entregas_activas||0)}
+              ${stat('✅ Hoje', m.entregas_hoje||0)}
+              ${stat('⏱ Taxa prazo', m.taxa_prazo ? m.taxa_prazo+'%' : '—')}
+            </div>
+          </div>
+        </div>`).join('')||'<div class="empty" style="grid-column:span 3">Sem motoristas</div>'}
+    </div>`;
+}
+
+// ── VEÍCULOS ──
+async function rVeiculos() {
+  document.getElementById('topbar-title').textContent = '🚐 Veículos';
+  const veics = await apiFetch('/veiculos');
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="modalNovoVeiculo()">+ Novo Veículo</button>
+    </div>
+    <div class="card">
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Matrícula</th><th>Modelo</th><th>Tipo</th><th>Capacidade</th><th>País</th><th>Motorista</th><th>Estado</th></tr></thead>
+        <tbody>${veics.map(v=>`<tr>
+          <td style="font-family:monospace;font-weight:600">${v.matricula}</td>
+          <td>${v.modelo||'—'}</td>
+          <td style="text-transform:capitalize">${v.tipo?.replace('_',' ')||'—'}</td>
+          <td style="font-size:12px">${v.capacidade_kg}kg · ${v.capacidade_m3}m³</td>
+          <td>${FLAG[v.pais]||''} ${v.pais}</td>
+          <td>${v.motorista_nome||'<span style="color:var(--t3)">Sem motorista</span>'}</td>
+          <td><span class="badge" style="background:rgba(16,185,129,.12);color:#10b981">${v.estado}</span></td>
+        </tr>`).join('')||'<tr><td colspan="7" class="empty">Sem veículos</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+// ── RECOLHAS ──
+async function rRecolhas() {
+  document.getElementById('topbar-title').textContent = '📥 Recolhas';
+  const hoje = new Date().toISOString().slice(0,10);
+  const recolhas = await apiFetch(`/recolhas?data=${hoje}`);
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:16px;align-items:center">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input class="fi" type="date" value="${hoje}" id="data-recolhas" style="width:160px" onchange="recarregarRecolhas(this.value)"/>
+      </div>
+      <button class="btn btn-primary" onclick="modalNovaRecolha()">+ Nova Recolha</button>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-title">Recolhas — ${new Date(hoje+'T12:00').toLocaleDateString('pt-PT',{weekday:'long',day:'numeric',month:'long'})}</div></div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Local</th><th>Contacto</th><th>Janela</th><th>Motorista</th><th>Volumes</th><th>Prioridade</th><th>Estado</th></tr></thead>
+        <tbody>${recolhas.map(r=>`<tr>
+          <td><div style="font-weight:500">${r.morada_recolha?.slice(0,50)}</div></td>
+          <td><div>${r.contacto_nome||'—'}</div><div style="font-size:11px;color:var(--t3)">${r.contacto_telefone||''}</div></td>
+          <td style="font-family:monospace;font-size:12px">${r.janela_inicio?.slice(0,5)||'09:00'} - ${r.janela_fim?.slice(0,5)||'18:00'}</td>
+          <td>${r.motorista_nome||'<span style="color:var(--t3)">Não atribuído</span>'}</td>
+          <td>${r.num_volumes_estimado} vol · ${r.peso_estimado_kg}kg</td>
+          <td><span class="badge" style="background:${r.prioridade==='urgente'?'rgba(239,68,68,.12)':'rgba(99,102,241,.12)'};color:${r.prioridade==='urgente'?'#ef4444':'#6366f1'}">${r.prioridade}</span></td>
+          <td><span class="badge" style="background:rgba(245,158,11,.12);color:#f59e0b">${r.estado}</span></td>
+        </tr>`).join('')||'<tr><td colspan="7" class="empty">Sem recolhas para este dia</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+async function recarregarRecolhas(data) {
+  const recolhas = await apiFetch(`/recolhas?data=${data}`).catch(()=>[]);
+  document.querySelector('.card').querySelector('tbody').innerHTML = recolhas.length ?
+    recolhas.map(r=>`<tr><td>${r.morada_recolha?.slice(0,50)}</td><td>${r.contacto_nome||'—'}</td><td style="font-family:monospace">${r.janela_inicio?.slice(0,5)} - ${r.janela_fim?.slice(0,5)}</td><td>${r.motorista_nome||'—'}</td><td>${r.num_volumes_estimado}</td><td>${r.prioridade}</td><td>${r.estado}</td></tr>`).join('') :
+    '<tr><td colspan="7" class="empty">Sem recolhas</td></tr>';
+}
+
+// ── ROTAS ──
+async function rRotas() {
+  document.getElementById('topbar-title').textContent = '🗺 Rotas';
+  const rotas = await apiFetch('/rotas');
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="modalNovaRota()">+ Nova Rota</button>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-title">Rotas (${rotas.length})</div></div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Nome</th><th>Data</th><th>Motorista</th><th>Paragens</th><th>Distância</th><th>IA</th><th>Estado</th></tr></thead>
+        <tbody>${rotas.map(r=>`<tr>
+          <td style="font-weight:500">${r.nome}</td>
+          <td>${fmtD(r.data_rota)}</td>
+          <td>${r.motorista_nome||'—'} <span style="color:var(--t3);font-size:11px">${r.matricula||''}</span></td>
+          <td>${r.entregues||0}/${r.num_paragens} <span style="color:var(--t3);font-size:11px">entregues</span></td>
+          <td style="font-size:12px">${r.distancia_estimada_km?r.distancia_estimada_km+'km':'—'} ${r.tempo_estimado_min?'·'+r.tempo_estimado_min+'min':''}</td>
+          <td>${r.optimizada_ia?'<span class="badge" style="background:rgba(99,102,241,.12);color:#6366f1">🤖 IA</span>':'—'}</td>
+          <td><span class="badge" style="background:rgba(245,158,11,.12);color:#f59e0b">${r.estado}</span></td>
+        </tr>`).join('')||'<tr><td colspan="7" class="empty">Sem rotas</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+// ── TRACKING ──
+async function rTracking() {
+  document.getElementById('topbar-title').textContent = '🔍 Tracking';
+  document.getElementById('conteudo').innerHTML = `
+    <div class="card" style="max-width:600px;margin:0 auto">
+      <div class="card-h"><div class="card-title">Rastrear Encomenda</div></div>
+      <div class="card-body">
+        <div style="display:flex;gap:8px">
+          <input class="fi" id="tracking-input" placeholder="ORD-2026-000001" style="flex:1" onkeydown="if(event.key==='Enter')doTracking()"/>
+          <button class="btn btn-primary" onclick="doTracking()">Rastrear</button>
+        </div>
+        <div id="tracking-result" style="margin-top:20px"></div>
+      </div>
+    </div>`;
+}
+
+async function trackingRapido(numero) {
+  if (!numero?.trim()) return;
+  tab('tracking',null);
+  setTimeout(() => { document.getElementById('tracking-input').value=numero; doTracking(); }, 100);
+}
+
+async function doTracking() {
+  const numero = document.getElementById('tracking-input')?.value?.trim();
+  if (!numero) return;
+  const res = document.getElementById('tracking-result');
+  res.innerHTML = '<div style="text-align:center;color:var(--t3)">⟳ A procurar...</div>';
+  try {
+    const d = await apiFetch(`/tracking/${numero}`);
+    const estados = ['nova','confirmada','em_preparacao','pronta_recolha','recolhida','em_transito','em_entrega','entregue'];
+    const idxActual = estados.indexOf(d.estado);
+
+    res.innerHTML = `
+      <div class="tracking-page">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-size:11px;opacity:.7;margin-bottom:2px">NÚMERO DE ENCOMENDA</div>
+            <div style="font-size:22px;font-weight:800;font-family:monospace">${d.numero}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:11px;opacity:.7;margin-bottom:2px">DESTINATÁRIO</div>
+            <div style="font-weight:600">${d.destinatario_nome}</div>
+            <div style="font-size:12px;opacity:.7">${d.destinatario_localidade}, ${FLAG[d.destinatario_pais]||''} ${d.destinatario_pais}</div>
+          </div>
+        </div>
+        <div class="progress-steps" style="margin-top:20px">
+          ${estados.map((e,i)=>`
+            ${i>0?`<div class="step-line ${i<=idxActual?'done':''}"></div>`:''}
+            <div class="step ${i<idxActual?'done':i===idxActual?'active':''}">
+              <div class="step-dot">${i<idxActual?'✓':i===idxActual?'●':i+1}</div>
+              <div>${LABEL_EST[e]?.split(' ')[0]||e}</div>
+            </div>`).join('')}
+        </div>
+        ${d.motorista_nome?`<div style="margin-top:16px;background:rgba(255,255,255,.1);border-radius:8px;padding:12px;display:flex;justify-content:space-between">
+          <div><div style="font-size:11px;opacity:.7">MOTORISTA</div><div style="font-weight:600">${d.motorista_nome}</div></div>
+          <div style="text-align:right"><div style="font-size:11px;opacity:.7">VEÍCULO</div><div style="font-weight:600">${d.matricula||'—'}</div></div>
+          ${d.data_entrega_prevista?`<div style="text-align:right"><div style="font-size:11px;opacity:.7">ENTREGA PREVISTA</div><div style="font-weight:600">${fmtD(d.data_entrega_prevista)}</div></div>`:''}
+        </div>`:''}
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">Histórico</div></div>
+        <div class="card-body">
+          <div class="timeline">
+            ${(d.historico||[]).reverse().map(h=>`
+              <div class="timeline-item">
+                <div class="timeline-dot" style="background:${COR_EST[h.estado]||'#6366f1'}"></div>
+                <div class="timeline-content">
+                  <div class="timeline-estado">${ICONE_EST[h.estado]||''} ${LABEL_EST[h.estado]||h.estado||'Actualização'}</div>
+                  <div class="timeline-data">${fmtDT(h.criado_em)}</div>
+                  ${h.notas?`<div class="timeline-notas">${h.notas}</div>`:''}
+                  ${h.latitude?`<div style="font-size:10px;color:var(--t3);margin-top:2px">📍 ${h.latitude}, ${h.longitude}</div>`:''}
+                </div>
+              </div>`).join('')||'<div style="color:var(--t3);font-size:13px">Sem histórico</div>'}
+          </div>
+        </div>
+      </div>`;
+  } catch(e) {
+    res.innerHTML = `<div style="text-align:center;color:#ef4444;padding:20px">⚠️ Encomenda não encontrada: ${numero}</div>`;
+  }
+}
+
+// ── ANALYTICS ──
+async function rAnalytics() {
+  document.getElementById('topbar-title').textContent = '📈 Analytics';
+  const d = await apiFetch('/analytics?periodo=30');
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr)">
+      ${kpi('📦','Total',d.kpis?.total||0,'#6366f1')}
+      ${kpi('✅','Entregues',d.kpis?.entregues||0,'#10b981')}
+      ${kpi('📊','Taxa Entrega',(d.kpis?.taxa_entrega||0)+'%','#10b981')}
+      ${kpi('⏱','Taxa Prazo',(d.kpis?.taxa_prazo||0)+'%',parseFloat(d.kpis?.taxa_prazo||0)>=90?'#10b981':'#f59e0b')}
+      ${kpi('⚡','Tempo Médio',d.kpis?.tempo_medio_h?d.kpis.tempo_medio_h+'h':'—','#3b82f6')}
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">🌍 Por País</div></div>
+        <div class="card-body">
+          ${d.por_pais?.map(p=>`
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <span style="font-size:18px">${FLAG[p.pais]||'🌍'}</span>
+              <div style="flex:1">
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+                  <span>${p.nome}</span><span style="font-weight:600">${p.total}</span>
+                </div>
+                <div style="height:5px;background:var(--s3);border-radius:3px;overflow:hidden">
+                  <div style="height:100%;background:#4f46e5;width:${d.kpis?.total?(p.total/d.kpis.total*100):0}%;border-radius:3px"></div>
+                </div>
+              </div>
+            </div>`).join('')||'<div style="color:var(--t3)">Sem dados</div>'}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">👤 Performance Motoristas</div></div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Motorista</th><th>Total</th><th>Entregues</th><th>Taxa Prazo</th></tr></thead>
+          <tbody>${d.por_motorista?.map(m=>`<tr>
+            <td style="font-weight:500">${m.nome}</td>
+            <td>${m.total}</td>
+            <td>${m.entregues}</td>
+            <td style="color:${parseFloat(m.taxa_prazo||0)>=90?'#10b981':'#f59e0b'};font-weight:600">${m.taxa_prazo||0}%</td>
+          </tr>`).join('')||'<tr><td colspan="4" class="empty">Sem dados</td></tr>'}</tbody>
+        </table></div>
+      </div>
+    </div>`;
+}
+
+// ── MODAIS ──
+function modalNovaEncomenda() {
+  document.getElementById('modal-area').innerHTML = `
+    <div class="modal-ov">
+      <div class="modal">
+        <div class="modal-h"><div class="modal-title">📦 Nova Encomenda</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+        <div class="modal-b">
+          <div style="font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;margin-bottom:12px">Remetente</div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Nome remetente</label><input class="fi" id="ne-rem-nome" placeholder="Empresa / Nome"/></div>
+            <div class="fg"><label class="fl">País remetente</label>
+              <select class="fi" id="ne-rem-pais"><option value="PT">🇵🇹 Portugal</option><option value="CH">🇨🇭 Suíça</option><option value="FR">🇫🇷 França</option><option value="DE">🇩🇪 Alemanha</option><option value="ES">🇪🇸 Espanha</option></select></div>
+          </div>
+          <div style="font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;margin:16px 0 12px">Destinatário *</div>
+          <div class="fg"><label class="fl">Nome *</label><input class="fi" id="ne-dest-nome" placeholder="Nome completo ou empresa"/></div>
+          <div class="fg"><label class="fl">Morada</label><input class="fi" id="ne-dest-morada" placeholder="Rua, número, andar"/></div>
+          <div class="g3">
+            <div class="fg"><label class="fl">Código Postal</label><input class="fi" id="ne-dest-cp" placeholder="1000-001"/></div>
+            <div class="fg"><label class="fl">Localidade</label><input class="fi" id="ne-dest-loc" placeholder="Lisboa"/></div>
+            <div class="fg"><label class="fl">País</label>
+              <select class="fi" id="ne-dest-pais"><option value="PT">🇵🇹 Portugal</option><option value="CH">🇨🇭 Suíça</option><option value="FR">🇫🇷 França</option><option value="DE">🇩🇪 Alemanha</option><option value="ES">🇪🇸 Espanha</option></select></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Telefone</label><input class="fi" id="ne-dest-tel" placeholder="+351 912 345 678"/></div>
+            <div class="fg"><label class="fl">Email (para notificações)</label><input class="fi" id="ne-dest-email" type="email" placeholder="cliente@email.pt"/></div>
+          </div>
+          <div style="font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;margin:16px 0 12px">Detalhes da Encomenda</div>
+          <div class="g3">
+            <div class="fg"><label class="fl">Peso (kg)</label><input class="fi" id="ne-peso" type="number" placeholder="0.0" step="0.1"/></div>
+            <div class="fg"><label class="fl">Nº Volumes</label><input class="fi" id="ne-vols" type="number" placeholder="1" min="1" value="1"/></div>
+            <div class="fg"><label class="fl">Prioridade</label>
+              <select class="fi" id="ne-pri"><option value="normal">Normal</option><option value="alta">Alta</option><option value="urgente">🚨 Urgente</option><option value="baixa">Baixa</option></select></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Data Entrega Prevista</label><input class="fi" id="ne-data-ent" type="date"/></div>
+            <div class="fg"><label class="fl">Valor Mercadoria (€)</label><input class="fi" id="ne-valor" type="number" placeholder="0.00" step="0.01"/></div>
+          </div>
+          <div class="fg"><label class="fl">Instruções Especiais</label><textarea class="fi" id="ne-instrucoes" placeholder="Entregar em mãos próprias, fragil, etc..."></textarea></div>
+        </div>
+        <div class="modal-f">
+          <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="criarEncomenda()">Criar Encomenda</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function criarEncomenda() {
+  const nome = document.getElementById('ne-dest-nome')?.value?.trim();
+  if (!nome) return alert('Nome do destinatário obrigatório');
+  try {
+    const r = await apiFetch('/encomendas', { method:'POST', body: JSON.stringify({
+      remetente_nome: document.getElementById('ne-rem-nome')?.value||'',
+      remetente_pais: document.getElementById('ne-rem-pais')?.value||'PT',
+      destinatario_nome: nome,
+      destinatario_morada: document.getElementById('ne-dest-morada')?.value||'',
+      destinatario_codigo_postal: document.getElementById('ne-dest-cp')?.value||'',
+      destinatario_localidade: document.getElementById('ne-dest-loc')?.value||'',
+      destinatario_pais: document.getElementById('ne-dest-pais')?.value||'PT',
+      destinatario_telefone: document.getElementById('ne-dest-tel')?.value||'',
+      destinatario_email: document.getElementById('ne-dest-email')?.value||'',
+      peso_kg: parseFloat(document.getElementById('ne-peso')?.value)||0,
+      num_volumes: parseInt(document.getElementById('ne-vols')?.value)||1,
+      prioridade: document.getElementById('ne-pri')?.value||'normal',
+      data_entrega_prevista: document.getElementById('ne-data-ent')?.value||null,
+      valor_mercadoria: parseFloat(document.getElementById('ne-valor')?.value)||0,
+      instrucoes_especiais: document.getElementById('ne-instrucoes')?.value||'',
+    })});
+    fecharModal();
+    alert(`✅ Encomenda criada: ${r.numero}`);
+    tab('encomendas', document.querySelector('.sb-item:nth-child(2)'));
+  } catch(e) { alert('Erro: '+e.message); }
+}
+
+async function verEncomenda(id) {
+  try {
+    const d = await apiFetch(`/encomendas/${id}`);
+    document.getElementById('modal-area').innerHTML = `
+      <div class="modal-ov">
+        <div class="modal" style="max-width:700px">
+          <div class="modal-h">
+            <div>
+              <div class="modal-title">${d.numero}</div>
+              <div style="font-size:12px;color:var(--t3)">${d.destinatario_nome}</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              ${badge(d.estado)}
+              <button class="modal-close" onclick="fecharModal()">×</button>
+            </div>
+          </div>
+          <div class="modal-b">
+            <div class="g2" style="margin-bottom:16px">
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:8px;font-weight:700;text-transform:uppercase">Destinatário</div>
+                <div style="font-weight:600">${d.destinatario_nome}</div>
+                <div style="font-size:13px;color:var(--t2)">${d.destinatario_morada||'—'}</div>
+                <div style="font-size:13px;color:var(--t2)">${d.destinatario_codigo_postal||''} ${d.destinatario_localidade||''} ${FLAG[d.destinatario_pais]||''} ${d.destinatario_pais}</div>
+                <div style="font-size:13px;color:var(--t2)">${d.destinatario_telefone||''} ${d.destinatario_email||''}</div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:8px;font-weight:700;text-transform:uppercase">Detalhes</div>
+                ${stat2('Peso',d.peso_kg+'kg')}
+                ${stat2('Volumes',d.num_volumes)}
+                ${stat2('Prioridade',d.prioridade)}
+                ${stat2('Entrega prevista',fmtD(d.data_entrega_prevista))}
+                ${stat2('Motorista',d.motorista_nome||'—')}
+                ${stat2('Veículo',d.matricula||'—')}
+              </div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:var(--t3);margin-bottom:12px;font-weight:700;text-transform:uppercase">Histórico</div>
+              <div class="timeline">
+                ${(d.historico||[]).map(h=>`
+                  <div class="timeline-item">
+                    <div class="timeline-dot" style="background:${COR_EST[h.estado]||'#6366f1'}"></div>
+                    <div class="timeline-content">
+                      <div class="timeline-estado">${ICONE_EST[h.estado]||''} ${LABEL_EST[h.estado]||h.estado||'Actualização'}</div>
+                      <div class="timeline-data">${fmtDT(h.criado_em)} ${h.operador_nome?'· '+h.operador_nome:''}</div>
+                      ${h.notas?`<div class="timeline-notas">${h.notas}</div>`:''}
+                    </div>
+                  </div>`).join('')||'<div style="color:var(--t3)">Sem histórico</div>'}
+              </div>
+            </div>
+          </div>
+          <div class="modal-f">
+            <button class="btn btn-secondary" onclick="fecharModal()">Fechar</button>
+            <button class="btn btn-primary" onclick="mudarEstadoModal('${d.id}','${d.estado}')">Mudar Estado</button>
+          </div>
+        </div>
+      </div>`;
+  } catch(e) { alert('Erro: '+e.message); }
+}
+
+async function mudarEstadoModal(id, estadoActual) {
+  const TRANSICOES = {
+    nova:['confirmada','cancelada'], confirmada:['em_preparacao','cancelada'],
+    em_preparacao:['pronta_recolha'], pronta_recolha:['recolhida'],
+    recolhida:['em_transito'], em_transito:['em_entrega','problema'],
+    em_entrega:['entregue','problema'], problema:['em_transito','em_entrega','cancelada']
+  };
+  const permitidos = TRANSICOES[estadoActual]||[];
+
+  document.getElementById('modal-area').innerHTML = `
+    <div class="modal-ov">
+      <div class="modal" style="max-width:440px">
+        <div class="modal-h"><div class="modal-title">Mudar Estado</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+        <div class="modal-b">
+          <div style="margin-bottom:16px">${badge(estadoActual)} → ?</div>
+          <div class="fg"><label class="fl">Novo Estado *</label>
+            <select class="fi" id="novo-estado">
+              ${permitidos.map(e=>`<option value="${e}">${ICONE_EST[e]||''} ${LABEL_EST[e]||e}</option>`).join('')}
+            </select></div>
+          <div class="fg"><label class="fl">Notas</label><textarea class="fi" id="notas-estado" placeholder="Observações..."></textarea></div>
+        </div>
+        <div class="modal-f">
+          <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="confirmarMudancaEstado('${id}')">Actualizar</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function confirmarMudancaEstado(id) {
+  const estado = document.getElementById('novo-estado')?.value;
+  const notas = document.getElementById('notas-estado')?.value;
+  if (!estado) return alert('Selecciona um estado');
+  try {
+    await apiFetch(`/encomendas/${id}/estado`, { method:'PUT', body: JSON.stringify({ estado, notas }) });
+    fecharModal();
+    carregar();
+  } catch(e) { alert('Erro: '+e.message); }
+}
+
+function modalNovoMotorista() {
+  document.getElementById('modal-area').innerHTML = `
+    <div class="modal-ov">
+      <div class="modal" style="max-width:480px">
+        <div class="modal-h"><div class="modal-title">Novo Motorista</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+        <div class="modal-b">
+          <div class="fg"><label class="fl">Nome *</label><input class="fi" id="nm-nome"/></div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Email</label><input class="fi" id="nm-email" type="email"/></div>
+            <div class="fg"><label class="fl">Telefone</label><input class="fi" id="nm-tel"/></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Licença</label><input class="fi" id="nm-lic"/></div>
+            <div class="fg"><label class="fl">País</label>
+              <select class="fi" id="nm-pais"><option value="PT">🇵🇹 PT</option><option value="CH">🇨🇭 CH</option><option value="FR">🇫🇷 FR</option><option value="DE">🇩🇪 DE</option><option value="ES">🇪🇸 ES</option></select></div>
+          </div>
+        </div>
+        <div class="modal-f">
+          <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="criarMotorista()">Criar</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function criarMotorista() {
+  const nome = document.getElementById('nm-nome')?.value?.trim();
+  if (!nome) return alert('Nome obrigatório');
+  try {
+    await apiFetch('/motoristas', { method:'POST', body: JSON.stringify({
+      nome, email: document.getElementById('nm-email')?.value||'',
+      telefone: document.getElementById('nm-tel')?.value||'',
+      licenca: document.getElementById('nm-lic')?.value||'',
+      pais: document.getElementById('nm-pais')?.value||'PT',
+    })});
+    fecharModal(); carregar();
+  } catch(e) { alert('Erro: '+e.message); }
+}
+
+function modalNovoVeiculo() {
+  document.getElementById('modal-area').innerHTML = `
+    <div class="modal-ov">
+      <div class="modal" style="max-width:480px">
+        <div class="modal-h"><div class="modal-title">Novo Veículo</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+        <div class="modal-b">
+          <div class="g2">
+            <div class="fg"><label class="fl">Matrícula *</label><input class="fi" id="nv-mat"/></div>
+            <div class="fg"><label class="fl">Modelo</label><input class="fi" id="nv-mod"/></div>
+          </div>
+          <div class="g3">
+            <div class="fg"><label class="fl">Tipo</label>
+              <select class="fi" id="nv-tipo"><option value="furgao">Furgão</option><option value="camiao_pequeno">Camião Pequeno</option><option value="camiao">Camião</option><option value="carro">Carro</option><option value="moto">Moto</option></select></div>
+            <div class="fg"><label class="fl">Cap. (kg)</label><input class="fi" id="nv-kg" type="number" value="1000"/></div>
+            <div class="fg"><label class="fl">Cap. (m³)</label><input class="fi" id="nv-m3" type="number" value="10"/></div>
+          </div>
+          <div class="fg"><label class="fl">País</label>
+            <select class="fi" id="nv-pais"><option value="PT">🇵🇹 Portugal</option><option value="CH">🇨🇭 Suíça</option><option value="FR">🇫🇷 França</option><option value="DE">🇩🇪 Alemanha</option><option value="ES">🇪🇸 Espanha</option></select></div>
+        </div>
+        <div class="modal-f">
+          <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="criarVeiculo()">Criar</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function criarVeiculo() {
+  const mat = document.getElementById('nv-mat')?.value?.trim();
+  if (!mat) return alert('Matrícula obrigatória');
+  try {
+    await apiFetch('/veiculos', { method:'POST', body: JSON.stringify({
+      matricula: mat, modelo: document.getElementById('nv-mod')?.value||'',
+      tipo: document.getElementById('nv-tipo')?.value||'furgao',
+      capacidade_kg: parseFloat(document.getElementById('nv-kg')?.value)||1000,
+      capacidade_m3: parseFloat(document.getElementById('nv-m3')?.value)||10,
+      pais: document.getElementById('nv-pais')?.value||'PT',
+    })});
+    fecharModal(); carregar();
+  } catch(e) { alert('Erro: '+e.message); }
+}
+
+function modalNovaRecolha() {
+  document.getElementById('modal-area').innerHTML = `
+    <div class="modal-ov">
+      <div class="modal" style="max-width:500px">
+        <div class="modal-h"><div class="modal-title">Nova Recolha</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+        <div class="modal-b">
+          <div class="fg"><label class="fl">Morada de recolha *</label><input class="fi" id="nr-morada"/></div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Contacto nome</label><input class="fi" id="nr-nome"/></div>
+            <div class="fg"><label class="fl">Telefone</label><input class="fi" id="nr-tel"/></div>
+          </div>
+          <div class="g3">
+            <div class="fg"><label class="fl">Data *</label><input class="fi" id="nr-data" type="date" value="${new Date().toISOString().slice(0,10)}"/></div>
+            <div class="fg"><label class="fl">Janela início</label><input class="fi" id="nr-inicio" type="time" value="09:00"/></div>
+            <div class="fg"><label class="fl">Janela fim</label><input class="fi" id="nr-fim" type="time" value="18:00"/></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Nº Volumes</label><input class="fi" id="nr-vols" type="number" value="1"/></div>
+            <div class="fg"><label class="fl">Peso (kg)</label><input class="fi" id="nr-peso" type="number" value="0"/></div>
+          </div>
+          <div class="fg"><label class="fl">Instruções</label><textarea class="fi" id="nr-inst"></textarea></div>
+        </div>
+        <div class="modal-f">
+          <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="criarRecolha()">Agendar Recolha</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function criarRecolha() {
+  const morada = document.getElementById('nr-morada')?.value?.trim();
+  if (!morada) return alert('Morada obrigatória');
+  try {
+    await apiFetch('/recolhas', { method:'POST', body: JSON.stringify({
+      morada_recolha: morada,
+      contacto_nome: document.getElementById('nr-nome')?.value||'',
+      contacto_telefone: document.getElementById('nr-tel')?.value||'',
+      data_recolha: document.getElementById('nr-data')?.value,
+      janela_inicio: document.getElementById('nr-inicio')?.value||'09:00',
+      janela_fim: document.getElementById('nr-fim')?.value||'18:00',
+      num_volumes_estimado: parseInt(document.getElementById('nr-vols')?.value)||1,
+      peso_estimado_kg: parseFloat(document.getElementById('nr-peso')?.value)||0,
+      instrucoes: document.getElementById('nr-inst')?.value||'',
+    })});
+    fecharModal(); carregar();
+  } catch(e) { alert('Erro: '+e.message); }
+}
+
+function modalNovaRota() { alert('Criar rota: selecciona encomendas na lista e clica "Criar Rota" (em breve com drag & drop)'); }
+
+function fecharModal() { document.getElementById('modal-area').innerHTML = ''; }
+
+// Helpers
+function kpi(ico, label, valor, cor) {
+  return `<div class="kpi" style="border-top-color:${cor}">
+    <div class="kpi-val" style="color:${cor}">${valor}</div>
+    <div class="kpi-label">${ico} ${label}</div>
+  </div>`;
+}
+function stat(k,v) { return `<div style="background:var(--s2);border-radius:8px;padding:10px 12px"><div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;margin-bottom:2px">${k}</div><div style="font-size:14px;font-weight:700">${v}</div></div>`; }
+function stat2(k,v) { return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--b1);font-size:12px"><span style="color:var(--t3)">${k}</span><span style="font-weight:500">${v}</span></div>`; }
+
+// Init
+carregar();
+setInterval(() => { if(tabAtual==='dashboard') carregar(); }, 30000); // auto-refresh 30s
+</script>
+</body>
+</html>
