@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="description" content="NexEdge — ERP Premium com IA para empresas suíças e portuguesas. Logística, WMS, RH, Financeiro, CRM, ITSM. 14 dias grátis."/>
+<title>NexEdge — ERP Premium com IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030712;--s1:#0F172A;--s2:#1E293B;--t1:#F8FAFC;--t2:#94A3B8;--t3:#475569;--gr:#10B981;--pu:#8B5CF6;--bl:#3B82F6}
+html{scroll-behavior:smooth}
+body{font-family:Inter,sans-serif;background:var(--bg);color:var(--t1);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 5%;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.04);background:rgba(3,7,18,.85);backdrop-filter:blur(12px)}
+.nav-logo{font-size:18px;font-weight:800;display:flex;align-items:center;gap:10px}
+.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,#10b981,#059669);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.nav-links{display:flex;gap:6px}
+.nav-link{padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;text-decoration:none;transition:all .15s}
+.nav-link:hover{color:var(--t1);background:rgba(255,255,255,.05)}
+.nav-cta{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;text-decoration:none;transition:all .15s}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(16,185,129,.3)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:100px 5% 60px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 60% 30%,rgba(16,185,129,.06) 0%,transparent 60%),radial-gradient(ellipse at 30% 70%,rgba(139,92,246,.05) 0%,transparent 60%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);border-radius:20px;padding:6px 16px;font-size:12px;font-weight:600;color:#10b981;margin-bottom:24px}
+.hero-badge-dot{width:7px;height:7px;border-radius:50%;background:#10b981;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+h1{font-size:clamp(36px,6vw,72px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px}
+h1 .gr{background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h1 .pu{background:linear-gradient(135deg,#8b5cf6,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:clamp(16px,2vw,20px);color:var(--t2);max-width:620px;margin:0 auto 36px;line-height:1.6}
+.hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
+.btn-hero{padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s;border:none;font-family:inherit}
+.btn-hero-primary{background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 24px rgba(16,185,129,.3)}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(16,185,129,.4)}
+.btn-hero-sec{background:rgba(255,255,255,.06);color:var(--t1);border:1px solid rgba(255,255,255,.1)}
+.btn-hero-sec:hover{background:rgba(255,255,255,.1)}
+.hero-stats{display:flex;gap:40px;justify-content:center;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat-val{font-size:28px;font-weight:900;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px}
+.hero-stat-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-top:3px}
+
+/* SECTION */
+section{padding:80px 5%}
+.section-badge{display:inline-block;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#a78bfa;margin-bottom:16px}
+.section-title{font-size:clamp(28px,4vw,44px);font-weight:900;letter-spacing:-1px;margin-bottom:12px}
+.section-sub{font-size:16px;color:var(--t2);max-width:560px;line-height:1.6;margin-bottom:48px}
+.section-center{text-align:center}
+.section-center .section-sub{margin:0 auto 48px}
+
+/* MÓDULOS GRID */
+.modulos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.modulo-card{background:var(--s1);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;transition:all .2s;cursor:default}
+.modulo-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.3);border-color:rgba(255,255,255,.1)}
+.mod-icon{font-size:28px;margin-bottom:12px}
+.mod-nome{font-size:14px;font-weight:700;margin-bottom:4px}
+.mod-desc{font-size:12px;color:var(--t3);line-height:1.5;margin-bottom:12px}
+.mod-tags{display:flex;flex-wrap:wrap;gap:4px}
+.mod-tag{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:4px;padding:2px 8px;font-size:10px;color:var(--t3)}
+
+/* PREÇOS */
+.precos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.preco-card{background:var(--s1);border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:28px;position:relative;transition:all .2s}
+.preco-card.destaque{border-color:rgba(16,185,129,.4);box-shadow:0 0 0 1px rgba(16,185,129,.15),0 20px 60px rgba(16,185,129,.1)}
+.preco-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:20px;padding:4px 16px;font-size:11px;font-weight:700;white-space:nowrap}
+.preco-tier{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:8px}
+.preco-nome{font-size:20px;font-weight:800;margin-bottom:4px}
+.preco-desc{font-size:12px;color:var(--t3);margin-bottom:20px;line-height:1.4}
+.preco-val{font-size:40px;font-weight:900;letter-spacing:-2px;margin-bottom:4px}
+.preco-val span{font-size:18px;font-weight:600;color:var(--t2)}
+.preco-periodo{font-size:12px;color:var(--t3);margin-bottom:20px}
+.preco-features{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.preco-features li{font-size:13px;display:flex;align-items:flex-start;gap:8px;color:var(--t2)}
+.preco-features li::before{content:'✓';color:#10b981;font-weight:700;flex-shrink:0;margin-top:1px}
+.preco-btn{display:block;text-align:center;padding:12px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;transition:all .15s}
+.preco-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(16,185,129,.3)}
+.preco-btn.sec{background:rgba(255,255,255,.06);color:var(--t1)}
+.preco-btn.sec:hover{background:rgba(255,255,255,.1)}
+
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.feature{background:var(--s1);border:1px solid rgba(255,255,255,.04);border-radius:14px;padding:20px;display:flex;gap:14px;align-items:flex-start}
+.feature-icon{font-size:24px;flex-shrink:0}
+.feature-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.feature-desc{font-size:12px;color:var(--t3);line-height:1.5}
+
+/* TRIAL */
+.trial-box{background:linear-gradient(135deg,#0F2027,#1E293B);border:1px solid rgba(16,185,129,.2);border-radius:24px;padding:48px;text-align:center;position:relative;overflow:hidden}
+.trial-box::before{content:'';position:absolute;top:-40%;left:-10%;width:80%;height:200%;background:radial-gradient(ellipse,rgba(16,185,129,.06),transparent 70%);pointer-events:none}
+
+/* FOOTER */
+footer{background:var(--s1);border-top:1px solid rgba(255,255,255,.04);padding:40px 5%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-links{display:flex;gap:20px}
+.footer-link{font-size:12px;color:var(--t3);text-decoration:none}
+.footer-link:hover{color:var(--t2)}
+
+@media(max-width:768px){
+  nav .nav-links{display:none}
+  .hero{padding:90px 5% 40px}
+  .features-grid{grid-template-columns:1fr}
+  footer{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="logo-mark">N</div>
+    NexEdge
+  </div>
+  <div class="nav-links">
+    <a class="nav-link" href="#modulos">Módulos</a>
+    <a class="nav-link" href="#precos">Preços</a>
+    <a class="nav-link" href="#features">Funcionalidades</a>
+    <a class="nav-link" href="/frete-simulator">Simulador Frete</a>
+  </div>
+  <a class="nav-cta" href="/login">Experimentar Grátis →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-badge"><div class="hero-badge-dot"></div>Novo · IA integrada em todos os módulos</div>
+    <h1>O ERP que substitui<br><span class="gr">10 ferramentas</span> numa só</h1>
+    <p class="hero-sub">Logística · WMS · RH · Financeiro · CRM · ITSM · MediaLoop · Senhas — tudo integrado, com IA nativa, para empresas PT e CH.</p>
+    <div class="hero-ctas">
+      <a class="btn-hero btn-hero-primary" href="/login">Começar 14 dias grátis</a>
+      <a class="btn-hero btn-hero-sec" href="/logistica">Ver Demo ao Vivo</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-val">80+</div><div class="hero-stat-label">Módulos</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">14</div><div class="hero-stat-label">Apps Standalone</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">PT·CH</div><div class="hero-stat-label">Multi-país</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">100%</div><div class="hero-stat-label">Automatizado</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MÓDULOS -->
+<section id="modulos" style="background:var(--s1)">
+  <div class="section-center">
+    <div class="section-badge">Módulos</div>
+    <h2 class="section-title">Tudo o que a tua empresa precisa</h2>
+    <p class="section-sub">80+ módulos integrados nativamente. Sem integrações complicadas, sem dados duplicados.</p>
+  </div>
+  <div class="modulos-grid">
+    ${[
+      {icon:'🚚',nome:'Logística Premium',desc:'Encomendas, tracking, POD digital, multi-país PT/CH/FR/DE/ES',tags:['Motoristas','Rotas IA','GPS Real-time']},
+      {icon:'🏭',nome:'WMS Armazém',desc:'Zonas, localizações FEFO, recepção, picking, expedição, inventário',tags:['Scanner Barras','FEFO Auto','IA Localização']},
+      {icon:'🗼',nome:'Torre de Controlo',desc:'Dashboard unificado com agentes IA, simulador What If, CO₂',tags:['Agentes IA','Risk Engine','Simulador']},
+      {icon:'👥',nome:'RH Premium',desc:'Contratação, férias, avaliações, OKRs, 360° feedback, competências',tags:['OKRs','360°','PDI']},
+      {icon:'💰',nome:'Financeiro',desc:'Faturação, contabilidade, SEPA, open banking, relatório único',tags:['SEPA','Open Banking','AT/IVA']},
+      {icon:'🤝',nome:'CRM com IA',desc:'Pipeline, scoring IA, previsão de vendas, gestão de contratos',tags:['IA Scoring','Previsão ML','Pipeline']},
+      {icon:'🎫',nome:'ITSM Premium',desc:'Tickets, SLA, chatbot IA, portal self-service, email→ticket',tags:['Chatbot IA','SLA Auto','Portal']},
+      {icon:'📺',nome:'MediaLoop',desc:'Digital signage: ecrãs, playlists, publicidade, widgets, programação',tags:['Ecrãs','Publicidade','Widgets']},
+      {icon:'🎫',nome:'Sistema de Senhas',desc:'Filas, balcões, quiosque, ecrã TV, voz, analytics em tempo real',tags:['Quiosque','Voz','Real-time']},
+      {icon:'📊',nome:'BI & Relatórios',desc:'Dashboards Chart.js, relatório único GEP/CITE, exportação',tags:['Chart.js','GEP/CITE','PDF']},
+      {icon:'📋',nome:'Gestão de Projectos',desc:'Projectos, tarefas, Gantt, sprints, equipas, budget',tags:['Gantt','Sprints','Budget']},
+      {icon:'🤖',nome:'IA Copilot Universal',desc:'Pergunta qualquer coisa sobre a tua empresa — dados reais, respostas instantâneas',tags:['Claude AI','Dados Reais','Chat']},
+      {icon:'📱',nome:'Portal Motorista PWA',desc:'App para motoristas: GPS, POD com assinatura digital, câmara, mapa',tags:['PWA','POD','GPS']},
+      {icon:'🔔',nome:'Push Notifications',desc:'Alertas nativos no browser e mobile para todos os módulos',tags:['PWA','Push','Mobile']},
+    ].map(m=>`
+      <div class="modulo-card">
+        <div class="mod-icon">${m.icon}</div>
+        <div class="mod-nome">${m.nome}</div>
+        <div class="mod-desc">${m.desc}</div>
+        <div class="mod-tags">${m.tags.map(t=>`<span class="mod-tag">${t}</span>`).join('')}</div>
+      </div>`).join('')}
+  </div>
+</section>
+
+<!-- FEATURES DIFERENCIADORAS -->
+<section id="features">
+  <div class="section-center">
+    <div class="section-badge">Inovação</div>
+    <h2 class="section-title">O que não encontras em mais lado nenhum</h2>
+    <p class="section-sub">Funcionalidades únicas que não existem em Factorial, Personio, Onfleet ou SAP.</p>
+  </div>
+  <div class="features-grid">
+    ${[
+      {icon:'🤖',title:'IA Copilot em todos os módulos',desc:'Pergunta "quais as entregas atrasadas hoje?" e recebes a resposta com dados reais da tua empresa. Funciona em logística, WMS, RH, financeiro — em qualquer módulo.'},
+      {icon:'🗼',title:'Torre de Controlo com Agentes IA',desc:'3 agentes autónomos: Planeamento (distribui encomendas por motoristas), Excepções (detecta e resolve problemas), Simulador (What If? para qualquer cenário).'},
+      {icon:'📱',title:'Portal do Motorista PWA',desc:'App móvel para motoristas com PIN, assinatura digital, câmara para POD, GPS em tempo real, mapa Leaflet dark mode. Funciona offline.'},
+      {icon:'🌱',title:'Sustainability Engine',desc:'CO₂ por entrega e rota, equivalente em árvores, comparação por país, recomendações IA para reduzir emissões. Único no mercado para logística PME.'},
+      {icon:'🔮',title:'Simulador "What If?"',desc:'Simula qualquer cenário: pico de Black Friday (+200% volume), greve de transportadoras, perda de 30% de motoristas. Resposta em segundos com plano de contingência.'},
+      {icon:'📦',title:'WMS com FEFO Automático',desc:'Picking automático com FEFO (First Expired First Out), sugestão de localização por IA, geração de 150+ localizações com um clique, inventário digital.'},
+      {icon:'📺',title:'MediaLoop Digital Signage',desc:'Sistema de ecrãs digitais integrado no ERP: widgets com dados RH (aniversários), senhas em tempo real nos ecrãs, publicidade com revenue share automático.'},
+      {icon:'⚡',title:'100% Automatizado',desc:'Atribuição automática de motoristas, faturação pós-POD, reposição de stock, relatório executivo às 8h segundas, alertas preditivos antes do problema acontecer.'},
+    ].map(f=>`
+      <div class="feature">
+        <div class="feature-icon">${f.icon}</div>
+        <div>
+          <div class="feature-title">${f.title}</div>
+          <div class="feature-desc">${f.desc}</div>
+        </div>
+      </div>`).join('')}
+  </div>
+</section>
+
+<!-- PREÇOS -->
+<section id="precos" style="background:var(--s1)">
+  <div class="section-center">
+    <div class="section-badge">Preços</div>
+    <h2 class="section-title">Paga só pelo que usas</h2>
+    <p class="section-sub">Começa com o essencial e adiciona módulos à medida que cresces. Sem contratos anuais obrigatórios.</p>
+  </div>
+  <div class="precos-grid">
+    <div class="preco-card">
+      <div class="preco-tier">Tier 1</div>
+      <div class="preco-nome">Core</div>
+      <div class="preco-desc">RH, contabilidade e gestão básica para começar</div>
+      <div class="preco-val">49<span>€</span></div>
+      <div class="preco-periodo">/mês · até 25 utilizadores</div>
+      <ul class="preco-features">
+        <li>RH Premium (recrutamento, férias, avaliações)</li>
+        <li>Contabilidade e faturação PT/CH</li>
+        <li>CRM básico</li>
+        <li>Relatórios BI</li>
+        <li>Copilot IA incluído</li>
+        <li>Suporte por email</li>
+      </ul>
+      <a class="preco-btn sec" href="/login">Começar grátis</a>
+    </div>
+
+    <div class="preco-card">
+      <div class="preco-tier">Tier 2</div>
+      <div class="preco-nome">Operations</div>
+      <div class="preco-desc">Core + ferramentas de operações para equipas em crescimento</div>
+      <div class="preco-val">119<span>€</span></div>
+      <div class="preco-periodo">/mês · utilizadores ilimitados</div>
+      <ul class="preco-features">
+        <li>Tudo do Core</li>
+        <li>ITSM Premium + Chatbot IA</li>
+        <li>Gestão de Projectos</li>
+        <li>OKRs + 360° Feedback</li>
+        <li>CRM Premium com IA Scoring</li>
+        <li>Automações No-Code</li>
+        <li>2FA + Auditoria Trail</li>
+        <li>Webhooks + API</li>
+      </ul>
+      <a class="preco-btn sec" href="/login">Começar grátis</a>
+    </div>
+
+    <div class="preco-card destaque">
+      <div class="preco-badge">🏆 Mais popular</div>
+      <div class="preco-tier">Tier 3</div>
+      <div class="preco-nome">Logistics</div>
+      <div class="preco-desc">Operations + suite logística completa para empresas PT/CH</div>
+      <div class="preco-val">249<span>€</span></div>
+      <div class="preco-periodo">/mês · utilizadores ilimitados</div>
+      <ul class="preco-features">
+        <li>Tudo do Operations</li>
+        <li>Logística Premium multi-país</li>
+        <li>WMS Armazém completo</li>
+        <li>Torre de Controlo + Agentes IA</li>
+        <li>Portal Motorista PWA</li>
+        <li>Simulador What If?</li>
+        <li>Sustainability Engine CO₂</li>
+        <li>Alertas Preditivos IA</li>
+      </ul>
+      <a class="preco-btn" href="/login">Começar grátis</a>
+    </div>
+
+    <div class="preco-card">
+      <div class="preco-tier">Tier 4</div>
+      <div class="preco-nome">Enterprise</div>
+      <div class="preco-desc">Tudo incluído + IA avançada + módulos especializados</div>
+      <div class="preco-val">449<span>€</span></div>
+      <div class="preco-periodo">/mês · SLA garantido</div>
+      <ul class="preco-features">
+        <li>Tudo do Logistics</li>
+        <li>MediaLoop Digital Signage</li>
+        <li>Sistema de Senhas/Filas</li>
+        <li>SuperAdmin SaaS multi-empresa</li>
+        <li>API pública + Swagger</li>
+        <li>Onboarding dedicado</li>
+        <li>Suporte prioritário 24/7</li>
+        <li>Personalização da landing</li>
+      </ul>
+      <a class="preco-btn sec" href="/login">Falar com equipa</a>
+    </div>
+  </div>
+
+  <!-- ADD-ONS -->
+  <div style="margin-top:32px">
+    <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:16px;text-align:center">Add-ons disponíveis</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+      ${[
+        {nome:'MediaLoop',preco:'+39€/mês'},
+        {nome:'Sistema de Senhas',preco:'+29€/mês'},
+        {nome:'Logística (standalone)',preco:'+89€/mês'},
+        {nome:'WMS (standalone)',preco:'+69€/mês'},
+        {nome:'Utilizadores extra',preco:'+5€/utilizador/mês'},
+        {nome:'Armazenamento extra',preco:'+10€/100GB/mês'},
+      ].map(a=>`
+        <div style="background:var(--s2);border:1px solid rgba(255,255,255,.04);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px">${a.nome}</span>
+          <span style="font-size:13px;font-weight:700;color:#10b981">${a.preco}</span>
+        </div>`).join('')}
+    </div>
+  </div>
+</section>
+
+<!-- TRIAL CTA -->
+<section>
+  <div class="trial-box">
+    <div class="section-badge" style="margin-bottom:16px">14 dias grátis · Sem cartão de crédito</div>
+    <h2 style="font-size:clamp(24px,4vw,40px);font-weight:900;letter-spacing:-1px;margin-bottom:12px">Pronto para começar?</h2>
+    <p style="font-size:16px;color:var(--t2);margin-bottom:32px;max-width:500px;margin-left:auto;margin-right:auto">Cria a tua conta em 2 minutos. Os primeiros 14 dias são completamente gratuitos, sem limitações.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn-hero btn-hero-primary" href="/login" style="font-size:15px;font-weight:700;padding:14px 32px;border-radius:12px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;text-decoration:none;transition:all .2s">Começar agora — grátis</a>
+      <a class="btn-hero btn-hero-sec" href="/frete-simulator" style="font-size:15px;font-weight:600;padding:14px 32px;border-radius:12px;background:rgba(255,255,255,.06);color:var(--t1);border:1px solid rgba(255,255,255,.1);text-decoration:none">🧮 Calcular frete</a>
+    </div>
+    <div style="margin-top:24px;font-size:12px;color:var(--t3)">✓ Sem contrato · ✓ Cancela quando quiseres · ✓ Suporte em PT e DE/FR</div>
+  </div>
+</section>
+
+<footer>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="logo-mark" style="width:28px;height:28px;font-size:13px">N</div>
+    <span style="font-size:13px;font-weight:700">NexEdge</span>
+    <span style="font-size:12px;color:var(--t3)">© 2026</span>
+  </div>
+  <div class="footer-links">
+    <a class="footer-link" href="#">Termos</a>
+    <a class="footer-link" href="#">Privacidade</a>
+    <a class="footer-link" href="#">RGPD</a>
+    <a class="footer-link" href="/frete-simulator">Simulador Frete</a>
+    <a class="footer-link" href="mailto:info@nexedge.pt">info@nexedge.pt</a>
+  </div>
+</footer>
+
+</body>
+</html>
