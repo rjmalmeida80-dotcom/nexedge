@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal do Cliente — NexEdge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,-apple-system,sans-serif;background:#F1F5F9;color:#0F172A;min-height:100vh}
+    .header{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4f46e5 100%);padding:0;position:relative;overflow:hidden}
+    .header-inner{max-width:1000px;margin:0 auto;padding:24px 24px 32px}
+    .header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+    .logo{display:flex;align-items:center;gap:10px}
+    .logo-ic{width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2)}
+    .logo-tx{color:#fff;font-weight:700;font-size:16px}
+    .user-info{display:flex;align-items:center;gap:10px}
+    .user-av{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px}
+    .user-name{color:rgba(255,255,255,.9);font-size:13px;font-weight:500}
+    .logout-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit}
+    .header-title{font-size:28px;font-weight:800;color:#fff;margin-bottom:6px;letter-spacing:-.5px}
+    .header-sub{font-size:14px;color:rgba(199,210,254,.7)}
+    .nav-pills{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
+    .pill{padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:500;border:none;font-family:inherit;transition:all .15s}
+    .pill.act{background:#fff;color:#4f46e5}
+    .pill:not(.act){background:rgba(255,255,255,.1);color:rgba(255,255,255,.7)}
+    .pill:not(.act):hover{background:rgba(255,255,255,.2);color:#fff}
+    .main{max-width:1000px;margin:0 auto;padding:28px 24px}
+    .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+    .kpi{background:#fff;border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+    .kpi-val{font-size:26px;font-weight:800;margin-bottom:4px;letter-spacing:-.5px}
+    .kpi-label{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.05em}
+    .card{background:#fff;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:16px;overflow:hidden}
+    .card-h{padding:16px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between}
+    .card-title{font-size:14px;font-weight:600;color:#1e293b}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{padding:10px 16px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;background:#f8fafc;border-bottom:1px solid #e2e8f0}
+    td{padding:12px 16px;border-bottom:1px solid #f1f5f9;color:#475569;vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#fafafa}
+    .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:9999px;font-size:11px;font-weight:600}
+    .btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+    .btn-primary{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;box-shadow:0 2px 8px rgba(79,70,229,.3)}
+    .btn-secondary{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+    .btn-sm{padding:5px 12px;font-size:12px}
+    .fi{padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:9px;font-size:13px;color:#1e293b;outline:none;font-family:inherit;background:#fff;width:100%}
+    .fi:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+    .fl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:5px}
+    .fg{margin-bottom:14px}
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+    .modal{background:#fff;border-radius:16px;width:100%;max-width:520px;overflow:hidden;animation:fadeIn .2s ease-out}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+    .modal-h{padding:20px 24px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center}
+    .modal-title{font-size:16px;font-weight:700;color:#1e293b}
+    .modal-close{background:none;border:none;cursor:pointer;color:#94a3b8;font-size:22px;line-height:1}
+    .modal-b{padding:24px}
+    .modal-f{padding:16px 24px;border-top:1px solid #f1f5f9;display:flex;gap:8px;justify-content:flex-end}
+    .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f8fafc,#eef2ff);padding:20px}
+    .login-card{background:#fff;border-radius:20px;padding:40px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.1)}
+    .login-logo{text-align:center;margin-bottom:28px}
+    .login-ic{width:56px;height:56px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:24px;box-shadow:0 4px 16px rgba(79,70,229,.4);margin-bottom:12px}
+    .login-title{font-size:22px;font-weight:700;color:#1e293b;margin-bottom:4px}
+    .login-sub{font-size:13px;color:#64748b}
+    .empty{text-align:center;padding:48px 20px;color:#94a3b8}
+    .empty-icon{font-size:40px;margin-bottom:10px}
+    textarea.fi{resize:vertical;min-height:80px}
+    @media(max-width:600px){.kpi-row{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+const API = '/api';
+let cliente = null;
+let token = null;
+let tabAtual = 'faturas';
+
+// ── AUTH ──
+function getStoredAuth() {
+  try {
+    const s = localStorage.getItem('ne-portal-cliente');
+    if (s) { const d = JSON.parse(s); token = d.token; cliente = d.cliente; return true; }
+  } catch(e) {}
+  return false;
+}
+
+function saveAuth(t, c) { token = t; cliente = c; localStorage.setItem('ne-portal-cliente', JSON.stringify({token:t,cliente:c})); }
+function clearAuth() { token = null; cliente = null; localStorage.removeItem('ne-portal-cliente'); render(); }
+
+async function apiFetch(path, opts={}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const r = await fetch(API + path, { ...opts, headers: { ...headers, ...(opts.headers||{}) } });
+  if (r.status === 401) { clearAuth(); return null; }
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+// ── UTILS ──
+function fmtEur(v) { return new Intl.NumberFormat('pt-PT',{style:'currency',currency:'EUR'}).format(v||0); }
+function fmtD(d) { return d ? new Date(d).toLocaleDateString('pt-PT') : '—'; }
+function badge(cor, label) { return `<span class="badge" style="background:${cor}15;color:${cor};border:1px solid ${cor}25">${label}</span>`; }
+
+// ── RENDER PRINCIPAL ──
+function render() {
+  const app = document.getElementById('app');
+  if (!token || !cliente) { app.innerHTML = renderLogin(); return; }
+  app.innerHTML = renderApp();
+  carregarTab();
+}
+
+function renderLogin() {
+  return `<div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="login-ic">N</div>
+        <div class="login-title">Portal do Cliente</div>
+        <div class="login-sub">Acesso às suas faturas, pagamentos e suporte</div>
+      </div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="l-email" type="email" placeholder="o-seu@email.pt" onkeydown="if(event.key==='Enter')login()"/></div>
+      <div class="fg"><label class="fl">Código de acesso</label><input class="fi" id="l-code" type="password" placeholder="Código enviado por email" onkeydown="if(event.key==='Enter')login()"/></div>
+      <button class="btn btn-primary" style="width:100%;padding:12px;font-size:14px;margin-top:8px" onclick="login()">Entrar no Portal →</button>
+      <div style="text-align:center;margin-top:16px">
+        <button onclick="pedirCodigo()" style="background:none;border:none;color:#6366f1;font-size:13px;cursor:pointer;font-family:inherit">Não tenho código — pedir acesso</button>
+      </div>
+      <div id="login-msg" style="margin-top:12px;text-align:center;font-size:13px"></div>
+    </div>
+  </div>`;
+}
+
+async function login() {
+  const email = document.getElementById('l-email')?.value?.trim();
+  const code = document.getElementById('l-code')?.value?.trim();
+  const msg = document.getElementById('login-msg');
+  if (!email || !code) { msg.innerHTML='<span style="color:#ef4444">Preenche email e código</span>'; return; }
+  msg.innerHTML = '<span style="color:#64748b">A verificar...</span>';
+  try {
+    const r = await fetch(API + '/portal-cliente/auth', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, codigo: code })
+    });
+    if (!r.ok) { msg.innerHTML='<span style="color:#ef4444">Código inválido ou expirado</span>'; return; }
+    const d = await r.json();
+    saveAuth(d.token, d.cliente);
+    render();
+  } catch(e) {
+    // Em dev, usar auth normal se tiver token
+    const t = localStorage.getItem('access_token');
+    if (t) { token = t; cliente = { nome: 'Cliente Dev', email }; render(); return; }
+    msg.innerHTML='<span style="color:#ef4444">Erro: '+e.message+'</span>';
+  }
+}
+
+async function pedirCodigo() {
+  const email = prompt('Introduz o teu email para receber o código de acesso:');
+  if (!email) return;
+  await fetch(API + '/portal-cliente/pedir-acesso', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ email })
+  }).catch(()=>{});
+  alert('✅ Se o teu email estiver registado, receberás um código em breve.');
+}
+
+function renderApp() {
+  const tabs = [
+    {id:'faturas',label:'📄 Faturas'},
+    {id:'pagamentos',label:'💳 Pagamentos'},
+    {id:'encomendas',label:'📦 Encomendas'},
+    {id:'suporte',label:'🎫 Suporte'},
+    {id:'documentos',label:'📁 Documentos'},
+  ];
+  return `
+    <div class="header">
+      <div class="header-inner">
+        <div class="header-top">
+          <div class="logo"><div class="logo-ic">N</div><div class="logo-tx">nexedge</div></div>
+          <div class="user-info">
+            <div class="user-av">${(cliente?.nome||'C')[0].toUpperCase()}</div>
+            <div>
+              <div class="user-name">${cliente?.nome||'Cliente'}</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.4)">${cliente?.email||''}</div>
+            </div>
+            <button class="logout-btn" onclick="clearAuth()">Sair</button>
+          </div>
+        </div>
+        <div class="header-title">Portal do Cliente</div>
+        <div class="header-sub">Bem-vindo de volta — consulta as tuas faturas, pagamentos e pedidos de suporte</div>
+        <div class="nav-pills">
+          ${tabs.map(t=>`<button class="pill${tabAtual===t.id?' act':''}" onclick="mudarTab('${t.id}')">${t.label}</button>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="main" id="main-content">
+      <div style="text-align:center;padding:40px;color:#94a3b8">A carregar...</div>
+    </div>`;
+}
+
+function mudarTab(t) {
+  tabAtual = t;
+  document.querySelectorAll('.pill').forEach(p => {
+    p.classList.toggle('act', p.textContent.toLowerCase().includes(t.slice(0,4)));
+  });
+  carregarTab();
+}
+
+async function carregarTab() {
+  const c = document.getElementById('main-content');
+  if (!c) return;
+  c.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8">A carregar...</div>';
+  try {
+    if (tabAtual === 'faturas')    await rFaturas(c);
+    else if (tabAtual === 'pagamentos') await rPagamentos(c);
+    else if (tabAtual === 'encomendas') await rEncomendas(c);
+    else if (tabAtual === 'suporte')    await rSuporte(c);
+    else if (tabAtual === 'documentos') await rDocumentos(c);
+  } catch(e) {
+    c.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><div>${e.message}</div></div>`;
+  }
+}
+
+// ── FATURAS ──
+async function rFaturas(c) {
+  const data = await apiFetch('/portal-cliente/faturas').catch(() => ({ faturas:[], resumo:{} }));
+  const faturas = data?.faturas || [];
+  const resumo = data?.resumo || {};
+
+  c.innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-val" style="color:#1e293b">${fmtEur(resumo.total_faturado||0)}</div><div class="kpi-label">Total Faturado</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:#10b981">${fmtEur(resumo.total_pago||0)}</div><div class="kpi-label">Total Pago</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:#ef4444">${fmtEur(resumo.total_pendente||0)}</div><div class="kpi-label">Pendente</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:#f59e0b">${resumo.num_vencidas||0}</div><div class="kpi-label">Vencidas</div></div>
+    </div>
+    <div class="card">
+      <div class="card-h">
+        <div class="card-title">As Minhas Faturas</div>
+        <button class="btn btn-secondary btn-sm" onclick="mudarTab('suporte')">💬 Questão sobre fatura</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Número</th><th>Data</th><th>Vencimento</th><th>Valor</th><th>Estado</th><th>Acção</th></tr></thead>
+          <tbody>
+            ${faturas.length ? faturas.map(f => {
+              const vencida = f.estado==='emitida' && new Date(f.data_vencimento) < new Date();
+              const corEst = f.estado==='paga'?'#10b981':vencida?'#ef4444':'#f59e0b';
+              const labelEst = f.estado==='paga'?'Paga':vencida?'Vencida':'Pendente';
+              return `<tr>
+                <td style="font-family:monospace;font-weight:500">${f.numero}</td>
+                <td>${fmtD(f.data_emissao)}</td>
+                <td style="${vencida?'color:#ef4444;font-weight:500':''}">${fmtD(f.data_vencimento)}</td>
+                <td style="font-weight:600">${fmtEur(f.total)}</td>
+                <td>${badge(corEst,labelEst)}</td>
+                <td>
+                  <button onclick="verFatura('${f.id}')" class="btn btn-secondary btn-sm">Ver</button>
+                  ${f.estado!=='paga'?`<button onclick="pagarFatura('${f.id}','${f.numero}',${f.total})" class="btn btn-primary btn-sm" style="margin-left:4px">Pagar</button>`:''}
+                </td>
+              </tr>`;}).join('') : '<tr><td colspan="6" class="empty">Sem faturas</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function verFatura(id) { window.open(`/api/portal-cliente/faturas/${id}/pdf`, '_blank'); }
+function pagarFatura(id, num, valor) { alert(`Redirecionar para pagamento da fatura ${num} — ${fmtEur(valor)}\n\nIntegração com MB Way / Referência MB / Transferência disponível em produção.`); }
+
+// ── PAGAMENTOS ──
+async function rPagamentos(c) {
+  const data = await apiFetch('/portal-cliente/pagamentos').catch(() => []);
+  const pagamentos = Array.isArray(data) ? data : (data?.pagamentos || []);
+
+  c.innerHTML = `
+    <div class="card">
+      <div class="card-h"><div class="card-title">Histórico de Pagamentos</div></div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Data</th><th>Referência</th><th>Fatura</th><th>Valor</th><th>Método</th><th>Estado</th></tr></thead>
+          <tbody>
+            ${pagamentos.length ? pagamentos.map(p=>`<tr>
+              <td>${fmtD(p.data_pagamento||p.criado_em)}</td>
+              <td style="font-family:monospace;font-size:11px">${p.referencia||'—'}</td>
+              <td style="font-family:monospace;font-size:11px">${p.fatura_numero||'—'}</td>
+              <td style="font-weight:600">${fmtEur(p.valor)}</td>
+              <td>${p.metodo||'Transferência'}</td>
+              <td>${badge('#10b981','Confirmado')}</td>
+            </tr>`).join('') : '<tr><td colspan="6" class="empty">Sem pagamentos registados</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// ── ENCOMENDAS ──
+async function rEncomendas(c) {
+  const data = await apiFetch('/portal-cliente/encomendas').catch(() => []);
+  const encomendas = Array.isArray(data) ? data : (data?.encomendas || []);
+  const COR = { pendente:'#f59e0b', confirmada:'#6366f1', em_preparacao:'#3b82f6', enviada:'#8b5cf6', entregue:'#10b981', cancelada:'#ef4444' };
+
+  c.innerHTML = `
+    <div class="card">
+      <div class="card-h"><div class="card-title">As Minhas Encomendas</div></div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Número</th><th>Data</th><th>Itens</th><th>Total</th><th>Estado</th><th>Rastreamento</th></tr></thead>
+          <tbody>
+            ${encomendas.length ? encomendas.map(e=>`<tr>
+              <td style="font-family:monospace;font-weight:500">${e.numero||e.id?.slice(0,8)}</td>
+              <td>${fmtD(e.criado_em)}</td>
+              <td>${e.num_itens||e.linhas?.length||'—'}</td>
+              <td style="font-weight:600">${fmtEur(e.total)}</td>
+              <td>${badge(COR[e.estado]||'#6b7280',(e.estado||'pendente').replace('_',' '))}</td>
+              <td>${e.tracking_code?`<a href="${e.tracking_url||'#'}" target="_blank" style="color:#6366f1;font-size:12px">${e.tracking_code}</a>`:'—'}</td>
+            </tr>`).join('') : '<tr><td colspan="6" class="empty"><div class="empty-icon">📦</div>Sem encomendas</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// ── SUPORTE ──
+async function rSuporte(c) {
+  const tickets = await apiFetch('/portal-cliente/tickets').catch(() => []);
+  const COR_EST = { aberto:'#6366f1', em_progresso:'#3b82f6', pendente:'#f59e0b', resolvido:'#10b981', fechado:'#6b7280' };
+
+  c.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="novoTicket()">+ Novo Pedido de Suporte</button>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-title">Os Meus Pedidos</div></div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Número</th><th>Assunto</th><th>Criado</th><th>Estado</th><th>Última actualização</th></tr></thead>
+          <tbody>
+            ${(Array.isArray(tickets)?tickets:[]).length ? tickets.map(t=>`<tr onclick="verTicket('${t.numero}')" style="cursor:pointer">
+              <td style="font-family:monospace;font-size:11px">${t.numero}</td>
+              <td style="font-weight:500;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.titulo}</td>
+              <td style="font-size:12px">${fmtD(t.criado_em)}</td>
+              <td>${badge(COR_EST[t.estado]||'#6b7280',t.estado?.replace('_',' ')||'aberto')}</td>
+              <td style="font-size:12px">${fmtD(t.actualizado_em)}</td>
+            </tr>`).join('') : '<tr><td colspan="5" class="empty"><div class="empty-icon">🎫</div>Sem pedidos de suporte</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="modal-ticket" style="display:none"></div>`;
+}
+
+function novoTicket() {
+  document.getElementById('app').insertAdjacentHTML('beforeend', `
+    <div class="modal-ov" id="m-novo-ticket">
+      <div class="modal">
+        <div class="modal-h">
+          <div class="modal-title">Novo Pedido de Suporte</div>
+          <button class="modal-close" onclick="document.getElementById('m-novo-ticket').remove()">×</button>
+        </div>
+        <div class="modal-b">
+          <div class="fg"><label class="fl">Assunto *</label><input class="fi" id="nt-titulo" placeholder="Descreve brevemente o problema"/></div>
+          <div class="fg"><label class="fl">Categoria</label>
+            <select class="fi" id="nt-cat">
+              <option value="faturacao">💰 Faturação</option>
+              <option value="encomendas">📦 Encomendas</option>
+              <option value="tecnico">💻 Técnico</option>
+              <option value="outro">📋 Outro</option>
+            </select></div>
+          <div class="fg"><label class="fl">Descrição detalhada</label><textarea class="fi" id="nt-desc" placeholder="Descreve o problema com o máximo de detalhe..."></textarea></div>
+          <div class="fg"><label class="fl">Urgência</label>
+            <select class="fi" id="nt-urg">
+              <option value="normal">Normal</option>
+              <option value="urgente">Urgente</option>
+              <option value="imediato">Imediato</option>
+            </select></div>
+        </div>
+        <div class="modal-f">
+          <button class="btn btn-secondary" onclick="document.getElementById('m-novo-ticket').remove()">Cancelar</button>
+          <button class="btn btn-primary" onclick="submeterTicket()">Submeter Pedido</button>
+        </div>
+      </div>
+    </div>`);
+}
+
+async function submeterTicket() {
+  const titulo = document.getElementById('nt-titulo')?.value?.trim();
+  if (!titulo) { alert('Assunto obrigatório'); return; }
+  try {
+    await apiFetch('/portal-cliente/tickets', {
+      method: 'POST',
+      body: JSON.stringify({
+        titulo,
+        descricao: document.getElementById('nt-desc')?.value || '',
+        urgencia: document.getElementById('nt-urg')?.value || 'normal',
+        categoria: document.getElementById('nt-cat')?.value || 'outro',
+      })
+    });
+    document.getElementById('m-novo-ticket')?.remove();
+    alert('✅ Pedido submetido! Receberás uma confirmação por email.');
+    carregarTab();
+  } catch(e) { alert('Erro: ' + e.message); }
+}
+
+async function verTicket(numero) {
+  const t = await apiFetch(`/itsm/portal/estado?numero=${numero}`).catch(() => null);
+  if (!t) return;
+  alert(`Ticket ${t.numero}\n\nEstado: ${t.estado}\n\n${t.resolucao||'Em tratamento...'}`);
+}
+
+// ── DOCUMENTOS ──
+async function rDocumentos(c) {
+  const docs = await apiFetch('/portal-cliente/documentos').catch(() => []);
+  c.innerHTML = `
+    <div class="card">
+      <div class="card-h"><div class="card-title">Documentos Partilhados</div></div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Nome</th><th>Tipo</th><th>Data</th><th>Tamanho</th><th>Acção</th></tr></thead>
+          <tbody>
+            ${(Array.isArray(docs)?docs:[]).length ? docs.map(d=>`<tr>
+              <td style="font-weight:500">${d.nome}</td>
+              <td style="font-size:11px;color:#94a3b8">${d.tipo||'PDF'}</td>
+              <td style="font-size:12px">${fmtD(d.criado_em)}</td>
+              <td style="font-size:12px">${d.tamanho?Math.round(d.tamanho/1024)+'KB':'—'}</td>
+              <td><a href="${d.url}" target="_blank" class="btn btn-secondary btn-sm">⬇ Download</a></td>
+            </tr>`).join('') : '<tr><td colspan="5" class="empty"><div class="empty-icon">📁</div>Sem documentos partilhados</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// Init — tentar auth automática
+(function() {
+  // Primeiro tentar sessão guardada do portal
+  getStoredAuth();
+  
+  // Se não tem sessão, tentar token do ERP
+  if (!token) {
+    const t = localStorage.getItem('access_token');
+    if (t) {
+      token = t;
+      try {
+        const auth = localStorage.getItem('rh-auth');
+        if (auth) {
+          const u = JSON.parse(auth)?.state?.utilizador;
+          cliente = { nome: u?.nome_completo || u?.nome || 'Admin', email: u?.email || '' };
+        } else {
+          cliente = { nome: 'Admin', email: '' };
+        }
+      } catch(e) {
+        cliente = { nome: 'Admin', email: '' };
+      }
+    }
+  }
+  
+  render();
+})();
+</script>
+<script src="/chatbot-widget.js"></script>
+</body>
+</html>

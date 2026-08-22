@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal de Suporte — NexEdge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,-apple-system,sans-serif;background:#F1F5F9;color:#0F172A;min-height:100vh}
+    
+    /* Header */
+    .header{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4f46e5 100%);padding:0;position:relative;overflow:hidden}
+    .header-bg{position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+    .header-inner{position:relative;max-width:900px;margin:0 auto;padding:48px 24px 40px}
+    .header-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+    .logo-ic{width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2)}
+    .logo-tx{color:#fff;font-weight:700;font-size:18px}
+    .header-title{font-size:36px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:-1px}
+    .header-sub{font-size:15px;color:rgba(199,210,254,0.8);margin-bottom:32px;line-height:1.5}
+    .header-search{position:relative;max-width:520px}
+    .header-search input{width:100%;padding:14px 20px 14px 48px;border-radius:12px;border:none;font-size:15px;background:rgba(255,255,255,0.95);color:#0f172a;outline:none;box-shadow:0 4px 20px rgba(0,0,0,0.2)}
+    .header-search input:focus{box-shadow:0 4px 20px rgba(0,0,0,0.3),0 0 0 3px rgba(255,255,255,0.3)}
+    .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:18px}
+    .header-stats{display:flex;gap:24px;margin-top:28px}
+    .hstat{color:rgba(199,210,254,0.7);font-size:13px;display:flex;align-items:center;gap:6px}
+    .hstat strong{color:#fff;font-size:16px;font-weight:700}
+
+    /* Main */
+    .main{max-width:900px;margin:0 auto;padding:32px 24px}
+    
+    /* Tabs */
+    .tabs{display:flex;gap:4px;background:#fff;border-radius:12px;padding:4px;box-shadow:0 1px 3px rgba(0,0,0,0.08);margin-bottom:28px}
+    .tab{flex:1;padding:10px;text-align:center;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#64748b;border:none;background:none;font-family:inherit;transition:all .15s}
+    .tab.act{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;box-shadow:0 2px 8px rgba(79,70,229,0.3)}
+    .tab:hover:not(.act){background:#f1f5f9;color:#1e293b}
+
+    /* Catálogo */
+    .section-title{font-size:18px;font-weight:700;color:#1e293b;margin-bottom:6px}
+    .section-sub{font-size:13px;color:#64748b;margin-bottom:20px}
+    .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:32px}
+    .cat-card{background:#fff;border:2px solid #e2e8f0;border-radius:14px;padding:22px 16px;cursor:pointer;transition:all .2s;text-align:center}
+    .cat-card:hover{border-color:#6366f1;box-shadow:0 8px 24px rgba(99,102,241,0.15);transform:translateY(-3px)}
+    .cat-card.sel{border-color:#4f46e5;background:#eef2ff;box-shadow:0 0 0 4px rgba(79,70,229,0.1)}
+    .cat-ico{font-size:34px;margin-bottom:10px}
+    .cat-name{font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px}
+    .cat-desc{font-size:11px;color:#94a3b8;line-height:1.4}
+    .cat-sla{font-size:11px;color:#6366f1;margin-top:8px;font-weight:500}
+
+    /* Formulário */
+    .form-card{background:#fff;border-radius:16px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,0.08);margin-bottom:20px}
+    .form-card-title{font-size:16px;font-weight:700;color:#1e293b;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+    .fg{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+    .fl{font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.05em}
+    .fi{padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;color:#1e293b;outline:none;font-family:inherit;transition:border-color .15s,box-shadow .15s;background:#fff}
+    .fi:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,0.1)}
+    .fi::placeholder{color:#94a3b8}
+    select.fi{cursor:pointer}
+    textarea.fi{resize:vertical;min-height:120px}
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .btn-submit{width:100%;padding:14px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(79,70,229,0.4);transition:all .2s}
+    .btn-submit:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(79,70,229,0.5)}
+    .btn-submit:active{transform:scale(.98)}
+    .btn-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+
+    /* Ticket Status */
+    .status-card{background:#fff;border-radius:16px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,0.08);margin-bottom:16px}
+    .status-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+    .status-num{font-size:12px;color:#94a3b8;font-family:monospace;margin-bottom:4px}
+    .status-title{font-size:16px;font-weight:700;color:#1e293b}
+    .status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:600}
+    .status-timeline{border-left:2px solid #e2e8f0;margin-left:8px;padding-left:16px;display:flex;flex-direction:column;gap:12px}
+    .tl-item{position:relative}
+    .tl-dot{position:absolute;left:-21px;top:4px;width:8px;height:8px;border-radius:50%;background:#6366f1;border:2px solid #fff;box-shadow:0 0 0 2px #6366f1}
+    .tl-time{font-size:11px;color:#94a3b8;margin-bottom:2px}
+    .tl-text{font-size:13px;color:#475569;line-height:1.5}
+    .tl-autor{font-size:11px;font-weight:600;color:#1e293b;margin-bottom:2px}
+
+    /* Success */
+    .success-card{background:#fff;border-radius:16px;padding:48px 28px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+    .success-icon{font-size:56px;margin-bottom:16px}
+    .success-title{font-size:22px;font-weight:700;color:#1e293b;margin-bottom:8px}
+    .success-sub{font-size:14px;color:#64748b;margin-bottom:24px;line-height:1.6}
+    .success-num{background:#eef2ff;color:#4f46e5;font-family:monospace;font-size:18px;font-weight:700;padding:10px 20px;border-radius:8px;display:inline-block;margin-bottom:20px}
+    .btn-secondary{padding:11px 24px;background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
+    .btn-secondary:hover{background:#e2e8f0;color:#1e293b}
+
+    /* Pesquisa resultados */
+    .search-results{background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);overflow:hidden;position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:100;display:none}
+    .search-result-item{padding:14px 20px;cursor:pointer;border-bottom:1px solid #f1f5f9;transition:background .1s}
+    .search-result-item:hover{background:#f8fafc}
+    .search-result-item:last-child{border-bottom:none}
+    .sri-num{font-size:11px;color:#94a3b8;font-family:monospace}
+    .sri-title{font-size:13px;font-weight:500;color:#1e293b;margin:2px 0}
+    .sri-estado{font-size:11px}
+
+    /* FAQ */
+    .faq-item{background:#fff;border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+    .faq-q{padding:16px 20px;cursor:pointer;font-size:14px;font-weight:500;color:#1e293b;display:flex;justify-content:space-between;align-items:center;transition:background .1s}
+    .faq-q:hover{background:#f8fafc}
+    .faq-a{padding:0 20px 16px;font-size:13px;color:#475569;line-height:1.7;display:none}
+    .faq-a.open{display:block}
+    
+    /* Avaliação */
+    .stars{display:flex;gap:6px;justify-content:center;margin:12px 0}
+    .star{font-size:32px;cursor:pointer;transition:transform .1s;opacity:.4}
+    .star:hover,.star.sel{opacity:1;transform:scale(1.15)}
+
+    /* Responsive */
+    @media(max-width:600px){
+      .header-title{font-size:26px}
+      .cat-grid{grid-template-columns:1fr 1fr}
+      .g2{grid-template-columns:1fr}
+      .header-stats{flex-wrap:wrap;gap:12px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-bg"></div>
+  <div class="header-inner">
+    <div class="header-logo">
+      <div class="logo-ic">N</div>
+      <div class="logo-tx" id="empresa-nome">NexEdge</div>
+    </div>
+    <h1 class="header-title">Portal de Suporte</h1>
+    <p class="header-sub">Como podemos ajudar? Submete um pedido ou verifica o estado do teu ticket.</p>
+    <div class="header-search" style="position:relative">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Pesquisar na base de conhecimento ou verificar ticket..." id="header-search" oninput="pesquisarHeader(this.value)" autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <div class="header-stats" id="header-stats">
+      <div class="hstat"><strong id="stat-abertos">—</strong> tickets abertos</div>
+      <div class="hstat"><strong id="stat-sla">—</strong>% SLA cumprido</div>
+      <div class="hstat"><strong id="stat-csat">—</strong>/5 satisfação</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab act" onclick="mudarTab('novo',this)">📋 Novo Pedido</button>
+    <button class="tab" onclick="mudarTab('estado',this)">🔍 Ver Estado</button>
+    <button class="tab" onclick="mudarTab('conhecimento',this)">📚 Base de Conhecimento</button>
+  </div>
+
+  <div id="conteudo"></div>
+</div>
+
+<script>
+// ── CONFIG ──
+const API = '/api';
+let tabAtual = 'novo';
+let catSel = null;
+let ticketCriado = null;
+let empresaId = null;
+
+// Tentar obter empresa do URL ou do token
+function getEmpresaId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('empresa') || params.get('e');
+}
+
+function getToken() {
+  try {
+    const t = localStorage.getItem('access_token'); if(t) return t;
+    const r = localStorage.getItem('rh-auth'); if(r) { const p=JSON.parse(r); if(p?.state?.token) return p.state.token; }
+  } catch(e){}
+  return null;
+}
+
+// ── API ──
+async function apiFetch(path, opts={}) {
+  const token = getToken();
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const r = await fetch(API + path, { ...opts, headers: { ...headers, ...(opts.headers||{}) } });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+// ── UTILS ──
+const COR_EST = {aberto:'#6366f1',em_progresso:'#3b82f6',pendente:'#f59e0b',resolvido:'#10b981',fechado:'#6b7280',cancelado:'#ef4444'};
+const LABEL_EST = {aberto:'Aberto',em_progresso:'Em Progresso',pendente:'Pendente',resolvido:'Resolvido',fechado:'Fechado',cancelado:'Cancelado'};
+
+function badge(cor, label) {
+  return `<span class="status-badge" style="background:${cor}15;color:${cor};border:1px solid ${cor}30">${label}</span>`;
+}
+
+function fmtDT(d) { return d ? new Date(d).toLocaleString('pt-PT') : '—'; }
+
+// ── TABS ──
+function mudarTab(tab, el) {
+  tabAtual = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('act'));
+  el.classList.add('act');
+  renderTab();
+}
+
+// ── CATEGORIAS ──
+const CATEGORIAS = [
+  {id:'ti',ico:'🖥️',nome:'Infraestrutura TI',desc:'Computadores, redes, servidores',sla:'4h / 8h',tipo:'incident',pri:'alta'},
+  {id:'sw',ico:'💻',nome:'Software & Apps',desc:'Instalações, licenças, acessos',sla:'4h / 24h',tipo:'request',pri:'media'},
+  {id:'sec',ico:'🔐',nome:'Segurança & Acessos',desc:'Passwords, permissões, 2FA',sla:'1h / 4h',tipo:'incident',pri:'alta'},
+  {id:'rh',ico:'👥',nome:'Recursos Humanos',desc:'Onboarding, contratos, benefícios',sla:'8h / 48h',tipo:'request',pri:'baixa'},
+  {id:'fin',ico:'💰',nome:'Financeiro',desc:'Pagamentos, reembolsos, facturas',sla:'4h / 24h',tipo:'request',pri:'media'},
+  {id:'frota',ico:'🚗',nome:'Frota & Viaturas',desc:'Avarias, manutenção, reservas',sla:'2h / 8h',tipo:'incident',pri:'alta'},
+  {id:'inst',ico:'🏢',nome:'Instalações',desc:'Climatização, limpeza, obras',sla:'8h / 72h',tipo:'request',pri:'baixa'},
+  {id:'outro',ico:'📋',nome:'Outros',desc:'Outros pedidos e solicitações',sla:'8h / 72h',tipo:'request',pri:'baixa'},
+];
+
+// ── RENDER ──
+function renderTab() {
+  if (tabAtual === 'novo') renderNovo();
+  else if (tabAtual === 'estado') renderEstado();
+  else if (tabAtual === 'conhecimento') renderConhecimento();
+}
+
+function renderNovo() {
+  if (ticketCriado) { renderSucesso(); return; }
+
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div class="section-title">Como podemos ajudar?</div>
+    <div class="section-sub">Selecciona a categoria do teu pedido</div>
+    <div class="cat-grid">
+      ${CATEGORIAS.map(cat => `
+        <div class="cat-card${catSel?.id===cat.id?' sel':''}" onclick="selCat('${cat.id}')">
+          <div class="cat-ico">${cat.ico}</div>
+          <div class="cat-name">${cat.nome}</div>
+          <div class="cat-desc">${cat.desc}</div>
+          <div class="cat-sla">⏱ Resposta ${cat.sla.split('/')[0]} · Resolução ${cat.sla.split('/')[1]}</div>
+        </div>`).join('')}
+    </div>
+    ${catSel ? renderFormulario() : '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px">Selecciona uma categoria para continuar</div>'}
+  `;
+}
+
+function selCat(id) {
+  catSel = CATEGORIAS.find(c => c.id === id);
+  renderNovo();
+  setTimeout(() => document.querySelector('.form-card')?.scrollIntoView({behavior:'smooth',block:'start'}), 100);
+}
+
+function renderFormulario() {
+  return `
+    <div class="form-card">
+      <div class="form-card-title">${catSel.ico} ${catSel.nome} — Novo Pedido</div>
+      
+      <div class="fg">
+        <label class="fl">O teu nome *</label>
+        <input class="fi" id="f-nome" placeholder="Nome completo" value="${getNomeUtilizador()}"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Email de contacto *</label>
+        <input class="fi" id="f-email" type="email" placeholder="nome@empresa.pt" value="${getEmailUtilizador()}"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Título do pedido *</label>
+        <input class="fi" id="f-titulo" placeholder="Descreve brevemente o problema ou pedido"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Descrição detalhada</label>
+        <textarea class="fi" id="f-desc" placeholder="Descreve o problema com o máximo de detalhe possível. Inclui passos para reproduzir, mensagens de erro, etc."></textarea>
+      </div>
+      <div class="g2">
+        <div class="fg">
+          <label class="fl">Urgência</label>
+          <select class="fi" id="f-urgencia">
+            <option value="normal">⏱ Normal</option>
+            <option value="urgente">⚡ Urgente — Afecta o meu trabalho</option>
+            <option value="imediato">🚨 Imediato — Sistema em baixo</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Impacto</label>
+          <select class="fi" id="f-impacto">
+            <option value="individual">👤 Só eu</option>
+            <option value="departamento">🏢 A minha equipa</option>
+            <option value="empresa">🏭 Toda a empresa</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <button class="btn-submit" onclick="submeterPedido()" id="btn-submit">
+          🎫 Submeter Pedido de Suporte
+        </button>
+      </div>
+      <p style="text-align:center;font-size:12px;color:#94a3b8;margin-top:12px">
+        Receberás uma confirmação por email. SLA: ${catSel.sla.split('/')[0]} resposta · ${catSel.sla.split('/')[1]} resolução
+      </p>
+    </div>
+  `;
+}
+
+function getNomeUtilizador() {
+  try { const u = JSON.parse(localStorage.getItem('rh-auth'))?.state?.utilizador; return u?.nome_completo || ''; } catch(e){return '';}
+}
+function getEmailUtilizador() {
+  try { const u = JSON.parse(localStorage.getItem('rh-auth'))?.state?.utilizador; return u?.email || ''; } catch(e){return '';}
+}
+
+async function submeterPedido() {
+  const nome = document.getElementById('f-nome')?.value?.trim();
+  const email = document.getElementById('f-email')?.value?.trim();
+  const titulo = document.getElementById('f-titulo')?.value?.trim();
+  const desc = document.getElementById('f-desc')?.value?.trim();
+  const urgencia = document.getElementById('f-urgencia')?.value;
+  const impacto = document.getElementById('f-impacto')?.value;
+
+  if (!nome || !email || !titulo) { alert('Preenche os campos obrigatórios: Nome, Email e Título'); return; }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = '⏳ A submeter...';
+
+  try {
+    const token = getToken();
+    const body = {
+      tipo: catSel.tipo || 'request',
+      titulo, descricao: desc,
+      prioridade: catSel.pri || 'media',
+      urgencia, impacto,
+      tags: [catSel.nome],
+      campos_extra: { nome_contacto: nome, email_contacto: email, categoria_portal: catSel.nome },
+    };
+
+    let r;
+    if (token) {
+      // Utilizador autenticado
+      r = await apiFetch('/itsm/tickets', { method: 'POST', body: JSON.stringify(body) });
+    } else {
+      // Portal público — endpoint especial sem auth
+      r = await apiFetch('/itsm/portal/ticket', {
+        method: 'POST',
+        body: JSON.stringify({ ...body, nome_contacto: nome, email_contacto: email, empresa_slug: getEmpresaId() })
+      });
+    }
+
+    ticketCriado = r;
+    renderSucesso();
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '🎫 Submeter Pedido de Suporte';
+    alert('Erro ao submeter: ' + e.message);
+  }
+}
+
+function renderSucesso() {
+  const t = ticketCriado;
+  document.getElementById('conteudo').innerHTML = `
+    <div class="success-card">
+      <div class="success-icon">🎉</div>
+      <h2 class="success-title">Pedido submetido com sucesso!</h2>
+      <p class="success-sub">O teu pedido foi recebido e será tratado pela nossa equipa.<br>Receberás actualizações por email.</p>
+      <div class="success-num">${t?.numero || 'TK-NOVO'}</div>
+      <p style="font-size:13px;color:#94a3b8;margin-bottom:20px">Guarda este número para acompanhar o estado do teu pedido</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn-secondary" onclick="ticketCriado=null;catSel=null;renderNovo()">📋 Novo Pedido</button>
+        <button class="btn-secondary" onclick="verEstadoTicket('${t?.numero||''}')">🔍 Ver Estado</button>
+      </div>
+    </div>
+    <div class="form-card" style="margin-top:20px">
+      <div class="form-card-title">⭐ Como foi a tua experiência?</div>
+      <p style="font-size:13px;color:#64748b;margin-bottom:12px">A tua opinião ajuda-nos a melhorar o serviço.</p>
+      <div class="stars" id="stars">
+        ${[1,2,3,4,5].map(n=>`<span class="star" onclick="avaliarPortal(${n})" data-n="${n}">⭐</span>`).join('')}
+      </div>
+      <textarea class="fi" id="feedback-txt" placeholder="Comentário opcional..." style="margin-top:12px"></textarea>
+      <button class="btn-submit" style="margin-top:12px" onclick="enviarFeedback()">Enviar feedback</button>
+    </div>
+  `;
+}
+
+function avaliarPortal(n) {
+  document.querySelectorAll('.star').forEach((s, i) => {
+    s.classList.toggle('sel', i < n);
+    s.style.opacity = i < n ? '1' : '0.3';
+  });
+  document.querySelectorAll('.star').forEach(s => s.setAttribute('data-sel', s.dataset.n <= n ? '1' : '0'));
+}
+
+async function enviarFeedback() {
+  const nota = [...document.querySelectorAll('.star[data-sel="1"]')].length;
+  const feedback = document.getElementById('feedback-txt')?.value;
+  if (!nota) { alert('Selecciona uma classificação'); return; }
+  if (ticketCriado?.id) {
+    await apiFetch(`/itsm/tickets/${ticketCriado.id}/satisfacao`, {
+      method: 'POST', body: JSON.stringify({ nota, feedback })
+    }).catch(() => {});
+  }
+  alert('✅ Obrigado pelo teu feedback!');
+}
+
+// ── ESTADO ──
+function renderEstado() {
+  document.getElementById('conteudo').innerHTML = `
+    <div class="form-card">
+      <div class="form-card-title">🔍 Verificar Estado do Ticket</div>
+      <div class="fg">
+        <label class="fl">Número do Ticket</label>
+        <input class="fi" id="num-ticket" placeholder="Ex: TK2026-00001" onkeydown="if(event.key==='Enter')verEstado()"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Email (para verificação)</label>
+        <input class="fi" id="email-ticket" type="email" placeholder="O email que usaste no pedido" value="${getEmailUtilizador()}"/>
+      </div>
+      <button class="btn-submit" onclick="verEstado()">🔍 Verificar Estado</button>
+    </div>
+    <div id="resultado-estado"></div>
+  `;
+}
+
+function verEstadoTicket(num) {
+  document.querySelector('.tab[onclick*="estado"]')?.click();
+  setTimeout(() => { document.getElementById('num-ticket').value = num; verEstado(); }, 200);
+}
+
+async function verEstado() {
+  const num = document.getElementById('num-ticket')?.value?.trim();
+  const email = document.getElementById('email-ticket')?.value?.trim();
+  if (!num) { alert('Introduz o número do ticket'); return; }
+
+  const div = document.getElementById('resultado-estado');
+  div.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8">A verificar...</div>';
+
+  try {
+    const token = getToken();
+    let ticket;
+    if (token) {
+      // Utilizador autenticado — pesquisar pelo número
+      const d = await apiFetch(`/itsm/tickets?pesquisa=${num}&limite=5`);
+      ticket = (d?.tickets||[]).find(t => t.numero === num);
+    } else {
+      // Portal público
+      ticket = await apiFetch(`/itsm/portal/estado?numero=${num}&email=${encodeURIComponent(email||'')}`).catch(()=>null);
+    }
+
+    if (!ticket) {
+      div.innerHTML = `<div class="status-card" style="text-align:center">
+        <div style="font-size:40px;margin-bottom:12px">🔍</div>
+        <div style="font-size:16px;font-weight:600;color:#1e293b;margin-bottom:6px">Ticket não encontrado</div>
+        <div style="font-size:13px;color:#64748b">Verifica o número e o email introduzidos</div>
+      </div>`;
+      return;
+    }
+
+    const cor = COR_EST[ticket.estado] || '#6b7280';
+    div.innerHTML = `
+      <div class="status-card">
+        <div class="status-header">
+          <div>
+            <div class="status-num">${ticket.numero}</div>
+            <div class="status-title">${ticket.titulo}</div>
+          </div>
+          ${badge(cor, LABEL_EST[ticket.estado] || ticket.estado)}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:16px 0;background:#f8fafc;border-radius:10px;padding:14px">
+          <div><div style="font-size:11px;color:#94a3b8;margin-bottom:3px">Tipo</div><div style="font-size:13px;font-weight:500">${ticket.tipo}</div></div>
+          <div><div style="font-size:11px;color:#94a3b8;margin-bottom:3px">Prioridade</div><div style="font-size:13px;font-weight:500;color:${ticket.prioridade==='critica'?'#ef4444':ticket.prioridade==='alta'?'#f97316':'#f59e0b'}">${ticket.prioridade}</div></div>
+          <div><div style="font-size:11px;color:#94a3b8;margin-bottom:3px">SLA Resolução</div><div style="font-size:13px;font-weight:500">${ticket.data_limite_resolucao?new Date(ticket.data_limite_resolucao).toLocaleDateString('pt-PT'):'—'}</div></div>
+        </div>
+        ${ticket.resolucao ? `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;margin-bottom:16px"><div style="font-size:11px;font-weight:600;color:#16a34a;margin-bottom:4px">✅ RESOLUÇÃO</div><div style="font-size:13px;color:#166534">${ticket.resolucao}</div></div>` : ''}
+        ${(ticket.comentarios||[]).filter(c=>c.visivelParaCliente!==false&&c.tipo!=='sistema').length?`
+          <div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em">Histórico de actualizações</div>
+          <div class="status-timeline">
+            ${[...(ticket.comentarios||[])].filter(c=>c.visivelParaCliente!==false&&c.tipo!=='sistema').reverse().map(c=>`
+              <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-time">${new Date(c.criado_em).toLocaleString('pt-PT')}</div>
+                <div class="tl-autor">${c.autor_nome||'Suporte'}</div>
+                <div class="tl-text">${c.conteudo}</div>
+              </div>`).join('')}
+          </div>` : '<div style="color:#94a3b8;font-size:13px;text-align:center;padding:12px">Sem actualizações ainda</div>'}
+        ${ticket.estado==='resolvido'&&!ticket.satisfacao?`
+          <div style="border-top:1px solid #e2e8f0;margin-top:16px;padding-top:16px;text-align:center">
+            <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:8px">Como foi o suporte?</div>
+            <div class="stars" id="stars-estado">
+              ${[1,2,3,4,5].map(n=>`<span class="star" onclick="avaliarEstado(${n},'${ticket.id}')" data-n="${n}">⭐</span>`).join('')}
+            </div>
+          </div>` : ''}
+      </div>`;
+  } catch(e) {
+    div.innerHTML = `<div class="status-card"><div style="text-align:center;color:#64748b">${e.message}</div></div>`;
+  }
+}
+
+async function avaliarEstado(nota, ticketId) {
+  document.querySelectorAll('#stars-estado .star').forEach((s,i) => {
+    s.style.opacity = i < nota ? '1' : '0.3';
+  });
+  await apiFetch(`/itsm/tickets/${ticketId}/satisfacao`, {
+    method: 'POST', body: JSON.stringify({ nota })
+  }).catch(()=>{});
+  setTimeout(() => {
+    document.getElementById('stars-estado').innerHTML = `<div style="color:#10b981;font-weight:600">✅ Obrigado pelo feedback!</div>`;
+  }, 500);
+}
+
+// ── CONHECIMENTO ──
+async function renderConhecimento() {
+  const c = document.getElementById('conteudo');
+  c.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8">A carregar...</div>';
+
+  try {
+    const rows = await apiFetch('/itsm/conhecimento').catch(() => []);
+    const faqs = [
+      {q:'Como submeto um novo pedido de suporte?',a:'Vai ao separador "Novo Pedido", selecciona a categoria que melhor descreve o teu problema e preenche o formulário. Receberás um email de confirmação com o número do ticket.'},
+      {q:'Quanto tempo demora a resposta?',a:'O tempo de resposta depende da prioridade: Crítico 1h, Alto 4h, Médio 8h, Baixo 24h. O SLA de resolução varia entre 4h e 72h conforme a categoria.'},
+      {q:'Como verifico o estado do meu pedido?',a:'Vai ao separador "Ver Estado", introduz o número do ticket e o teu email. Podes acompanhar todas as actualizações em tempo real.'},
+      {q:'O que fazer em caso de urgência?',a:'Selecciona "Imediato — Sistema em baixo" no campo Urgência ao criar o pedido. Isso garante escalamento imediato para a equipa de suporte.'},
+      {q:'Posso anexar ficheiros ao pedido?',a:'Sim, na descrição do pedido podes incluir links para ficheiros partilhados (OneDrive, Google Drive, etc). Para upload directo contacta o suporte.'},
+    ];
+
+    c.innerHTML = `
+      <div class="section-title" style="margin-bottom:20px">📚 Base de Conhecimento & FAQ</div>
+      ${rows.length ? `
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px">
+          ${rows.map(a=>`
+            <div style="background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.06);cursor:pointer;transition:all .2s" onmouseover="this.style.boxShadow='0 6px 20px rgba(0,0,0,0.1)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.06)';this.style.transform='none'">
+              <div style="display:flex;gap:8px;margin-bottom:10px">
+                <span style="background:#eef2ff;color:#4f46e5;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600">${a.tipo}</span>
+                ${a.categoria_nome?`<span style="font-size:11px;color:#94a3b8">${a.categoria_nome}</span>`:''}
+              </div>
+              <div style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:6px;line-height:1.4">${a.titulo}</div>
+              <div style="font-size:12px;color:#64748b;line-height:1.6;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${a.conteudo}</div>
+              <div style="display:flex;gap:10px;margin-top:10px;font-size:11px;color:#94a3b8"><span>👁 ${a.visualizacoes}</span><span>👍 ${a.util_sim}</span></div>
+            </div>`).join('')}
+        </div>` : ''}
+      <div class="section-title" style="margin-bottom:16px">❓ Perguntas Frequentes</div>
+      ${faqs.map((f,i)=>`
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(${i})">
+            <span>${f.q}</span>
+            <span id="faq-ico-${i}">+</span>
+          </div>
+          <div class="faq-a" id="faq-a-${i}">${f.a}</div>
+        </div>`).join('')}
+    `;
+  } catch(e) {
+    c.innerHTML = `<div style="text-align:center;padding:40px;color:#94a3b8">${e.message}</div>`;
+  }
+}
+
+function toggleFaq(i) {
+  const a = document.getElementById('faq-a-'+i);
+  const ico = document.getElementById('faq-ico-'+i);
+  a.classList.toggle('open');
+  ico.textContent = a.classList.contains('open') ? '−' : '+';
+}
+
+// ── PESQUISA HEADER ──
+let pesquisaTimeout;
+async function pesquisarHeader(q) {
+  clearTimeout(pesquisaTimeout);
+  const div = document.getElementById('search-results');
+  if (!q || q.length < 2) { div.style.display='none'; return; }
+  pesquisaTimeout = setTimeout(async () => {
+    try {
+      const token = getToken();
+      if (!token) { div.style.display='none'; return; }
+      const d = await apiFetch(`/itsm/tickets?pesquisa=${encodeURIComponent(q)}&limite=5`);
+      const its = d?.tickets||[];
+      const kb = await apiFetch(`/itsm/conhecimento?pesquisa=${encodeURIComponent(q)}`).catch(()=>[]);
+      if (!its.length && !kb.length) { div.style.display='none'; return; }
+      div.innerHTML = [
+        ...its.map(t=>`<div class="search-result-item" onclick="verEstadoTicket('${t.numero}')">
+          <div class="sri-num">${t.numero}</div>
+          <div class="sri-title">${t.titulo}</div>
+          <div class="sri-estado" style="color:${COR_EST[t.estado]||'#6b7280'}">${LABEL_EST[t.estado]||t.estado}</div>
+        </div>`),
+        ...kb.map(a=>`<div class="search-result-item" onclick="alert('${a.titulo}')">
+          <div class="sri-num">📚 ${a.tipo}</div>
+          <div class="sri-title">${a.titulo}</div>
+        </div>`),
+      ].join('');
+      div.style.display='block';
+    } catch(e) { div.style.display='none'; }
+  }, 400);
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.header-search')) document.getElementById('search-results').style.display='none';
+});
+
+// ── STATS ──
+async function carregarStats() {
+  try {
+    const d = await apiFetch('/itsm/dashboard');
+    const k = d?.kpis;
+    if (k) {
+      document.getElementById('stat-abertos').textContent = k.abertos;
+      document.getElementById('stat-sla').textContent = k.sla_resolucao_pct;
+      document.getElementById('stat-csat').textContent = k.satisfacao_media;
+    }
+    const emp = await apiFetch('/empresa').catch(()=>null);
+    if (emp?.nome) document.getElementById('empresa-nome').textContent = emp.nome + ' · Suporte';
+  } catch(e) {}
+}
+
+// ── INIT ──
+carregarStats();
+renderTab();
+</script>
+<script src="/chatbot-widget.js"></script>
+</body>
+</html>

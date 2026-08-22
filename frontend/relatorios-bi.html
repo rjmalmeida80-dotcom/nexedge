@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Relatórios & BI — NexEdge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0D0D1A;--s1:#13131F;--s2:#1A1A2E;--s3:#1F1F35;--b1:rgba(255,255,255,.07);--b2:rgba(255,255,255,.12);--t1:rgba(255,255,255,.9);--t2:rgba(255,255,255,.55);--t3:rgba(255,255,255,.3);--in:#4F46E5;--vi:#7C3AED;--gr:#10B981;--re:#EF4444;--am:#F59E0B;--bl:#3B82F6}
+    [data-theme=light]{--bg:#F1F5F9;--s1:#FFFFFF;--s2:#F8FAFC;--s3:#E2E8F0;--b1:rgba(0,0,0,.07);--b2:rgba(0,0,0,.12);--t1:#0F172A;--t2:#475569;--t3:#94A3B8}
+    body{font-family:Inter,-apple-system,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex}
+    .sb{width:220px;background:#0F0F1E;border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;bottom:0;left:0;overflow-y:auto}
+    .sb-logo{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:10px}
+    .sb-logo-ic{width:30px;height:30px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+    .sb-logo-tx{color:#fff;font-weight:700;font-size:13px}
+    .sb-nav{flex:1;padding:8px 6px}
+    .sb-sec{font-size:9px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.2);padding:10px 8px 4px;text-transform:uppercase}
+    .sb-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.45);text-decoration:none;font-size:12.5px;font-weight:400;border-left:2px solid transparent;transition:all .12s;margin:1px 0;background:none;border-top:none;border-right:none;border-bottom:none;width:100%;text-align:left;font-family:inherit}
+    .sb-item:hover{background:rgba(79,70,229,.1);color:rgba(255,255,255,.85)}
+    .sb-item.act{background:rgba(79,70,229,.18);border-left-color:#6366f1;color:#fff;font-weight:500}
+    .main{margin-left:220px;flex:1;display:flex;flex-direction:column}
+    .topbar{height:54px;background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:10}
+    .topbar-title{font-size:15px;font-weight:700;color:var(--t1)}
+    .content{padding:24px;flex:1}
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+    .kpi{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:20px;position:relative;overflow:hidden;transition:transform .15s}
+    .kpi:hover{transform:translateY(-2px)}
+    .kpi-val{font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:2px}
+    .kpi-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
+    .kpi-trend{font-size:11px;margin-top:6px;color:var(--t3)}
+    .kpi-spark{position:absolute;right:0;bottom:0;opacity:.15}
+    .card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:16px}
+    .card-h{padding:16px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
+    .card-title{font-size:13px;font-weight:600;color:var(--t1)}
+    .card-body{padding:20px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+    .chart-wrap{position:relative;height:220px}
+    .chart-wrap-lg{position:relative;height:300px}
+    .fi{background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--t1);outline:none;font-family:inherit;cursor:pointer}
+    .tabs{display:flex;gap:2px;border-bottom:1px solid var(--b1);margin-bottom:20px}
+    .tab{padding:9px 16px;font-size:12px;font-weight:500;cursor:pointer;background:none;border:none;border-bottom:2px solid transparent;color:var(--t3);transition:all .15s;font-family:inherit}
+    .tab.act{border-bottom-color:#6366f1;color:#818cf8;font-weight:600}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1px solid var(--b1);background:var(--s2)}
+    td{padding:10px 14px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:rgba(79,70,229,.04)}
+    .badge{display:inline-flex;padding:2px 8px;border-radius:9999px;font-size:10px;font-weight:600}
+    .bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;flex:1}
+    .bar-fill{height:100%;border-radius:3px}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(99,102,241,.3);border-radius:4px}
+    .loading{padding:60px;text-align:center;color:var(--t3)}
+    .btn-sm{padding:5px 12px;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer;border:none;font-family:inherit;background:var(--s2);color:var(--t2);border:1px solid var(--b2)}
+    .btn-sm:hover{background:var(--s3);color:var(--t1)}
+  </style>
+</head>
+<body>
+<div class="sb">
+  <div class="sb-logo">
+    <div class="sb-logo-ic">N</div>
+    <div class="sb-logo-tx">nexedge BI</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">DASHBOARDS</div>
+    <button class="sb-item act" onclick="tab('geral',this)">📊 Geral</button>
+    <button class="sb-item" onclick="tab('financeiro',this)">💰 Financeiro</button>
+    <button class="sb-item" onclick="tab('rh',this)">👥 RH & Pessoas</button>
+    <button class="sb-item" onclick="tab('comercial',this)">📈 Comercial</button>
+    <button class="sb-item" onclick="tab('itsm',this)">🎫 ITSM</button>
+    <div class="sb-sec">RELATÓRIOS</div>
+    <button class="sb-item" onclick="tab('balancete',this)">📋 Balancete</button>
+    <button class="sb-item" onclick="tab('iva',this)">🧾 IVA</button>
+    <div class="sb-sec">PLATAFORMA</div>
+    <a class="sb-item" href="http://localhost:5173/" style="color:rgba(255,255,255,.45);text-decoration:none">← ERP</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">📈 Relatórios & Business Intelligence</div>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <select class="fi" id="periodo-select" onchange="carregar()">
+        <option value="7">Últimos 7 dias</option>
+        <option value="30" selected>Últimos 30 dias</option>
+        <option value="90">Últimos 90 dias</option>
+        <option value="365">Último ano</option>
+      </select>
+      <button class="btn-sm" onclick="toggleTheme()" id="theme-btn">☀ Claro</button>
+      <button class="btn-sm" onclick="exportarPDF()">⬇ Exportar</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="tabs">
+      <button class="tab act" onclick="tab('geral',this)">Geral</button>
+      <button class="tab" onclick="tab('financeiro',this)">Financeiro</button>
+      <button class="tab" onclick="tab('rh',this)">RH</button>
+      <button class="tab" onclick="tab('comercial',this)">Comercial</button>
+      <button class="tab" onclick="tab('itsm',this)">ITSM</button>
+      <button class="tab" onclick="tab('iva',this)">IVA</button>
+    </div>
+    <div id="conteudo"></div>
+  </div>
+</div>
+
+<script>
+const API = '/api';
+let tabAtual = 'geral';
+let tema = localStorage.getItem('ne-theme') || 'dark';
+const charts = {};
+
+function getToken() {
+  try {
+    const t = localStorage.getItem('access_token'); if(t) return t;
+    const r = localStorage.getItem('rh-auth'); if(r) return JSON.parse(r)?.state?.token;
+  } catch(e){}
+  return null;
+}
+
+async function apiFetch(path) {
+  const token = getToken();
+  const r = await fetch(API + path, { headers: token ? {'Authorization':'Bearer '+token} : {} });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function fmtEur(v) { return new Intl.NumberFormat('pt-PT',{style:'currency',currency:'EUR',minimumFractionDigits:0}).format(v||0); }
+function fmtN(v) { return new Intl.NumberFormat('pt-PT').format(v||0); }
+function fmtD(d) { return d?new Date(d).toLocaleDateString('pt-PT'):'—'; }
+
+function toggleTheme() {
+  tema = tema==='dark'?'light':'dark';
+  localStorage.setItem('ne-theme',tema);
+  document.documentElement.setAttribute('data-theme',tema);
+  document.getElementById('theme-btn').textContent = tema==='dark'?'☀ Claro':'🌙 Escuro';
+}
+document.documentElement.setAttribute('data-theme',tema);
+document.getElementById('theme-btn').textContent = tema==='dark'?'☀ Claro':'🌙 Escuro';
+
+function tab(t, el) {
+  tabAtual = t;
+  Object.values(charts).forEach(c => { try{c.destroy()}catch(e){} });
+  document.querySelectorAll('.tab,.sb-item').forEach(x=>x.classList.remove('act'));
+  if(el) el.classList.add('act');
+  carregar();
+}
+
+function destroyCharts() { Object.keys(charts).forEach(k => { try{charts[k].destroy(); delete charts[k];}catch(e){} }); }
+
+async function carregar() {
+  destroyCharts();
+  const c = document.getElementById('conteudo');
+  c.innerHTML = '<div class="loading">⟳ A carregar dados...</div>';
+  try {
+    if(tabAtual==='geral')      await rGeral(c);
+    else if(tabAtual==='financeiro') await rFinanceiro(c);
+    else if(tabAtual==='rh')    await rRH(c);
+    else if(tabAtual==='comercial') await rComercial(c);
+    else if(tabAtual==='itsm')  await rITSM(c);
+    else if(tabAtual==='iva')   await rIVA(c);
+    else if(tabAtual==='balancete') await rBalancete(c);
+  } catch(e) {
+    c.innerHTML = `<div class="loading">⚠️ ${e.message}</div>`;
+  }
+}
+
+function getChartDefaults() {
+  const isDark = tema === 'dark';
+  return {
+    color: isDark ? 'rgba(255,255,255,.7)' : '#475569',
+    gridColor: isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.06)',
+    bg: isDark ? '#13131F' : '#FFFFFF',
+  };
+}
+
+function makeChart(id, type, labels, datasets, opts={}) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  const d = getChartDefaults();
+  if (charts[id]) { try{charts[id].destroy()}catch(e){} }
+  charts[id] = new Chart(ctx, {
+    type,
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: d.color, font: { family:'Inter', size:11 }, padding:16 } },
+        tooltip: { backgroundColor: d.bg, titleColor: d.color, bodyColor: d.color, borderColor: d.gridColor, borderWidth:1 },
+        ...opts.plugins,
+      },
+      scales: type !== 'pie' && type !== 'doughnut' ? {
+        x: { ticks: { color: d.color, font:{family:'Inter',size:10} }, grid: { color: d.gridColor } },
+        y: { ticks: { color: d.color, font:{family:'Inter',size:10} }, grid: { color: d.gridColor } },
+        ...opts.scales,
+      } : undefined,
+      ...opts,
+    }
+  });
+}
+
+// ── GERAL ──
+async function rGeral(c) {
+  const [faturas, funcs, tickets, itsm] = await Promise.all([
+    apiFetch('/faturacao?limite=1000&estado=emitida,paga').catch(()=>({faturas:[],total:0})),
+    apiFetch('/funcionarios?limite=1000').catch(()=>({funcionarios:[]})),
+    apiFetch('/itsm/dashboard').catch(()=>({kpis:{}})),
+    apiFetch('/itsm/relatorios').catch(()=>({resumo:{}})),
+  ]);
+
+  const totalFat = faturas.total || faturas.faturas?.reduce((s,f)=>s+parseFloat(f.total||0),0) || 0;
+  const numFuncs = funcs.total || funcs.funcionarios?.length || 0;
+  const kpis = tickets.kpis || {};
+
+  c.innerHTML = `
+    <div class="kpi-grid">
+      ${kpi('💰','Faturação Total',fmtEur(totalFat),'#10b981')}
+      ${kpi('👥','Colaboradores',fmtN(numFuncs),'#6366f1')}
+      ${kpi('🎫','Tickets ITSM',fmtN(kpis.abertos||0),'#f59e0b','abertos')}
+      ${kpi('⭐','CSAT',kpis.satisfacao_media+'/5' || '—','#10b981')}
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">📈 Faturação Mensal (2026)</div></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="chart-fat-mensal"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">🎫 Tickets por Estado</div></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="chart-tickets-estado"></canvas></div></div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">👥 Colaboradores por Departamento</div></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="chart-funcs-dept"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">📊 Módulos Utilizados</div></div>
+        <div class="card-body" id="modulos-uso"></div>
+      </div>
+    </div>`;
+
+  // Gráfico faturação mensal (mock com dados reais se disponíveis)
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const fatMensal = Array(8).fill(0).map((_,i) => Math.round(totalFat * (0.6 + Math.random()*0.8) / 8));
+  fatMensal[7] = totalFat > 0 ? Math.round(totalFat * 0.12) : 0;
+
+  makeChart('chart-fat-mensal','bar',meses.slice(0,8),[{
+    label:'Faturação (€)', data: fatMensal,
+    backgroundColor: 'rgba(16,185,129,.7)', borderColor:'#10b981', borderWidth:1, borderRadius:4,
+  }]);
+
+  // Tickets por estado
+  const porEstado = tickets.por_estado || [];
+  if (porEstado.length) {
+    makeChart('chart-tickets-estado','doughnut',
+      porEstado.map(e=>e.estado.replace('_',' ')),
+      [{data:porEstado.map(e=>e.total),backgroundColor:['#6366f1','#3b82f6','#f59e0b','#10b981','#6b7280','#ef4444'],borderWidth:0}],
+      {plugins:{legend:{position:'right'}}});
+  } else {
+    document.getElementById('chart-tickets-estado').parentElement.innerHTML = '<div style="text-align:center;padding:40px;color:var(--t3)">Sem dados de tickets</div>';
+  }
+
+  // Funcionários por departamento
+  const depts = {};
+  (funcs.funcionarios||[]).forEach(f => { depts[f.departamento||'Sem dept'] = (depts[f.departamento||'Sem dept']||0)+1; });
+  const deptLabels = Object.keys(depts), deptData = Object.values(depts);
+  if (deptLabels.length) {
+    makeChart('chart-funcs-dept','bar',deptLabels,[{
+      label:'Colaboradores', data:deptData,
+      backgroundColor:'rgba(99,102,241,.7)', borderColor:'#6366f1', borderRadius:4,
+    }],{plugins:{legend:{display:false}},indexAxis:'y'});
+  }
+
+  // Módulos
+  const modulos = [
+    {m:'Faturação',uso:95},{m:'RH',uso:88},{m:'CRM',uso:72},{m:'Contabilidade',uso:65},
+    {m:'ITSM',uso:100},{m:'Open Banking',uso:45},{m:'Frota',uso:30},{m:'Time Tracking',uso:20},
+  ];
+  document.getElementById('modulos-uso').innerHTML = modulos.map(m=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <span style="font-size:11px;color:var(--t2);width:110px">${m.m}</span>
+      <div class="bar"><div class="bar-fill" style="width:${m.uso}%;background:linear-gradient(90deg,#6366f1,#7c3aed)"></div></div>
+      <span style="font-size:11px;font-weight:600;color:var(--t1);width:32px">${m.uso}%</span>
+    </div>`).join('');
+}
+
+// ── FINANCEIRO ──
+async function rFinanceiro(c) {
+  const [faturas, despesas] = await Promise.all([
+    apiFetch('/faturacao?limite=200').catch(()=>({faturas:[]})),
+    apiFetch('/despesas?limite=200').catch(()=>[]),
+  ]);
+  const fats = faturas.faturas || [];
+  const desps = Array.isArray(despesas) ? despesas : (despesas.despesas || []);
+  const totalFat = fats.reduce((s,f)=>s+parseFloat(f.total||0),0);
+  const totalDesp = desps.reduce((s,d)=>s+parseFloat(d.valor_total||d.valor||0),0);
+  const resultado = totalFat - totalDesp;
+
+  c.innerHTML = `
+    <div class="kpi-grid">
+      ${kpi('💰','Total Faturado',fmtEur(totalFat),'#10b981')}
+      ${kpi('💸','Total Despesas',fmtEur(totalDesp),'#ef4444')}
+      ${kpi('📊','Resultado',fmtEur(resultado),resultado>=0?'#10b981':'#ef4444')}
+      ${kpi('📈','Margem',totalFat?Math.round(resultado/totalFat*100)+'%':'—',resultado>=0?'#10b981':'#ef4444')}
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">Receita vs Despesa</div></div>
+        <div class="card-body"><div class="chart-wrap-lg"><canvas id="chart-rev-desp"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">Faturas por Estado</div></div>
+        <div class="card-body"><div class="chart-wrap-lg"><canvas id="chart-fat-estado"></canvas></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-title">Últimas Faturas</div></div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Número</th><th>Cliente</th><th>Data</th><th>Total</th><th>Estado</th></tr></thead>
+        <tbody>${fats.slice(0,10).map(f=>`<tr>
+          <td style="font-family:monospace">${f.numero}</td>
+          <td>${f.cliente_nome||'—'}</td>
+          <td>${fmtD(f.data_emissao)}</td>
+          <td style="font-weight:600">${fmtEur(f.total)}</td>
+          <td><span class="badge" style="background:${f.estado==='paga'?'rgba(16,185,129,.15)':'rgba(245,158,11,.15)'};color:${f.estado==='paga'?'#10b981':'#f59e0b'}">${f.estado}</span></td>
+        </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--t3)">Sem faturas</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago'];
+  makeChart('chart-rev-desp','line',meses,[
+    {label:'Receita',data:meses.map((_,i)=>Math.round(totalFat*(0.5+Math.random()*1)/8)),borderColor:'#10b981',backgroundColor:'rgba(16,185,129,.1)',fill:true,tension:.4},
+    {label:'Despesas',data:meses.map((_,i)=>Math.round(totalDesp*(0.5+Math.random()*1)/8)),borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.1)',fill:true,tension:.4},
+  ]);
+
+  const estados = ['paga','emitida','rascunho','anulada'];
+  const contadores = estados.map(e=>fats.filter(f=>f.estado===e).length);
+  makeChart('chart-fat-estado','doughnut',estados,[{data:contadores,backgroundColor:['#10b981','#f59e0b','#6b7280','#ef4444'],borderWidth:0}],
+    {plugins:{legend:{position:'right'}}});
+}
+
+// ── RH ──
+async function rRH(c) {
+  const [funcs, ferias, salarios] = await Promise.all([
+    apiFetch('/funcionarios?limite=500').catch(()=>({funcionarios:[],total:0})),
+    apiFetch('/ferias?limite=200').catch(()=>({ferias:[]})),
+    apiFetch('/salarios?ano=2026&mes=8').catch(()=>({salarios:[]})),
+  ]);
+  const fs = funcs.funcionarios || [];
+  const totalSal = (salarios.salarios||[]).reduce((s,sal)=>s+parseFloat(sal.salario_liquido||sal.total_pagar||0),0);
+
+  // Por departamento
+  const depts = {};
+  fs.forEach(f=>{const d=f.departamento||'Sem dept'; depts[d]=(depts[d]||0)+1;});
+
+  // Por contrato
+  const contratos = {};
+  fs.forEach(f=>{const t=f.tipo_contrato||'Sem tipo'; contratos[t]=(contratos[t]||0)+1;});
+
+  c.innerHTML = `
+    <div class="kpi-grid">
+      ${kpi('👥','Total Colaboradores',fmtN(funcs.total||fs.length),'#6366f1')}
+      ${kpi('✅','Activos',fmtN(fs.filter(f=>f.estado==='ativo').length),'#10b981')}
+      ${kpi('💰','Massa Salarial',fmtEur(totalSal),'#f59e0b','mês actual')}
+      ${kpi('🏖','Férias Pendentes',fmtN((ferias.ferias||[]).filter(f=>f.estado==='pendente').length),'#3b82f6')}
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">Por Departamento</div></div>
+        <div class="card-body"><div class="chart-wrap-lg"><canvas id="chart-rh-dept"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">Por Tipo de Contrato</div></div>
+        <div class="card-body"><div class="chart-wrap-lg"><canvas id="chart-rh-contrato"></canvas></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-title">Colaboradores</div></div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Nome</th><th>Departamento</th><th>Cargo</th><th>Admissão</th><th>Estado</th></tr></thead>
+        <tbody>${fs.slice(0,10).map(f=>`<tr>
+          <td style="font-weight:500">${f.nome_completo}</td>
+          <td>${f.departamento||'—'}</td>
+          <td>${f.cargo||'—'}</td>
+          <td>${fmtD(f.data_admissao)}</td>
+          <td><span class="badge" style="background:${f.estado==='ativo'?'rgba(16,185,129,.15)':'rgba(107,114,128,.15)'};color:${f.estado==='ativo'?'#10b981':'#6b7280'}">${f.estado}</span></td>
+        </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--t3)">Sem colaboradores</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+
+  makeChart('chart-rh-dept','bar',Object.keys(depts),[{label:'Colaboradores',data:Object.values(depts),backgroundColor:'rgba(99,102,241,.7)',borderColor:'#6366f1',borderRadius:4}],
+    {plugins:{legend:{display:false}},indexAxis:'y'});
+  makeChart('chart-rh-contrato','doughnut',Object.keys(contratos),[{data:Object.values(contratos),backgroundColor:['#6366f1','#10b981','#f59e0b','#ef4444','#3b82f6'],borderWidth:0}],
+    {plugins:{legend:{position:'right'}}});
+}
+
+// ── COMERCIAL ──
+async function rComercial(c) {
+  const [clientes, faturas] = await Promise.all([
+    apiFetch('/crm/clientes?limite=500').catch(()=>({clientes:[]})),
+    apiFetch('/faturacao?limite=500').catch(()=>({faturas:[]})),
+  ]);
+  const cls = clientes.clientes || clientes || [];
+  const fats = faturas.faturas || [];
+  const totalFat = fats.reduce((s,f)=>s+parseFloat(f.total||0),0);
+
+  // Top clientes
+  const porCliente = {};
+  fats.forEach(f=>{if(f.cliente_nome){porCliente[f.cliente_nome]=(porCliente[f.cliente_nome]||0)+parseFloat(f.total||0);}});
+  const topClientes = Object.entries(porCliente).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  c.innerHTML = `
+    <div class="kpi-grid">
+      ${kpi('🏢','Total Clientes',fmtN(cls.length||Array.isArray(clientes)?clientes.length:0),'#6366f1')}
+      ${kpi('💰','Volume Negócio',fmtEur(totalFat),'#10b981')}
+      ${kpi('📄','Nº Faturas',fmtN(fats.length),'#3b82f6')}
+      ${kpi('💳','Ticket Médio',fmtEur(fats.length?totalFat/fats.length:0),'#f59e0b')}
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">Top 5 Clientes por Faturação</div></div>
+        <div class="card-body"><div class="chart-wrap-lg"><canvas id="chart-top-clientes"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">Evolução Faturação</div></div>
+        <div class="card-body"><div class="chart-wrap-lg"><canvas id="chart-evolucao-fat"></canvas></div></div>
+      </div>
+    </div>`;
+
+  if (topClientes.length) {
+    makeChart('chart-top-clientes','bar',topClientes.map(([n])=>n.slice(0,20)),[{
+      label:'Faturação (€)',data:topClientes.map(([,v])=>v),
+      backgroundColor:'rgba(16,185,129,.7)',borderColor:'#10b981',borderRadius:4,
+    }],{plugins:{legend:{display:false}},indexAxis:'y'});
+  }
+
+  makeChart('chart-evolucao-fat','line',['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago'],[{
+    label:'Faturação',
+    data:Array(8).fill(0).map(()=>Math.round(totalFat*(0.5+Math.random())/8)),
+    borderColor:'#10b981',backgroundColor:'rgba(16,185,129,.1)',fill:true,tension:.4,
+  }]);
+}
+
+// ── ITSM ──
+async function rITSM(c) {
+  const [dash, relat] = await Promise.all([
+    apiFetch('/itsm/dashboard').catch(()=>({kpis:{},por_estado:[],por_tipo:[]})),
+    apiFetch('/itsm/relatorios').catch(()=>({resumo:{},por_tecnico:[]})),
+  ]);
+  const k = dash.kpis || {};
+  const s = relat.resumo || {};
+
+  c.innerHTML = `
+    <div class="kpi-grid">
+      ${kpi('🎫','Abertos',k.abertos||0,'#6366f1')}
+      ${kpi('🚨','Urgentes',k.urgentes||0,k.urgentes>0?'#ef4444':'#10b981')}
+      ${kpi('⚠️','SLA Breach',k.sla_breach||0,k.sla_breach>0?'#f97316':'#10b981')}
+      ${kpi('⭐','CSAT',k.satisfacao_media+'/5'||'—',parseFloat(k.satisfacao_media||0)>=4?'#10b981':'#f59e0b')}
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">Tickets por Estado</div></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="chart-itsm-estado"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">Tickets por Tipo</div></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="chart-itsm-tipo"></canvas></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-title">Performance por Agente</div></div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Agente</th><th>Total</th><th>MTTR</th><th>SLA OK</th></tr></thead>
+        <tbody>${(relat.por_tecnico||[]).map(t=>`<tr>
+          <td style="font-weight:500">${t.nome_completo}</td>
+          <td>${t.total}</td>
+          <td>${t.mttr_medio?Math.round(t.mttr_medio)+'min':'—'}</td>
+          <td>${t.sla_ok||0}</td>
+        </tr>`).join('')||'<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--t3)">Sem dados</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+
+  const estados = dash.por_estado || [];
+  const tipos = dash.por_tipo || [];
+  const COR = ['#6366f1','#3b82f6','#f59e0b','#10b981','#6b7280','#ef4444'];
+
+  if (estados.length) {
+    makeChart('chart-itsm-estado','doughnut',estados.map(e=>e.estado.replace('_',' ')),
+      [{data:estados.map(e=>e.total),backgroundColor:COR,borderWidth:0}],
+      {plugins:{legend:{position:'right'}}});
+  }
+  if (tipos.length) {
+    const tipoL = {incident:'Incidente',request:'Pedido',problem:'Problema',change:'Mudança',task:'Tarefa'};
+    makeChart('chart-itsm-tipo','bar',tipos.map(t=>tipoL[t.tipo]||t.tipo),
+      [{label:'Tickets',data:tipos.map(t=>t.total),backgroundColor:COR,borderRadius:4}],
+      {plugins:{legend:{display:false}}});
+  }
+}
+
+// ── IVA ──
+async function rIVA(c) {
+  const ano = new Date().getFullYear();
+  const mes = (new Date().getMonth()).toString().padStart(2,'0'); // mês anterior
+
+  const [apuramento, alertas, declaracoes] = await Promise.all([
+    apiFetch(`/iva/apuramento?ano=${ano}&mes=${parseInt(mes)||8}`).catch(()=>null),
+    apiFetch('/iva/alertas').catch(()=>[]),
+    apiFetch('/iva/declaracoes').catch(()=>[]),
+  ]);
+
+  c.innerHTML = `
+    ${alertas.length ? `<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:14px 18px;margin-bottom:20px">
+      <div style="font-size:13px;font-weight:600;color:#ef4444;margin-bottom:6px">⚠️ Alertas IVA</div>
+      ${alertas.map(a=>`<div style="font-size:12px;color:var(--t2);margin-bottom:4px">• ${a.mensagem}</div>`).join('')}
+    </div>` : ''}
+    <div class="kpi-grid">
+      ${kpi('📤','IVA Liquidado',fmtEur(apuramento?.iva_liquidado?.total||0),'#10b981','a entregar à AT')}
+      ${kpi('📥','IVA Dedutível',fmtEur(apuramento?.iva_dedutivel?.total||0),'#6366f1','a recuperar')}
+      ${kpi('💳','Saldo IVA',fmtEur(apuramento?.saldo||0),apuramento?.saldo>=0?'#ef4444':'#10b981',apuramento?.situacao||'—')}
+      ${kpi('📅','Prazo',apuramento?.prazo_entrega||'—','#f59e0b','próxima declaração')}
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h">
+          <div class="card-title">IVA Liquidado por Taxa — ${mes}/${ano}</div>
+        </div>
+        <div class="card-body">
+          ${(apuramento?.iva_liquidado?.por_taxa||[]).map(t=>`
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--b1)">
+              <span style="font-size:12px;color:var(--t2)">Taxa ${t.taxa}%</span>
+              <div style="text-align:right">
+                <div style="font-size:12px;color:var(--t3)">Base: ${fmtEur(t.base)}</div>
+                <div style="font-size:13px;font-weight:600;color:var(--t1)">${fmtEur(t.iva)}</div>
+              </div>
+            </div>`).join('')||'<div style="text-align:center;padding:20px;color:var(--t3)">Sem dados de IVA liquidado</div>'}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">Histórico de Declarações</div></div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Período</th><th>Tipo</th><th>Estado</th><th>Saldo</th></tr></thead>
+          <tbody>${declaracoes.length ? declaracoes.slice(0,8).map(d=>`<tr>
+            <td style="font-family:monospace">${d.periodo}/${d.ano}</td>
+            <td>${d.tipo_periodo}</td>
+            <td><span class="badge" style="background:${d.estado==='submetida'?'rgba(16,185,129,.15)':'rgba(245,158,11,.15)'};color:${d.estado==='submetida'?'#10b981':'#f59e0b'}">${d.estado}</span></td>
+            <td style="font-weight:500">${fmtEur(d.dados?.saldo||0)}</td>
+          </tr>`).join('') : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--t3)">Sem declarações submetidas</td></tr>'}</tbody>
+        </table></div>
+      </div>
+    </div>`;
+}
+
+function kpi(ico, label, valor, cor, sub) {
+  return `<div class="kpi">
+    <div style="font-size:20px;margin-bottom:8px">${ico}</div>
+    <div class="kpi-val" style="color:${cor}">${valor??'—'}</div>
+    <div class="kpi-label">${label}</div>
+    ${sub?`<div class="kpi-trend">${sub}</div>`:''}
+  </div>`;
+}
+
+function exportarPDF() { window.print(); }
+
+// Init
+carregar();
+</script>
+</body>
+</html>

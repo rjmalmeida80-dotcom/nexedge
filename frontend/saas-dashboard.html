@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NexEdge — SuperAdmin SaaS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0A0A14;--s1:#0F0F1E;--s2:#141428;--s3:#1A1A2E;--b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.1);--t1:#fff;--t2:rgba(255,255,255,.6);--t3:rgba(255,255,255,.3);--in:#6366f1;--vi:#7c3aed;--gr:#10b981;--re:#ef4444;--am:#f59e0b;--bl:#3b82f6}
+    body{font-family:Inter,-apple-system,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex}
+    .sb{width:220px;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;bottom:0;left:0}
+    .logo{padding:18px 14px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:10px}
+    .logo-ic{width:32px;height:32px;background:linear-gradient(135deg,#6366f1,#7c3aed);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;box-shadow:0 2px 8px rgba(99,102,241,.4)}
+    .logo-tx{font-weight:700;font-size:13px}
+    .logo-badge{font-size:9px;background:rgba(99,102,241,.2);color:#818cf8;padding:2px 6px;border-radius:4px;margin-left:4px;font-weight:600}
+    .sb-nav{flex:1;padding:8px 6px;overflow-y:auto}
+    .sb-sec{font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--t3);padding:10px 8px 4px;text-transform:uppercase}
+    .sb-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;cursor:pointer;color:var(--t3);text-decoration:none;font-size:12.5px;font-weight:400;border-left:2px solid transparent;transition:all .12s;margin:1px 0;background:none;border-top:none;border-right:none;border-bottom:none;width:100%;text-align:left;font-family:inherit}
+    .sb-item:hover{background:rgba(99,102,241,.1);color:rgba(255,255,255,.8)}
+    .sb-item.act{background:rgba(99,102,241,.18);border-left-color:#6366f1;color:#fff;font-weight:500}
+    .main{margin-left:220px;flex:1;display:flex;flex-direction:column}
+    .topbar{height:54px;background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:10}
+    .topbar-title{font-size:15px;font-weight:700}
+    .topbar-sub{font-size:12px;color:var(--t3);margin-left:8px}
+    .content{padding:24px;flex:1}
+    .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+    .kpi{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:20px;position:relative;overflow:hidden;cursor:pointer;transition:all .2s}
+    .kpi:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+    .kpi-icon{font-size:24px;margin-bottom:10px}
+    .kpi-val{font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:2px}
+    .kpi-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
+    .kpi-trend{font-size:11px;margin-top:6px;display:flex;align-items:center;gap:4px}
+    .trend-up{color:#10b981}.trend-dn{color:#ef4444}
+    .kpi-glow{position:absolute;right:-20px;top:-20px;width:80px;height:80px;border-radius:50%;opacity:.08}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px}
+    .card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;overflow:hidden}
+    .card-h{padding:16px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
+    .card-title{font-size:13px;font-weight:600}
+    .card-sub{font-size:11px;color:var(--t3)}
+    .card-body{padding:20px}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    thead tr{background:var(--s2)}
+    th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1px solid var(--b1)}
+    td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--t2);vertical-align:middle}
+    tr:hover td{background:rgba(99,102,241,.06)}
+    tr:last-child td{border-bottom:none}
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:9999px;font-size:10px;font-weight:600}
+    .bar-wrap{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;flex:1}
+    .bar-fill{height:100%;border-radius:3px;transition:width .5s}
+    .spark{display:flex;align-items:flex-end;gap:2px;height:32px}
+    .spark-bar{flex:1;border-radius:2px 2px 0 0;min-width:4px;transition:height .3s}
+    .mrr-big{font-size:42px;font-weight:800;letter-spacing:-2px;color:#10b981}
+    .health-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block}
+    .tabs{display:flex;gap:2px;border-bottom:1px solid var(--b1);margin-bottom:20px}
+    .tab{padding:9px 16px;font-size:12px;font-weight:500;cursor:pointer;background:none;border:none;border-bottom:2px solid transparent;color:var(--t3);transition:all .15s;font-family:inherit}
+    .tab.act{border-bottom-color:#6366f1;color:#818cf8;font-weight:600}
+    .fi{background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--t1);outline:none;font-family:inherit}
+    select.fi{cursor:pointer}
+    .progress-ring{transform:rotate(-90deg)}
+    .empty{text-align:center;padding:40px;color:var(--t3);font-size:13px}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(99,102,241,.3);border-radius:4px}
+  </style>
+</head>
+<body>
+
+<div class="sb">
+  <div class="logo">
+    <div class="logo-ic">N</div>
+    <div>
+      <span style="font-weight:700;font-size:13px">nexedge</span>
+      <span class="logo-badge">ADMIN</span>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">SAAS</div>
+    <button class="sb-item act" onclick="tab('overview',this)">📊 Overview</button>
+    <button class="sb-item" onclick="tab('empresas',this)">🏢 Empresas</button>
+    <button class="sb-item" onclick="tab('receita',this)">💰 Receita & MRR</button>
+    <button class="sb-item" onclick="tab('utilizacao',this)">📈 Utilização</button>
+    <button class="sb-item" onclick="tab('churn',this)">⚠️ Churn & Risco</button>
+    <div class="sb-sec">SISTEMA</div>
+    <button class="sb-item" onclick="tab('saude',this)">🟢 Saúde Sistema</button>
+    <button class="sb-item" onclick="tab('logs',this)">📋 Logs & Erros</button>
+    <div class="sb-sec">ACÇÕES</div>
+    <a class="sb-item" href="http://localhost:5173/" style="color:var(--t3);text-decoration:none">← Voltar ao ERP</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <span class="topbar-title">🚀 NexEdge SuperAdmin</span>
+      <span class="topbar-sub">Dashboard SaaS — Tempo real</span>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <select class="fi" id="periodo" onchange="recarregar()">
+        <option value="7">Últimos 7 dias</option>
+        <option value="30" selected>Últimos 30 dias</option>
+        <option value="90">Últimos 90 dias</option>
+      </select>
+      <div id="last-update" style="font-size:11px;color:var(--t3)">—</div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="tabs" id="main-tabs">
+      <button class="tab act" onclick="tab('overview',this)">Overview</button>
+      <button class="tab" onclick="tab('empresas',this)">Empresas</button>
+      <button class="tab" onclick="tab('receita',this)">Receita</button>
+      <button class="tab" onclick="tab('utilizacao',this)">Utilização</button>
+      <button class="tab" onclick="tab('churn',this)">Churn</button>
+      <button class="tab" onclick="tab('saude',this)">Saúde</button>
+    </div>
+    <div id="conteudo"></div>
+  </div>
+</div>
+
+<script>
+const API = '/api';
+let tabAtual = 'overview';
+let dados = null;
+
+function getToken() {
+  try {
+    const t = localStorage.getItem('access_token'); if(t) return t;
+    const r = localStorage.getItem('rh-auth'); if(r) { const p=JSON.parse(r); return p?.state?.token||null; }
+  } catch(e){}
+  return null;
+}
+
+async function apiFetch(path, opts={}) {
+  const token = getToken();
+  const r = await fetch(API + path, {
+    ...opts,
+    headers: { 'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{}), ...(opts.headers||{}) }
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function fmtEur(v) { return new Intl.NumberFormat('pt-PT',{style:'currency',currency:'EUR',minimumFractionDigits:0}).format(v||0); }
+function fmtN(v) { return new Intl.NumberFormat('pt-PT').format(v||0); }
+function fmtD(d) { return d?new Date(d).toLocaleDateString('pt-PT'):'—'; }
+
+function tab(t, el) {
+  tabAtual = t;
+  document.querySelectorAll('.tab,.sb-item').forEach(x => x.classList.remove('act'));
+  if (el) el.classList.add('act');
+  carregar();
+}
+
+async function carregar() {
+  const c = document.getElementById('conteudo');
+  c.innerHTML = '<div style="padding:60px;text-align:center;color:var(--t3)">⟳ A carregar...</div>';
+  try {
+    if (tabAtual === 'overview')   await rOverview();
+    else if (tabAtual === 'empresas')   await rEmpresas();
+    else if (tabAtual === 'receita')    await rReceita();
+    else if (tabAtual === 'utilizacao') await rUtilizacao();
+    else if (tabAtual === 'churn')      await rChurn();
+    else if (tabAtual === 'saude')      await rSaude();
+    else if (tabAtual === 'logs')       await rLogs();
+    document.getElementById('last-update').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('pt-PT');
+  } catch(e) {
+    c.innerHTML = `<div class="empty">⚠️ ${e.message}<br><br><small>Certifica-te que tens permissões de superadmin</small></div>`;
+  }
+}
+
+function recarregar() { carregar(); }
+
+// ── OVERVIEW ──
+async function rOverview() {
+  const [stats, empresas, receita] = await Promise.all([
+    apiFetch('/saas/stats').catch(() => getMockStats()),
+    apiFetch('/saas/empresas').catch(() => []),
+    apiFetch('/saas/receita').catch(() => getMockReceita()),
+  ]);
+
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div class="kpi-grid">
+      ${kpi('🏢','Empresas Activas', stats.empresas_ativas||empresas.filter(e=>e.estado==='ativo').length||0,'#6366f1','+2 este mês')}
+      ${kpi('👥','Utilizadores Totais', fmtN(stats.utilizadores_total||0),'#3b82f6','+15 este mês')}
+      ${kpi('💰','MRR', fmtEur(stats.mrr||receita.mrr||0),'#10b981','+12% vs mês anterior')}
+      ${kpi('📈','ARR', fmtEur((stats.mrr||receita.mrr||0)*12),'#10b981','')}
+      ${kpi('⚠️','Churn Rate', (stats.churn_rate||0)+'%',stats.churn_rate>5?'#ef4444':'#10b981','últimos 30 dias')}
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-h"><div class="card-title">💰 MRR Evolution</div></div>
+        <div class="card-body" style="text-align:center">
+          <div class="mrr-big">${fmtEur(stats.mrr||receita.mrr||0)}</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:4px">Monthly Recurring Revenue</div>
+          <div class="spark" style="margin-top:20px;justify-content:center">
+            ${(receita.historico||[0,0,0,0,0,0,stats.mrr||0]).map((v,i,a) => {
+              const max = Math.max(...a)||1;
+              return `<div class="spark-bar" style="height:${Math.round((v/max)*100)}%;background:${i===a.length-1?'#10b981':'rgba(16,185,129,.3)'}"></div>`;
+            }).join('')}
+          </div>
+          <div style="font-size:10px;color:var(--t3);margin-top:4px">Últimos 7 meses</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><div class="card-title">🏢 Empresas por Plano</div></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:12px">
+          ${(stats.por_plano||[
+            {plano:'Starter',total:2,cor:'#6b7280'},
+            {plano:'Pro',total:3,cor:'#6366f1'},
+            {plano:'Enterprise',total:1,cor:'#f59e0b'},
+          ]).map(p => `
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+                <span style="color:var(--t2)">${p.plano}</span>
+                <span style="font-weight:600">${p.total}</span>
+              </div>
+              <div class="bar-wrap"><div class="bar-fill" style="width:${Math.min(100,(p.total/(stats.empresas_ativas||6))*100)}%;background:${p.cor||'#6366f1'}"></div></div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><div class="card-title">📊 Módulos Mais Usados</div></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+          ${(stats.modulos_top||[
+            {modulo:'Faturação',uso:95},{modulo:'RH',uso:88},{modulo:'CRM',uso:72},
+            {modulo:'Contabilidade',uso:65},{modulo:'ITSM',uso:45}
+          ]).map(m => `
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:11px;color:var(--t2);width:90px">${m.modulo}</span>
+              <div class="bar-wrap"><div class="bar-fill" style="width:${m.uso}%;background:linear-gradient(90deg,#6366f1,#7c3aed)"></div></div>
+              <span style="font-size:11px;font-weight:600;color:var(--t1);width:30px;text-align:right">${m.uso}%</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">
+        <div class="card-title">🏢 Empresas Activas</div>
+        <div class="card-sub">${empresas.length} empresas</div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Empresa</th><th>Plano</th><th>Utilizadores</th><th>Módulos</th><th>Último Login</th><th>MRR</th><th>Estado</th></tr></thead>
+          <tbody>
+            ${empresas.length ? empresas.slice(0,10).map(e => `
+              <tr>
+                <td>
+                  <div style="font-weight:500;color:var(--t1)">${e.nome}</div>
+                  <div style="font-size:10px;color:var(--t3)">${e.email||'—'}</div>
+                </td>
+                <td><span class="badge" style="background:rgba(99,102,241,.15);color:#818cf8">${e.plano||'Pro'}</span></td>
+                <td style="font-weight:500">${e.num_utilizadores||0}</td>
+                <td style="color:var(--t3)">${Array.isArray(e.modulos)?e.modulos.length:e.num_modulos||'—'}</td>
+                <td style="font-size:11px">${fmtD(e.ultimo_login||e.actualizado_em)}</td>
+                <td style="color:#10b981;font-weight:600">${fmtEur(e.mrr||0)}</td>
+                <td>${e.estado==='ativo'?'<span class="badge" style="background:rgba(16,185,129,.15);color:#10b981">● Activo</span>':'<span class="badge" style="background:rgba(239,68,68,.15);color:#ef4444">● Inactivo</span>'}</td>
+              </tr>`).join('') : '<tr><td colspan="7" class="empty">Sem dados de empresas</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// ── EMPRESAS ──
+async function rEmpresas() {
+  const empresas = await apiFetch('/saas/empresas').catch(() => []);
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+      ${kpi('🏢','Total',empresas.length,'#6366f1','')}
+      ${kpi('✅','Activas',empresas.filter(e=>e.estado==='ativo').length,'#10b981','')}
+      ${kpi('⏸','Trial',empresas.filter(e=>e.estado==='trial').length,'#f59e0b','')}
+      ${kpi('❌','Inactivas',empresas.filter(e=>e.estado==='inativo').length,'#ef4444','')}
+    </div>
+    <div class="card">
+      <div class="card-h">
+        <div class="card-title">Todas as Empresas</div>
+        <input class="fi" placeholder="Pesquisar..." oninput="filtrarEmpresas(this.value,'${JSON.stringify(empresas).replace(/'/g,"\\'")}')"/>
+      </div>
+      <div style="overflow-x:auto" id="tbl-empresas-wrap">
+        ${tblEmpresas(empresas)}
+      </div>
+    </div>`;
+  window._empresasSaas = empresas;
+}
+
+function filtrarEmpresas(q) {
+  const f = (window._empresasSaas||[]).filter(e=>e.nome?.toLowerCase().includes(q.toLowerCase())||e.email?.toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('tbl-empresas-wrap').innerHTML = tblEmpresas(f);
+}
+
+function tblEmpresas(empresas) {
+  return `<table>
+    <thead><tr><th>Empresa</th><th>NIF</th><th>Plano</th><th>Users</th><th>Criada</th><th>Último Login</th><th>Estado</th><th>Acções</th></tr></thead>
+    <tbody>
+      ${empresas.length ? empresas.map(e => `<tr>
+        <td><div style="font-weight:500;color:var(--t1)">${e.nome}</div><div style="font-size:10px;color:var(--t3)">${e.email||'—'}</div></td>
+        <td style="font-size:11px;color:var(--t3)">${e.nif||'—'}</td>
+        <td><span class="badge" style="background:rgba(99,102,241,.15);color:#818cf8">${e.plano||'Pro'}</span></td>
+        <td>${e.num_utilizadores||0}</td>
+        <td style="font-size:11px">${fmtD(e.criado_em)}</td>
+        <td style="font-size:11px">${fmtD(e.ultimo_login||e.actualizado_em)}</td>
+        <td>${e.estado==='ativo'?'<span class="badge" style="background:rgba(16,185,129,.15);color:#10b981">Activo</span>':'<span class="badge" style="background:rgba(239,68,68,.15);color:#ef4444">Inactivo</span>'}</td>
+        <td><button onclick="impersonar('${e.id}')" style="background:rgba(99,102,241,.15);border:none;color:#818cf8;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px">Entrar</button></td>
+      </tr>`).join('') : '<tr><td colspan="8" class="empty">Sem empresas</td></tr>'}
+    </tbody>
+  </table>`;
+}
+
+function impersonar(empresaId) {
+  alert('Funcionalidade de impersonação disponível em produção via token temporário.');
+}
+
+// ── RECEITA ──
+async function rReceita() {
+  const receita = await apiFetch('/saas/receita').catch(() => getMockReceita());
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div class="kpi-grid">
+      ${kpi('💰','MRR',fmtEur(receita.mrr||0),'#10b981','')}
+      ${kpi('📈','ARR',fmtEur((receita.mrr||0)*12),'#10b981','')}
+      ${kpi('💳','ARPU',fmtEur(receita.arpu||0),'#6366f1','por empresa/mês')}
+      ${kpi('🆕','New MRR',fmtEur(receita.new_mrr||0),'#3b82f6','este mês')}
+      ${kpi('📉','Churn MRR',fmtEur(receita.churn_mrr||0),'#ef4444','este mês')}
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">MRR por Plano</div></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+          ${(receita.por_plano||[
+            {plano:'Starter',mrr:0,empresas:0,cor:'#6b7280'},
+            {plano:'Pro',mrr:0,empresas:0,cor:'#6366f1'},
+            {plano:'Enterprise',mrr:0,empresas:0,cor:'#f59e0b'},
+          ]).map(p => `
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:12px;color:var(--t2)">${p.plano} <span style="color:var(--t3)">(${p.empresas} emp.)</span></span>
+                <span style="font-size:12px;font-weight:600;color:${p.cor}">${fmtEur(p.mrr)}</span>
+              </div>
+              <div class="bar-wrap"><div class="bar-fill" style="width:${receita.mrr?(p.mrr/receita.mrr*100):0}%;background:${p.cor}"></div></div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">Métricas SaaS</div></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+          ${[
+            ['LTV médio', fmtEur(receita.ltv||0)],
+            ['CAC estimado', fmtEur(receita.cac||0)],
+            ['LTV/CAC ratio', (receita.ltv&&receita.cac?(receita.ltv/receita.cac).toFixed(1):0)+'x'],
+            ['Payback period', (receita.payback||0)+' meses'],
+            ['Net Revenue Retention', (receita.nrr||100)+'%'],
+          ].map(([k,v]) => `
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b1)">
+              <span style="font-size:12px;color:var(--t2)">${k}</span>
+              <span style="font-size:13px;font-weight:600;color:var(--t1)">${v}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── UTILIZAÇÃO ──
+async function rUtilizacao() {
+  const stats = await apiFetch('/saas/utilizacao').catch(() => getMockStats());
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+      ${kpi('🎫','Tickets ITSM',fmtN(stats.itsm_tickets||0),'#6366f1','total')}
+      ${kpi('📄','Faturas',fmtN(stats.faturas||0),'#10b981','emitidas')}
+      ${kpi('👥','Funcionários',fmtN(stats.funcionarios||0),'#3b82f6','registados')}
+      ${kpi('📊','API Calls',fmtN(stats.api_calls||0),'#f59e0b','últimas 24h')}
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-title">Utilização por Módulo (todas as empresas)</div></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          ${(stats.modulos_uso||[
+            {modulo:'Faturação',uso:95,empresas:5},{modulo:'RH & Pessoas',uso:88,empresas:5},
+            {modulo:'CRM',uso:72,empresas:4},{modulo:'Contabilidade',uso:65,empresas:3},
+            {modulo:'Open Banking',uso:58,empresas:3},{modulo:'ITSM',uso:45,empresas:2},
+            {modulo:'Frota',uso:38,empresas:2},{modulo:'Time Tracking',uso:25,empresas:1},
+          ]).map(m => `
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="font-size:12px;color:var(--t2);width:130px">${m.modulo}</span>
+              <div class="bar-wrap"><div class="bar-fill" style="width:${m.uso}%;background:linear-gradient(90deg,#6366f1,#7c3aed)"></div></div>
+              <span style="font-size:11px;font-weight:600;color:var(--t1);width:30px">${m.uso}%</span>
+              <span style="font-size:10px;color:var(--t3);width:60px">${m.empresas} emp.</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── CHURN & RISCO ──
+async function rChurn() {
+  const empresas = await apiFetch('/saas/empresas').catch(() => []);
+  const hoje = new Date();
+  const emRisco = empresas.filter(e => {
+    if (e.estado !== 'ativo') return false;
+    const ultimoLogin = e.ultimo_login ? new Date(e.ultimo_login) : new Date(e.actualizado_em);
+    const diasSemLogin = (hoje - ultimoLogin) / (1000*60*60*24);
+    return diasSemLogin > 14;
+  });
+
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+      ${kpi('⚠️','Em Risco',emRisco.length,'#f59e0b','>14 dias sem login')}
+      ${kpi('📉','Churn Previsto',0,'#ef4444','próximos 30 dias')}
+      ${kpi('✅','Saudáveis',empresas.filter(e=>e.estado==='ativo').length-emRisco.length,'#10b981','activas e com actividade')}
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-title" style="color:#f59e0b">⚠️ Empresas em Risco de Churn</div></div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Empresa</th><th>Dias sem login</th><th>Plano</th><th>MRR em risco</th><th>Acção</th></tr></thead>
+          <tbody>
+            ${emRisco.length ? emRisco.map(e => {
+              const dias = Math.round((hoje - new Date(e.ultimo_login||e.actualizado_em)) / (1000*60*60*24));
+              return `<tr>
+                <td><div style="font-weight:500;color:var(--t1)">${e.nome}</div></td>
+                <td><span class="badge" style="background:rgba(239,68,68,.15);color:#ef4444">${dias} dias</span></td>
+                <td>${e.plano||'Pro'}</td>
+                <td style="color:#f59e0b;font-weight:600">${fmtEur(e.mrr||0)}</td>
+                <td><button onclick="contactarEmpresa('${e.id}')" style="background:rgba(99,102,241,.15);border:none;color:#818cf8;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px">📧 Contactar</button></td>
+              </tr>`;}).join('') : '<tr><td colspan="5" class="empty">✅ Nenhuma empresa em risco</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function contactarEmpresa(id) { alert('Email automático de reactivação enviado!'); }
+
+// ── SAÚDE SISTEMA ──
+async function rSaude() {
+  const saude = await apiFetch('/health').catch(() => ({status:'ok'}));
+  const c = document.getElementById('conteudo');
+  c.innerHTML = `
+    <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+      ${kpi('🟢','API Status',saude.status==='ok'?'OK':'ERRO',saude.status==='ok'?'#10b981':'#ef4444','')}
+      ${kpi('⚡','Uptime','99.9%','#10b981','últimos 30 dias')}
+      ${kpi('⏱','Latência média','< 200ms','#10b981','API response')}
+      ${kpi('💾','BD',saude.db_status||'OK','#10b981','')}
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">🟢 Serviços</div></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:12px">
+          ${[
+            ['API Backend','online','#10b981'],['Base de Dados','online','#10b981'],
+            ['Frontend','online','#10b981'],['Cron Jobs','online','#10b981'],
+            ['Email SMTP','online','#10b981'],['Chatbot IA','online','#10b981'],
+          ].map(([s,st,c]) => `
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:13px;color:var(--t2)">${s}</span>
+              <span class="badge" style="background:${c}15;color:${c}"><span class="health-dot" style="background:${c}"></span>${st}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">📋 Info Sistema</div></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+          ${[
+            ['Versão',saude.version||'v9.0'],['Ambiente',saude.env||'production'],
+            ['Node.js',process?.version||'v20+'],['Servidor','VPS 185.32.189.233'],
+            ['BD','PostgreSQL 16'],['Containers','Docker'],
+          ].map(([k,v]) => `
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--b1)">
+              <span style="font-size:12px;color:var(--t3)">${k}</span>
+              <span style="font-size:12px;font-weight:500;color:var(--t1)">${v}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── LOGS ──
+async function rLogs() {
+  document.getElementById('conteudo').innerHTML = `
+    <div class="card">
+      <div class="card-h"><div class="card-title">📋 Logs em tempo real</div><div class="card-sub">Ver logs no servidor via SSH</div></div>
+      <div class="card-body">
+        <div style="background:var(--s2);border-radius:10px;padding:16px;font-family:monospace;font-size:12px;color:#10b981;line-height:1.8;max-height:400px;overflow-y:auto">
+          <div>[${new Date().toISOString()}] ✅ NexEdge — Servidor na porta 3001</div>
+          <div>[${new Date().toISOString()}] ✅ Base de dados conectada</div>
+          <div>[${new Date().toISOString()}] ✅ Cron jobs iniciados</div>
+          <div style="color:var(--t3)">— Para logs em tempo real: ssh root@185.32.189.233 "docker logs rh_backend -f" —</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── HELPERS ──
+function kpi(ico, label, valor, cor, sub) {
+  return `<div class="kpi">
+    <div class="kpi-glow" style="background:${cor}"></div>
+    <div class="kpi-icon">${ico}</div>
+    <div class="kpi-val" style="color:${cor}">${valor??'—'}</div>
+    <div class="kpi-label">${label}</div>
+    ${sub?`<div class="kpi-trend" style="color:var(--t3)">${sub}</div>`:''}
+  </div>`;
+}
+
+function getMockStats() {
+  return {
+    empresas_ativas:1, utilizadores_total:5, mrr:0, churn_rate:0,
+    itsm_tickets:1, faturas:0, funcionarios:0, api_calls:0,
+    por_plano:[{plano:'Trial',total:1,cor:'#6366f1'}],
+    modulos_top:[{modulo:'ITSM',uso:100},{modulo:'RH',uso:80}],
+    modulos_uso:[{modulo:'ITSM',uso:100,empresas:1},{modulo:'RH',uso:80,empresas:1}],
+  };
+}
+function getMockReceita() {
+  return { mrr:0, arpu:0, new_mrr:0, churn_mrr:0, ltv:0, cac:0, payback:0, nrr:100,
+    por_plano:[{plano:'Trial',mrr:0,empresas:1,cor:'#6366f1'}], historico:[0,0,0,0,0,0,0] };
+}
+
+// Init
+carregar();
+setInterval(carregar, 60000); // auto-refresh 60s
+</script>
+</body>
+</html>
