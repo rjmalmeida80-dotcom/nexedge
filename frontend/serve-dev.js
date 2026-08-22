@@ -29,6 +29,8 @@ const ESPECIAIS = {
   '/relatorios-bi/':     path.join(__dirname, 'relatorios-bi.html'),
   '/projectos':          path.join(__dirname, 'projectos.html'),
   '/logistica': path.join(__dirname, 'logistica.html'),
+  '/wms': path.join(__dirname, 'wms.html'),
+  '/wms/': path.join(__dirname, 'wms.html'),
   '/medialoop-admin': path.join(__dirname, 'medialoop-admin.html'),
   '/senhas-admin': path.join(__dirname, 'senhas-admin.html'),
   '/quiosque': path.join(__dirname, 'quiosque.html'),

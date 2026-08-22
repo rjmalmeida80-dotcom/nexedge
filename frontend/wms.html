@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NexEdge WMS — Gestão de Armazém</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F1F5F9;--s1:#fff;--s2:#F8FAFC;--s3:#E2E8F0;--b1:rgba(0,0,0,.07);--t1:#0F172A;--t2:#475569;--t3:#94A3B8;--in:#059669;--gr:#10B981;--re:#EF4444;--am:#F59E0B;--bl:#3B82F6;--pu:#8B5CF6}
+body{font-family:Inter,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex}
+.sb{width:230px;background:linear-gradient(180deg,#052e16,#064e3b);border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;bottom:0;left:0;overflow-y:auto}
+.logo{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
+.logo-ic{width:36px;height:36px;background:linear-gradient(135deg,#10b981,#059669);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0}
+.logo-tx{color:#fff;font-weight:700;font-size:14px}
+.logo-sub{font-size:9px;background:rgba(16,185,129,.3);color:#6ee7b7;padding:2px 7px;border-radius:4px;margin-top:2px}
+.sb-nav{flex:1;padding:8px 6px}
+.sb-sec{font-size:9px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.2);padding:12px 8px 4px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.45);font-size:12.5px;border:none;border-left:2px solid transparent;background:none;width:100%;text-align:left;font-family:inherit;transition:all .12s;margin:1px 0}
+.sb-item:hover{background:rgba(16,185,129,.12);color:rgba(255,255,255,.85)}
+.sb-item.act{background:rgba(16,185,129,.2);border-left-color:#10b981;color:#fff;font-weight:600}
+.sb-badge{background:#ef4444;color:#fff;border-radius:9999px;padding:1px 6px;font-size:9px;font-weight:700;margin-left:auto}
+.main{margin-left:230px;flex:1;display:flex;flex-direction:column}
+.topbar{height:56px;background:#fff;border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.topbar-title{font-size:15px;font-weight:700}
+.content{padding:24px;flex:1}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:#fff;border:1px solid var(--b1);border-radius:12px;padding:16px;border-top:3px solid var(--gr);transition:all .15s}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.kpi-val{font-size:26px;font-weight:800;letter-spacing:-1px;margin-bottom:2px}
+.kpi-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em}
+.card{background:#fff;border:1px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card-h{padding:14px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:13px;font-weight:600}
+.card-body{padding:20px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1px solid var(--b1);background:var(--s2)}
+td{padding:11px 14px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa;cursor:pointer}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:9999px;font-size:10px;font-weight:600}
+.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.btn-primary{background:linear-gradient(135deg,#059669,#10b981);color:#fff;box-shadow:0 2px 8px rgba(16,185,129,.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,185,129,.4)}
+.btn-secondary{background:var(--s2);color:var(--t2);border:1px solid var(--s3)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-danger{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
+.btn-warning{background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)}
+.fi{padding:9px 12px;border:1.5px solid var(--s3);border-radius:9px;font-size:13px;color:var(--t1);outline:none;font-family:inherit;background:#fff;width:100%;transition:border-color .15s}
+.fi:focus{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.1)}
+.fl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);display:block;margin-bottom:5px}
+.fg{margin-bottom:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:640px;overflow:hidden;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+.modal-h{padding:18px 24px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center;background:var(--s2)}
+.modal-title{font-size:15px;font-weight:700}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--t3);font-size:22px}
+.modal-b{padding:24px;max-height:70vh;overflow-y:auto}
+.modal-f{padding:14px 24px;border-top:1px solid var(--b1);display:flex;gap:8px;justify-content:flex-end;background:var(--s2)}
+.zona-card{background:#fff;border:1px solid var(--b1);border-radius:12px;overflow:hidden;transition:all .15s;cursor:pointer}
+.zona-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.zona-header{padding:16px;display:flex;align-items:center;gap:12px}
+.zona-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0}
+.zona-body{padding:0 16px 16px}
+.progress-bar{height:8px;background:var(--s3);border-radius:4px;overflow:hidden;margin-top:8px}
+.progress-fill{height:100%;border-radius:4px;transition:width .5s}
+.alerta-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--b1)}
+.alerta-item:last-child{border-bottom:none}
+.alerta-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.empty{text-align:center;padding:48px;color:var(--t3);font-size:13px}
+select.fi{cursor:pointer}
+textarea.fi{resize:vertical;min-height:70px}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:4px}
+</style>
+</head>
+<body>
+
+<div class="sb">
+  <div class="logo">
+    <div class="logo-ic">🏭</div>
+    <div>
+      <div class="logo-tx">NexEdge WMS</div>
+      <div class="logo-sub">ARMAZÉM</div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">OPERAÇÕES</div>
+    <button class="sb-item act" onclick="tab('dashboard',this)">📊 Dashboard</button>
+    <button class="sb-item" onclick="tab('recepcao',this)">📥 Recepção</button>
+    <button class="sb-item" onclick="tab('picking',this)">🧺 Picking</button>
+    <button class="sb-item" onclick="tab('expedicao',this)">🚚 Expedição</button>
+    <div class="sb-sec">ARMAZÉM</div>
+    <button class="sb-item" onclick="tab('zonas',this)">🗺 Zonas</button>
+    <button class="sb-item" onclick="tab('localizacoes',this)">📍 Localizações</button>
+    <button class="sb-item" onclick="tab('stock',this)">📦 Stock <span class="sb-badge" id="badge-alertas" style="display:none">!</span></button>
+    <div class="sb-sec">CONTROLO</div>
+    <button class="sb-item" onclick="tab('inventario',this)">📋 Inventário</button>
+    <button class="sb-item" onclick="tab('movimentos',this)">🔄 Movimentos</button>
+    <button class="sb-item" onclick="tab('analytics',this)">📈 Analytics</button>
+    <div class="sb-sec">IA</div>
+    <button class="sb-item" onclick="tab('ia',this)">🤖 Optimização IA</button>
+    <div class="sb-sec">LINKS</div>
+    <a class="sb-item" href="/logistica" style="text-decoration:none;color:rgba(255,255,255,.45)">🚚 Logística</a>
+    <a class="sb-item" href="/" style="text-decoration:none;color:rgba(255,255,255,.45)">← ERP</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">📊 Dashboard WMS</div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn btn-secondary" onclick="tab('ia',null)">🤖 IA Optimizar</button>
+      <button class="btn btn-primary" onclick="acaoRapida()">+ Acção Rápida</button>
+    </div>
+  </div>
+  <div class="content" id="conteudo"><div class="empty">A carregar...</div></div>
+</div>
+<div id="modal-area"></div>
+
+<script>
+const API = '/api/wms';
+let tabAtual = 'dashboard';
+
+function getToken(){
+  try{const t=localStorage.getItem('access_token');if(t)return t;const r=localStorage.getItem('rh-auth');if(r)return JSON.parse(r)?.state?.token;}catch(e){}return null;
+}
+
+async function apiFetch(path,opts={}){
+  const token=getToken();
+  const r=await fetch((path.startsWith('/')?'':API+'/') + path, {
+    ...opts,
+    headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{}),...(opts.headers||{})}
+  });
+  if(!r.ok)throw new Error(await r.text());
+  return r.json();
+}
+
+function fmtN(n,dec=0){return n!=null?parseFloat(n).toLocaleString('pt-PT',{minimumFractionDigits:dec,maximumFractionDigits:dec}):'—';}
+function fmtEur(v){return v!=null?new Intl.NumberFormat('pt-PT',{style:'currency',currency:'EUR'}).format(v):'—';}
+function fmtD(d){return d?new Date(d).toLocaleDateString('pt-PT'):'—';}
+function fmtDT(d){return d?new Date(d).toLocaleString('pt-PT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';}
+
+const TIPO_COR={recepcao:'#3b82f6',picking:'#f59e0b',expedicao:'#8b5cf6',transferencia:'#06b6d4',ajuste_inventario:'#6b7280',devolucao:'#ef4444',quebra:'#ef4444'};
+const TIPO_ZONA={recepcao:'📥',armazenagem:'📦',picking:'🧺',expedicao:'🚚',quarentena:'⚠️',devolucoes:'↩️',frigorifico:'❄️',perigos:'☢️'};
+const COR_ZONA={recepcao:'#3b82f6',armazenagem:'#10b981',picking:'#f59e0b',expedicao:'#8b5cf6',quarentena:'#ef4444',devolucoes:'#6b7280',frigorifico:'#06b6d4',perigos:'#dc2626'};
+
+function tab(t,el){
+  tabAtual=t;
+  document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('act'));
+  if(el)el.classList.add('act');
+  document.getElementById('conteudo').innerHTML='<div class="empty">⟳ A carregar...</div>';
+  carregar();
+}
+
+async function carregar(){
+  try{
+    if(tabAtual==='dashboard') await rDashboard();
+    else if(tabAtual==='zonas') await rZonas();
+    else if(tabAtual==='localizacoes') await rLocalizacoes();
+    else if(tabAtual==='stock') await rStock();
+    else if(tabAtual==='recepcao') await rRecepcao();
+    else if(tabAtual==='picking') await rPicking();
+    else if(tabAtual==='expedicao') await rExpedicao();
+    else if(tabAtual==='inventario') await rInventario();
+    else if(tabAtual==='movimentos') await rMovimentos();
+    else if(tabAtual==='analytics') await rAnalytics();
+    else if(tabAtual==='ia') await rIA();
+    else document.getElementById('conteudo').innerHTML='<div class="empty">Em breve...</div>';
+  }catch(e){document.getElementById('conteudo').innerHTML=`<div class="empty">⚠️ ${e.message}</div>`;}
+}
+
+// ── DASHBOARD ──
+async function rDashboard(){
+  document.getElementById('topbar-title').textContent='📊 Dashboard WMS';
+  const d = await apiFetch(API+'/dashboard');
+
+  if(parseInt(d.alertas?.length||0)>0){
+    const b=document.getElementById('badge-alertas');
+    b.style.display='';b.textContent=d.alertas.length;
+  }
+
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div class="kpi-grid">
+      <div class="kpi" style="border-top-color:#3b82f6"><div class="kpi-val" style="color:#3b82f6">${d.kpis?.recepcoes_hoje||0}</div><div class="kpi-label">📥 Recepções Hoje</div></div>
+      <div class="kpi" style="border-top-color:#f59e0b"><div class="kpi-val" style="color:#f59e0b">${d.kpis?.pickings_hoje||0}</div><div class="kpi-label">🧺 Pickings Hoje</div></div>
+      <div class="kpi" style="border-top-color:#8b5cf6"><div class="kpi-val" style="color:#8b5cf6">${d.kpis?.expedicoes_hoje||0}</div><div class="kpi-label">🚚 Expedições Hoje</div></div>
+      <div class="kpi" style="border-top-color:#ef4444"><div class="kpi-val" style="color:#ef4444">${d.kpis?.tarefas_pendentes||0}</div><div class="kpi-label">⏳ Tarefas Pendentes</div></div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-h">
+          <div class="card-title">📦 Stock do Armazém</div>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;text-align:center">
+            <div><div style="font-size:28px;font-weight:800;color:#10b981">${fmtN(d.stock?.num_produtos)}</div><div style="font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase">Produtos</div></div>
+            <div><div style="font-size:28px;font-weight:800;color:#3b82f6">${fmtN(d.stock?.unidades_total)}</div><div style="font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase">Unidades</div></div>
+            <div><div style="font-size:22px;font-weight:800;color:#8b5cf6">${fmtEur(d.stock?.valor_total)}</div><div style="font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase">Valor Stock</div></div>
+          </div>
+          <div style="margin-top:20px">
+            <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;margin-bottom:10px">Top Produtos por Valor</div>
+            ${d.top_produtos?.map(p=>`
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--b1)">
+                <div>
+                  <div style="font-size:12px;font-weight:500">${p.nome}</div>
+                  <div style="font-size:11px;color:var(--t3)">${p.referencia||'—'}</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:12px;font-weight:600;color:#10b981">${fmtEur(p.valor_stock)}</div>
+                  <div style="font-size:11px;color:var(--t3)">${fmtN(p.stock_total)} un.</div>
+                </div>
+              </div>`).join('')||'<div style="color:var(--t3);font-size:12px;text-align:center;padding:16px">Sem produtos em stock</div>'}
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h">
+          <div class="card-title">⚠️ Alertas Activos (${d.alertas?.length||0})</div>
+          <button class="btn btn-sm btn-secondary" onclick="tab('stock',null)">Ver Stock</button>
+        </div>
+        ${d.alertas?.length ? d.alertas.map(a=>`
+          <div class="alerta-item">
+            <div class="alerta-icon" style="background:${a.prioridade==='alta'?'rgba(239,68,68,.12)':'rgba(245,158,11,.12)'}">
+              ${a.tipo==='stock_minimo'?'📦':a.tipo==='validade_proxima'?'⏰':'⚠️'}
+            </div>
+            <div style="flex:1">
+              <div style="font-size:12px;font-weight:500">${a.produto_nome||'—'}</div>
+              <div style="font-size:11px;color:var(--t3)">${a.mensagem}</div>
+            </div>
+            <button class="btn btn-sm" style="background:rgba(16,185,129,.1);color:#10b981;border:1px solid rgba(16,185,129,.2)" onclick="resolverAlerta('${a.id}')">✓</button>
+          </div>`).join('') : '<div class="empty" style="padding:32px"><div style="font-size:28px;margin-bottom:8px">✅</div>Sem alertas activos</div>'}
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">🗺 Ocupação por Zona</div></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+          ${d.ocupacao_zonas?.map(z=>`
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span>${TIPO_ZONA[z.tipo]||'📦'}</span>
+                  <span style="font-size:12px;font-weight:500">${z.nome}</span>
+                </div>
+                <span style="font-size:12px;font-weight:600;color:${parseFloat(z.taxa_ocupacao||0)>80?'#ef4444':parseFloat(z.taxa_ocupacao||0)>60?'#f59e0b':'#10b981'}">${z.taxa_ocupacao||0}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:${z.taxa_ocupacao||0}%;background:${parseFloat(z.taxa_ocupacao||0)>80?'#ef4444':parseFloat(z.taxa_ocupacao||0)>60?'#f59e0b':'#10b981'}"></div>
+              </div>
+              <div style="font-size:10px;color:var(--t3);margin-top:3px">${z.ocupadas||0} / ${z.total_localizacoes||0} localizações</div>
+            </div>`).join('')||'<div style="color:var(--t3);text-align:center;padding:16px">Sem zonas configuradas</div>'}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><div class="card-title">🔄 Movimentos Recentes</div></div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Tipo</th><th>Produto</th><th>Qtd</th><th>Localização</th><th>Operador</th></tr></thead>
+          <tbody>${d.movimentos_recentes?.map(m=>`<tr>
+            <td><span class="badge" style="background:${TIPO_COR[m.tipo]||'#6b7280'}15;color:${TIPO_COR[m.tipo]||'#6b7280'}">${m.tipo?.replace('_',' ')}</span></td>
+            <td style="font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.produto_nome||'—'}</td>
+            <td style="font-weight:600">${fmtN(m.quantidade,2)}</td>
+            <td style="font-family:monospace;font-size:11px">${m.localizacao_codigo||'—'}</td>
+            <td style="font-size:11px">${m.operador_nome?.split(' ')[0]||'—'}</td>
+          </tr>`).join('')||'<tr><td colspan="5" class="empty">Sem movimentos</td></tr>'}</tbody>
+        </table></div>
+      </div>
+    </div>`;
+}
+
+// ── ZONAS ──
+async function rZonas(){
+  document.getElementById('topbar-title').textContent='🗺 Zonas do Armazém';
+  const zonas = await apiFetch(API+'/zonas');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px;gap:8px">
+      <button class="btn btn-primary" onclick="modalNovaZona()">+ Nova Zona</button>
+    </div>
+    <div class="grid-3">
+      ${zonas.map(z=>`
+        <div class="zona-card" onclick="verZona('${z.id}')">
+          <div class="zona-header">
+            <div class="zona-icon" style="background:${COR_ZONA[z.tipo]||z.cor||'#10b981'}">${TIPO_ZONA[z.tipo]||'📦'}</div>
+            <div>
+              <div style="font-size:14px;font-weight:700">${z.nome}</div>
+              <div style="font-size:11px;color:var(--t3);text-transform:capitalize">${z.tipo?.replace('_',' ')}</div>
+            </div>
+            <div style="margin-left:auto;text-align:right">
+              <div style="font-size:18px;font-weight:800;color:${parseFloat(z.taxa_ocupacao||0)>80?'#ef4444':parseFloat(z.taxa_ocupacao||0)>60?'#f59e0b':'#10b981'}">${z.taxa_ocupacao||0}%</div>
+              <div style="font-size:10px;color:var(--t3)">ocupada</div>
+            </div>
+          </div>
+          <div class="zona-body">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${z.taxa_ocupacao||0}%;background:${COR_ZONA[z.tipo]||'#10b981'}"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:12px">
+              <span style="color:var(--t3)">${z.ocupadas||0} ocupadas</span>
+              <span style="color:var(--t3)">${z.total_localizacoes||0} total</span>
+            </div>
+            ${z.temperatura_min!=null||z.temperatura_max!=null?`<div style="margin-top:8px;font-size:11px;color:#06b6d4">🌡 ${z.temperatura_min||'—'}°C a ${z.temperatura_max||'—'}°C</div>`:''}
+            <div style="margin-top:10px;display:flex;gap:6px">
+              <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();modalGerarLocs('${z.id}','${z.nome}')">+ Gerar Localizações</button>
+            </div>
+          </div>
+        </div>`).join('')||'<div class="empty" style="grid-column:span 3">Sem zonas. Cria a primeira zona do armazém.</div>'}
+    </div>`;
+}
+
+// ── LOCALIZAÇÕES ──
+async function rLocalizacoes(){
+  document.getElementById('topbar-title').textContent='📍 Localizações';
+  const [zonas, locs] = await Promise.all([apiFetch(API+'/zonas'), apiFetch(API+'/localizacoes')]);
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center">
+      <select class="fi" id="fil-zona" style="width:200px" onchange="filtrarLocs()">
+        <option value="">Todas as zonas</option>
+        ${zonas.map(z=>`<option value="${z.id}">${z.nome}</option>`).join('')}
+      </select>
+      <select class="fi" id="fil-ocupada" style="width:150px" onchange="filtrarLocs()">
+        <option value="">Todas</option>
+        <option value="false">Livres</option>
+        <option value="true">Ocupadas</option>
+      </select>
+      <div style="margin-left:auto;font-size:13px;color:var(--t2)">${locs.length} localizações</div>
+    </div>
+    <div class="card">
+      <div style="overflow-x:auto" id="tbl-locs">
+        ${tblLocs(locs)}
+      </div>
+    </div>`;
+  window._locs=locs;
+}
+
+function filtrarLocs(){
+  const zona=document.getElementById('fil-zona')?.value;
+  const ocup=document.getElementById('fil-ocupada')?.value;
+  let f=window._locs||[];
+  if(zona)f=f.filter(l=>l.zona_id===zona);
+  if(ocup!=='')f=f.filter(l=>String(l.ocupada)===(ocup==='true'?'true':'false'));
+  document.getElementById('tbl-locs').innerHTML=tblLocs(f);
+}
+
+function tblLocs(locs){
+  if(!locs.length)return '<div class="empty">Sem localizações</div>';
+  return `<table>
+    <thead><tr><th>Código</th><th>Zona</th><th>Corredor/Prat/Pos</th><th>Produto</th><th>Stock</th><th>Estado</th></tr></thead>
+    <tbody>${locs.slice(0,200).map(l=>`<tr>
+      <td style="font-family:monospace;font-weight:700;color:#059669">${l.codigo}</td>
+      <td><span style="background:${COR_ZONA[l.zona_tipo]||'#10b981'}15;color:${COR_ZONA[l.zona_tipo]||'#10b981'};padding:2px 8px;border-radius:6px;font-size:11px">${l.zona_nome||'—'}</span></td>
+      <td style="font-size:12px;font-family:monospace">${l.corredor||'—'}-${l.prateleira||'—'}-${l.posicao||'—'}</td>
+      <td style="font-size:12px">${l.produto_nome||'<span style="color:var(--t3)">—</span>'}</td>
+      <td style="font-size:12px;font-weight:600">${l.quantidade?fmtN(l.quantidade,2)+' un.':'—'}</td>
+      <td><span class="badge" style="background:${l.ocupada?'rgba(245,158,11,.12)':'rgba(16,185,129,.12)'};color:${l.ocupada?'#f59e0b':'#10b981'}">${l.ocupada?'● Ocupada':'● Livre'}</span></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+// ── STOCK ──
+async function rStock(){
+  document.getElementById('topbar-title').textContent='📦 Stock';
+  const stock = await apiFetch(API+'/stock/resumo');
+  const abaixoMin = stock.filter(s=>s.estado_stock!=='ok').length;
+  if(abaixoMin>0){const b=document.getElementById('badge-alertas');b.style.display='';b.textContent=abaixoMin;}
+
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <input class="fi" id="fil-stock" placeholder="Pesquisar produto..." oninput="filtrarStock()" style="flex:1"/>
+      <select class="fi" id="fil-estado-stock" style="width:150px" onchange="filtrarStock()">
+        <option value="">Todos</option>
+        <option value="critico">🔴 Crítico</option>
+        <option value="baixo">🟡 Baixo</option>
+        <option value="ok">🟢 OK</option>
+      </select>
+      <button class="btn btn-warning" onclick="tab('recepcao',null)">📥 Nova Recepção</button>
+    </div>
+    <div class="card">
+      <div class="card-h">
+        <div class="card-title">Stock por Produto (${stock.length})</div>
+        <div style="font-size:12px;color:var(--t3)">${abaixoMin} abaixo do mínimo</div>
+      </div>
+      <div style="overflow-x:auto" id="tbl-stock">
+        ${tblStock(stock)}
+      </div>
+    </div>`;
+  window._stock=stock;
+}
+
+function filtrarStock(){
+  const search=document.getElementById('fil-stock')?.value?.toLowerCase();
+  const estado=document.getElementById('fil-estado-stock')?.value;
+  let f=window._stock||[];
+  if(search)f=f.filter(s=>s.nome?.toLowerCase().includes(search)||s.referencia?.toLowerCase().includes(search));
+  if(estado)f=f.filter(s=>s.estado_stock===estado);
+  document.getElementById('tbl-stock').innerHTML=tblStock(f);
+}
+
+function tblStock(stock){
+  if(!stock.length)return '<div class="empty">Sem stock</div>';
+  return `<table>
+    <thead><tr><th>Produto</th><th>Referência</th><th>Stock Total</th><th>Mínimo</th><th>Localizações</th><th>Próx. Validade</th><th>Valor</th><th>Estado</th></tr></thead>
+    <tbody>${stock.map(s=>`<tr onclick="verStockProduto('${s.id}')">
+      <td style="font-weight:500">${s.nome}</td>
+      <td style="font-family:monospace;font-size:12px">${s.referencia||'—'}</td>
+      <td style="font-weight:700;font-size:14px">${fmtN(s.quantidade_total,2)} <span style="font-size:11px;color:var(--t3)">${s.unidade||'UN'}</span></td>
+      <td style="font-size:12px;color:var(--t3)">${fmtN(s.stock_minimo,0)||'—'}</td>
+      <td style="font-size:12px">${s.num_localizacoes||0}</td>
+      <td style="font-size:12px;${s.validade_mais_proxima&&new Date(s.validade_mais_proxima)<new Date(Date.now()+30*86400000)?'color:#ef4444;font-weight:600':''}">${fmtD(s.validade_mais_proxima)}</td>
+      <td style="font-weight:600;color:#10b981">${fmtEur(s.valor_total)}</td>
+      <td><span class="badge" style="background:${s.estado_stock==='critico'?'rgba(239,68,68,.12)':s.estado_stock==='baixo'?'rgba(245,158,11,.12)':'rgba(16,185,129,.12)'};color:${s.estado_stock==='critico'?'#ef4444':s.estado_stock==='baixo'?'#f59e0b':'#10b981'}">${s.estado_stock==='critico'?'🔴 Crítico':s.estado_stock==='baixo'?'🟡 Baixo':'🟢 OK'}</span></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+// ── RECEPÇÃO ──
+async function rRecepcao(){
+  document.getElementById('topbar-title').textContent='📥 Recepção de Mercadoria';
+  const recs = await apiFetch(API+'/recepcoes');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="modalNovaRecepcao()">+ Nova Recepção</button>
+    </div>
+    <div class="card">
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Número</th><th>Fornecedor</th><th>Linhas</th><th>Unidades</th><th>Estado</th><th>Operador</th><th>Data</th><th>Acção</th></tr></thead>
+        <tbody>${recs.map(r=>`<tr>
+          <td style="font-family:monospace;font-weight:700;color:#059669">${r.numero}</td>
+          <td>${r.fornecedor_nome||'—'}</td>
+          <td>${r.num_linhas||0}</td>
+          <td>${fmtN(r.total_unidades_recebidas,0)||0}</td>
+          <td><span class="badge" style="background:${r.estado==='concluida'?'rgba(16,185,129,.12)':'rgba(245,158,11,.12)'};color:${r.estado==='concluida'?'#10b981':'#f59e0b'}">${r.estado}</span></td>
+          <td style="font-size:12px">${r.operador_nome?.split(' ')[0]||'—'}</td>
+          <td style="font-size:12px">${fmtD(r.criado_em)}</td>
+          <td>${r.estado!=='concluida'?`<button class="btn btn-sm btn-primary" onclick="darEntrada('${r.id}')">Dar Entrada</button>`:'<span style="color:var(--t3);font-size:12px">Concluída</span>'}</td>
+        </tr>`).join('')||'<tr><td colspan="8" class="empty">Sem recepções</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+// ── PICKING ──
+async function rPicking(){
+  document.getElementById('topbar-title').textContent='🧺 Ordens de Picking';
+  const ordens = await apiFetch(API+'/picking');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="modalNovaPicking()">+ Nova Ordem</button>
+    </div>
+    <div class="card">
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Número</th><th>Encomenda</th><th>Prioridade</th><th>Linhas</th><th>Progresso</th><th>Estado</th><th>Operador</th><th>Acção</th></tr></thead>
+        <tbody>${ordens.map(o=>{
+          const pct = o.num_linhas>0 ? Math.round(o.linhas_picked/o.num_linhas*100) : 0;
+          return `<tr>
+            <td style="font-family:monospace;font-weight:700;color:#f59e0b">${o.numero}</td>
+            <td style="font-size:12px">${o.encomenda_numero||'—'}</td>
+            <td><span class="badge" style="background:${o.prioridade==='urgente'?'rgba(239,68,68,.12)':'rgba(99,102,241,.12)'};color:${o.prioridade==='urgente'?'#ef4444':'#6366f1'}">${o.prioridade}</span></td>
+            <td>${o.num_linhas||0}</td>
+            <td style="min-width:100px">
+              <div style="display:flex;align-items:center;gap:6px">
+                <div style="flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden">
+                  <div style="height:100%;background:#f59e0b;width:${pct}%;border-radius:3px"></div>
+                </div>
+                <span style="font-size:11px;font-weight:600">${pct}%</span>
+              </div>
+            </td>
+            <td><span class="badge" style="background:${o.estado==='expedido'?'rgba(139,92,246,.12)':o.estado==='picking_concluido'?'rgba(16,185,129,.12)':'rgba(245,158,11,.12)'};color:${o.estado==='expedido'?'#8b5cf6':o.estado==='picking_concluido'?'#10b981':'#f59e0b'}">${o.estado?.replace('_',' ')}</span></td>
+            <td style="font-size:12px">${o.operador_nome?.split(' ')[0]||'—'}</td>
+            <td>${o.estado==='pendente'||o.estado==='em_curso'?`<button class="btn btn-sm btn-primary" onclick="iniciarPicking('${o.id}')">Iniciar</button>`:o.estado==='picking_concluido'?`<button class="btn btn-sm" style="background:rgba(139,92,246,.12);color:#8b5cf6;border:1px solid rgba(139,92,246,.2)" onclick="modalExpedicao('${o.id}')">Expedir</button>`:'—'}</td>
+          </tr>`;
+        }).join('')||'<tr><td colspan="8" class="empty">Sem ordens de picking</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+// ── EXPEDIÇÃO ──
+async function rExpedicao(){
+  document.getElementById('topbar-title').textContent='🚚 Expedição';
+  const exps = await apiFetch(API+'/expedicoes');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div class="card">
+      <div class="card-h"><div class="card-title">Expedições (${exps.length})</div></div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Número</th><th>Encomenda</th><th>Transportadora</th><th>Peso</th><th>Volumes</th><th>Estado</th><th>Operador</th><th>Data</th></tr></thead>
+        <tbody>${exps.map(e=>`<tr>
+          <td style="font-family:monospace;font-weight:700;color:#8b5cf6">${e.numero}</td>
+          <td style="font-size:12px">${e.encomenda_numero||'—'}</td>
+          <td>${e.transportadora||'—'}</td>
+          <td>${fmtN(e.peso_total,2)}kg</td>
+          <td>${e.num_volumes}</td>
+          <td><span class="badge" style="background:rgba(139,92,246,.12);color:#8b5cf6">${e.estado}</span></td>
+          <td style="font-size:12px">${e.operador_nome?.split(' ')[0]||'—'}</td>
+          <td style="font-size:12px">${fmtD(e.criado_em)}</td>
+        </tr>`).join('')||'<tr><td colspan="8" class="empty">Sem expedições</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+// ── MOVIMENTOS ──
+async function rMovimentos(){
+  document.getElementById('topbar-title').textContent='🔄 Movimentos';
+  const movs = await apiFetch(API+'/movimentos');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div class="card">
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Tipo</th><th>Produto</th><th>Quantidade</th><th>Localização</th><th>Referência</th><th>Operador</th><th>Data/Hora</th></tr></thead>
+        <tbody>${movs.map(m=>`<tr>
+          <td><span class="badge" style="background:${TIPO_COR[m.tipo]||'#6b7280'}15;color:${TIPO_COR[m.tipo]||'#6b7280'}">${m.tipo?.replace(/_/g,' ')}</span></td>
+          <td style="font-size:12px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.produto_nome||'—'}</td>
+          <td style="font-weight:600">${fmtN(m.quantidade,2)}</td>
+          <td style="font-family:monospace;font-size:11px">${m.localizacao_codigo||'—'}</td>
+          <td style="font-size:11px;color:var(--t3)">${m.referencia||'—'}</td>
+          <td style="font-size:12px">${m.operador_nome?.split(' ')[0]||'—'}</td>
+          <td style="font-size:11px">${fmtDT(m.criado_em)}</td>
+        </tr>`).join('')||'<tr><td colspan="7" class="empty">Sem movimentos</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+// ── INVENTÁRIO ──
+async function rInventario(){
+  document.getElementById('topbar-title').textContent='📋 Inventário';
+  const zonas = await apiFetch(API+'/zonas');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <select class="fi" id="inv-zona" style="width:200px">
+        <option value="">Inventário total</option>
+        ${zonas.map(z=>`<option value="${z.id}">${z.nome}</option>`).join('')}
+      </select>
+      <button class="btn btn-primary" onclick="iniciarInventario()">▶ Iniciar Inventário</button>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div style="text-align:center;padding:32px">
+          <div style="font-size:48px;margin-bottom:16px">📋</div>
+          <div style="font-size:16px;font-weight:600;margin-bottom:8px">Iniciar Contagem de Inventário</div>
+          <div style="font-size:13px;color:var(--t2);max-width:400px;margin:0 auto">
+            Selecciona uma zona ou faz um inventário total. O sistema vai criar uma lista com todas as localizações e as quantidades actuais em sistema para confirmares no terreno.
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── ANALYTICS ──
+async function rAnalytics(){
+  document.getElementById('topbar-title').textContent='📈 Analytics WMS';
+  const d = await apiFetch(API+'/analytics?periodo=30');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div class="kpi-grid">
+      <div class="kpi" style="border-top-color:#10b981"><div class="kpi-val" style="color:#10b981">${fmtN(d.stock_valor?.num_produtos)}</div><div class="kpi-label">Produtos em Stock</div></div>
+      <div class="kpi" style="border-top-color:#3b82f6"><div class="kpi-val" style="color:#3b82f6">${fmtN(d.stock_valor?.unidades_total)}</div><div class="kpi-label">Unidades Total</div></div>
+      <div class="kpi" style="border-top-color:#8b5cf6"><div class="kpi-val" style="color:#8b5cf6" style="font-size:18px">${fmtEur(d.stock_valor?.valor_custo)}</div><div class="kpi-label">Valor Custo</div></div>
+      <div class="kpi" style="border-top-color:#f59e0b"><div class="kpi-val" style="color:#f59e0b" style="font-size:18px">${fmtEur(d.stock_valor?.valor_venda)}</div><div class="kpi-label">Valor Venda</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">🔄 Movimentos por Tipo (30 dias)</div></div>
+        <div class="card-body">
+          ${d.movimentos_por_tipo?.map(m=>`
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <span class="badge" style="background:${TIPO_COR[m.tipo]||'#6b7280'}15;color:${TIPO_COR[m.tipo]||'#6b7280'};min-width:100px;justify-content:center">${m.tipo?.replace(/_/g,' ')}</span>
+              <div style="flex:1;height:8px;background:var(--s3);border-radius:4px;overflow:hidden">
+                <div style="height:100%;background:${TIPO_COR[m.tipo]||'#6b7280'};width:${d.movimentos_por_tipo[0]?.total?(m.total/d.movimentos_por_tipo[0].total*100):0}%;border-radius:4px"></div>
+              </div>
+              <span style="font-size:12px;font-weight:600;min-width:30px;text-align:right">${m.total}</span>
+            </div>`).join('')||'<div style="color:var(--t3);text-align:center">Sem dados</div>'}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">💰 Valor por Zona</div></div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Zona</th><th>Ocupação</th><th>Valor Stock</th></tr></thead>
+          <tbody>${d.valor_por_zona?.map(z=>`<tr>
+            <td><span style="color:${COR_ZONA[z.tipo]||'#10b981'}">${TIPO_ZONA[z.tipo]||'📦'}</span> ${z.nome}</td>
+            <td>${z.ocupadas||0}/${z.total_locs||0}</td>
+            <td style="font-weight:600;color:#10b981">${fmtEur(z.valor_stock)}</td>
+          </tr>`).join('')||'<tr><td colspan="3" class="empty">Sem dados</td></tr>'}</tbody>
+        </table></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-title">👤 Produtividade Operadores (30 dias)</div></div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Operador</th><th>Movimentos</th><th>Unidades Movidas</th></tr></thead>
+        <tbody>${d.produtividade_operadores?.map(o=>`<tr>
+          <td style="font-weight:500">${o.nome_completo}</td>
+          <td>${o.total_movimentos}</td>
+          <td style="font-weight:600">${fmtN(o.unidades_movidas,0)}</td>
+        </tr>`).join('')||'<tr><td colspan="3" class="empty">Sem dados</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+// ── IA ──
+async function rIA(){
+  document.getElementById('topbar-title').textContent='🤖 Optimização IA';
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div class="card">
+      <div class="card-h"><div class="card-title">🤖 Análise Inteligente do Armazém</div></div>
+      <div class="card-body">
+        <p style="color:var(--t2);margin-bottom:16px">A IA vai analisar o teu stock, movimentos e alertas para dar recomendações concretas de optimização.</p>
+        <button class="btn btn-primary" id="btn-ia" onclick="correrIA()">🤖 Analisar e Optimizar</button>
+        <div id="ia-resultado" style="margin-top:20px"></div>
+      </div>
+    </div>`;
+}
+
+async function correrIA(){
+  document.getElementById('btn-ia').disabled=true;
+  document.getElementById('btn-ia').textContent='⟳ A analisar...';
+  document.getElementById('ia-resultado').innerHTML='<div style="color:var(--t2);font-size:13px">A IA está a analisar o armazém...</div>';
+  try{
+    const r=await apiFetch(API+'/ia/optimizar-stock',{method:'POST',body:'{}'});
+    document.getElementById('ia-resultado').innerHTML=`
+      <div style="background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:20px;white-space:pre-wrap;font-size:13px;line-height:1.7;color:var(--t2)">${r.analise||'Sem análise disponível'}</div>`;
+  }catch(e){
+    document.getElementById('ia-resultado').innerHTML=`<div style="color:#ef4444">Erro: ${e.message}</div>`;
+  }
+  document.getElementById('btn-ia').disabled=false;
+  document.getElementById('btn-ia').textContent='🤖 Analisar e Optimizar';
+}
+
+// ── MODAIS ──
+function modalNovaZona(){
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal">
+      <div class="modal-h"><div class="modal-title">Nova Zona</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Nome *</label><input class="fi" id="nz-nome" placeholder="Zona A — Armazenagem Geral"/></div>
+        <div class="fg"><label class="fl">Tipo</label>
+          <select class="fi" id="nz-tipo">
+            <option value="armazenagem">📦 Armazenagem</option>
+            <option value="recepcao">📥 Recepção</option>
+            <option value="picking">🧺 Picking</option>
+            <option value="expedicao">🚚 Expedição</option>
+            <option value="quarentena">⚠️ Quarentena</option>
+            <option value="devolucoes">↩️ Devoluções</option>
+            <option value="frigorifico">❄️ Frigorífico</option>
+            <option value="perigos">☢️ Materiais Perigosos</option>
+          </select></div>
+        <div class="g2">
+          <div class="fg"><label class="fl">Temperatura mín (°C)</label><input class="fi" id="nz-tmin" type="number" placeholder="—"/></div>
+          <div class="fg"><label class="fl">Temperatura máx (°C)</label><input class="fi" id="nz-tmax" type="number" placeholder="—"/></div>
+        </div>
+        <div class="fg"><label class="fl">Cor</label><input class="fi" id="nz-cor" type="color" value="#10b981" style="height:42px;padding:4px"/></div>
+        <div class="fg"><label class="fl">Descrição</label><textarea class="fi" id="nz-desc"></textarea></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarZona()">Criar Zona</button>
+      </div>
+    </div></div>`;
+}
+
+async function criarZona(){
+  const nome=document.getElementById('nz-nome')?.value?.trim();
+  if(!nome)return alert('Nome obrigatório');
+  try{
+    await apiFetch(API+'/zonas',{method:'POST',body:JSON.stringify({
+      nome, tipo:document.getElementById('nz-tipo')?.value||'armazenagem',
+      temperatura_min:document.getElementById('nz-tmin')?.value||null,
+      temperatura_max:document.getElementById('nz-tmax')?.value||null,
+      cor:document.getElementById('nz-cor')?.value||'#10b981',
+      descricao:document.getElementById('nz-desc')?.value||'',
+    })});
+    fecharModal();carregar();
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+function modalGerarLocs(zonaId, zonaNome){
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal" style="max-width:480px">
+      <div class="modal-h"><div class="modal-title">Gerar Localizações — ${zonaNome}</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px;margin-bottom:16px">
+          <div style="font-size:12px;color:#059669;font-weight:600;margin-bottom:4px">Exemplo de código gerado</div>
+          <div style="font-family:monospace;font-size:16px;color:#059669">ZA-A-01-001</div>
+          <div style="font-size:11px;color:var(--t2);margin-top:4px">Prefixo — Corredor — Prateleira — Posição</div>
+        </div>
+        <div class="g3">
+          <div class="fg"><label class="fl">Prefixo</label><input class="fi" id="gl-pref" placeholder="ZA" maxlength="3"/></div>
+          <div class="fg"><label class="fl">Corredores</label><input class="fi" id="gl-cor" type="number" value="3" min="1" max="26"/></div>
+          <div class="fg"><label class="fl">Prateleiras</label><input class="fi" id="gl-prat" type="number" value="5" min="1"/></div>
+        </div>
+        <div class="fg"><label class="fl">Posições por prateleira</label><input class="fi" id="gl-pos" type="number" value="10" min="1"/></div>
+        <div id="gl-preview" style="font-size:12px;color:var(--t3);margin-top:4px"></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="gerarLocalizacoes('${zonaId}')">Gerar</button>
+      </div>
+    </div></div>`;
+
+  // Preview em tempo real
+  ['gl-cor','gl-prat','gl-pos'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('input',()=>{
+      const c=parseInt(document.getElementById('gl-cor')?.value||3);
+      const p=parseInt(document.getElementById('gl-prat')?.value||5);
+      const pos=parseInt(document.getElementById('gl-pos')?.value||10);
+      document.getElementById('gl-preview').textContent=`Serão criadas ${c*p*pos} localizações`;
+    });
+  });
+}
+
+async function gerarLocalizacoes(zonaId){
+  try{
+    const r=await apiFetch(API+'/zonas/'+zonaId+'/gerar-localizacoes',{method:'POST',body:JSON.stringify({
+      corredores:parseInt(document.getElementById('gl-cor')?.value)||3,
+      prateleiras:parseInt(document.getElementById('gl-prat')?.value)||5,
+      posicoes:parseInt(document.getElementById('gl-pos')?.value)||10,
+      prefixo:document.getElementById('gl-pref')?.value||'',
+    })});
+    fecharModal();
+    alert(`✅ ${r.criadas} localizações criadas na zona ${r.zona}`);
+    carregar();
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+function verZona(id){
+  modalGerarLocs(id,'Zona');
+}
+
+function modalNovaRecepcao(){
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal">
+      <div class="modal-h"><div class="modal-title">Nova Recepção</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Referência externa</label><input class="fi" id="nr-ref" placeholder="Nº guia do fornecedor"/></div>
+        <div class="fg"><label class="fl">Notas</label><textarea class="fi" id="nr-notas"></textarea></div>
+        <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:12px;font-size:12px;color:#3b82f6">
+          ℹ️ Após criar, podes adicionar linhas de produto e dar entrada do stock por localização.
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarRecepcao()">Criar Recepção</button>
+      </div>
+    </div></div>`;
+}
+
+async function criarRecepcao(){
+  try{
+    const r=await apiFetch(API+'/recepcoes',{method:'POST',body:JSON.stringify({
+      referencia_externa:document.getElementById('nr-ref')?.value||'',
+      notas:document.getElementById('nr-notas')?.value||'',
+    })});
+    fecharModal();
+    alert(`✅ Recepção criada: ${r.numero}`);
+    carregar();
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+async function darEntrada(id){
+  alert(`Para dar entrada da recepção ${id}:\n\nEm produção, abrirás um scanner de código de barras aqui.\nPor agora usa a API directamente:\n\nPOST /api/wms/recepcoes/${id}/dar-entrada\n{linhas: [{produto_id, quantidade, localizacao_id}]}`);
+}
+
+function modalNovaPicking(){
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal" style="max-width:480px">
+      <div class="modal-h"><div class="modal-title">Nova Ordem de Picking</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Prioridade</label>
+          <select class="fi" id="npk-pri">
+            <option value="normal">Normal</option>
+            <option value="alta">Alta</option>
+            <option value="urgente">🚨 Urgente</option>
+          </select></div>
+        <div class="fg"><label class="fl">Notas</label><textarea class="fi" id="npk-notas"></textarea></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarPicking()">Criar Ordem</button>
+      </div>
+    </div></div>`;
+}
+
+async function criarPicking(){
+  try{
+    const r=await apiFetch(API+'/picking',{method:'POST',body:JSON.stringify({
+      prioridade:document.getElementById('npk-pri')?.value||'normal',
+      notas:document.getElementById('npk-notas')?.value||'',
+      linhas:[],
+    })});
+    fecharModal();
+    alert(`✅ Ordem criada: ${r.numero}`);
+    carregar();
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+function iniciarPicking(id){alert(`Iniciar picking ${id} — em produção abre scanner.\nUsa a API: PUT /api/wms/picking/${id}/linha/:linhaId/pick`);}
+
+function modalExpedicao(ordemId){
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal" style="max-width:480px">
+      <div class="modal-h"><div class="modal-title">Expedir Ordem</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Transportadora</label><input class="fi" id="exp-transp" placeholder="DHL, FedEx, CTT..."/></div>
+        <div class="g2">
+          <div class="fg"><label class="fl">Peso total (kg)</label><input class="fi" id="exp-peso" type="number" step="0.1"/></div>
+          <div class="fg"><label class="fl">Nº Volumes</label><input class="fi" id="exp-vols" type="number" value="1" min="1"/></div>
+        </div>
+        <div class="fg"><label class="fl">Notas</label><textarea class="fi" id="exp-notas"></textarea></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="confirmarExpedicao('${ordemId}')">Confirmar Expedição</button>
+      </div>
+    </div></div>`;
+}
+
+async function confirmarExpedicao(ordemId){
+  try{
+    const r=await apiFetch(API+'/expedicao',{method:'POST',body:JSON.stringify({
+      ordem_picking_id:ordemId,
+      transportadora:document.getElementById('exp-transp')?.value||'',
+      peso_total:parseFloat(document.getElementById('exp-peso')?.value)||0,
+      volumes:parseInt(document.getElementById('exp-vols')?.value)||1,
+      notas:document.getElementById('exp-notas')?.value||'',
+    })});
+    fecharModal();
+    alert(`✅ Expedição criada: ${r.numero}`);
+    carregar();
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+async function iniciarInventario(){
+  const zonaId=document.getElementById('inv-zona')?.value||null;
+  if(!confirm(`Iniciar inventário${zonaId?` da zona seleccionada`:' total'}?`))return;
+  try{
+    const r=await apiFetch(API+'/inventario/iniciar',{method:'POST',body:JSON.stringify({zona_id:zonaId||null,tipo:zonaId?'zona':'total'})});
+    alert(`✅ Inventário ${r.numero} iniciado com ${r.num_linhas} linhas.\nPodes agora fazer a contagem física.`);
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+async function resolverAlerta(id){
+  try{await apiFetch(API+'/alertas/'+id+'/resolver',{method:'PUT',body:'{}'});carregar();}
+  catch(e){alert('Erro: '+e.message);}
+}
+
+function verStockProduto(id){tab('localizacoes',null);}
+function acaoRapida(){modalNovaRecepcao();}
+function fecharModal(){document.getElementById('modal-area').innerHTML='';}
+
+carregar();
+</script>
+</body>
+</html>
