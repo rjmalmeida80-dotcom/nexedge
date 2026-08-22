@@ -5,3 +5,4 @@ frontend/dist/
 backend/.env 
 backend/node 
 backend/pm2 
+backend/tmp_token.txt 
