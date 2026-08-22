@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MediaLoop — Gestão</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F1F5F9;--s1:#fff;--s2:#F8FAFC;--s3:#E2E8F0;--b1:rgba(0,0,0,.07);--t1:#0F172A;--t2:#475569;--t3:#94A3B8;--in:#4F46E5;--gr:#10B981;--re:#EF4444;--am:#F59E0B}
+body{font-family:Inter,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex}
+.sb{width:220px;background:linear-gradient(180deg,#0A0A18,#1A1A2E);border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;bottom:0;left:0;overflow-y:auto}
+.logo{padding:16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
+.logo-ic{width:32px;height:32px;background:linear-gradient(135deg,#8B5CF6,#4F46E5);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px}
+.logo-tx{color:#fff;font-weight:700;font-size:13px}
+.logo-sub{font-size:9px;background:rgba(139,92,246,.3);color:#c4b5fd;padding:1px 6px;border-radius:4px}
+.sb-nav{flex:1;padding:8px 6px}
+.sb-sec{font-size:9px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.2);padding:10px 8px 4px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.45);font-size:12px;font-weight:400;border:none;border-left:2px solid transparent;background:none;width:100%;text-align:left;font-family:inherit;transition:all .12s;margin:1px 0}
+.sb-item:hover{background:rgba(139,92,246,.12);color:rgba(255,255,255,.85)}
+.sb-item.act{background:rgba(139,92,246,.2);border-left-color:#8b5cf6;color:#fff;font-weight:600}
+.sb-badge{background:#ef4444;color:#fff;border-radius:9999px;padding:1px 6px;font-size:9px;font-weight:700;margin-left:auto}
+.main{margin-left:220px;flex:1;display:flex;flex-direction:column}
+.topbar{height:54px;background:#fff;border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.topbar-title{font-size:15px;font-weight:700}
+.content{padding:22px;flex:1}
+.card{background:#fff;border:1px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.card-h{padding:14px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:13px;font-weight:600}
+.card-body{padding:18px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid var(--b1);border-radius:12px;padding:16px;border-top:3px solid var(--in)}
+.kpi-val{font-size:26px;font-weight:800;letter-spacing:-1px;margin-bottom:2px}
+.kpi-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1px solid var(--b1);background:var(--s2)}
+td{padding:10px 14px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa;cursor:pointer}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:9999px;font-size:10px;font-weight:600}
+.btn{padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.btn-primary{background:linear-gradient(135deg,#8b5cf6,#4f46e5);color:#fff;box-shadow:0 2px 8px rgba(139,92,246,.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,.4)}
+.btn-secondary{background:var(--s2);color:var(--t2);border:1px solid var(--s3)}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-danger{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
+.fi{padding:8px 12px;border:1.5px solid var(--s3);border-radius:8px;font-size:13px;color:var(--t1);outline:none;font-family:inherit;background:#fff;width:100%;transition:border-color .15s}
+.fi:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.1)}
+.fl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);display:block;margin-bottom:4px}
+.fg{margin-bottom:12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:580px;overflow:hidden;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.modal-h{padding:16px 22px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center;background:var(--s2)}
+.modal-title{font-size:14px;font-weight:700}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--t3);font-size:20px}
+.modal-b{padding:22px;max-height:65vh;overflow-y:auto}
+.modal-f{padding:12px 22px;border-top:1px solid var(--b1);display:flex;gap:8px;justify-content:flex-end;background:var(--s2)}
+.ecra-card{background:#fff;border:1px solid var(--b1);border-radius:12px;overflow:hidden;transition:all .15s;cursor:pointer}
+.ecra-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.ecra-preview{background:#0A0A18;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:32px;position:relative}
+.ecra-status{position:absolute;top:8px;right:8px;width:10px;height:10px;border-radius:50%}
+.ecra-info{padding:12px}
+.ecra-nome{font-size:13px;font-weight:600;margin-bottom:2px}
+.ecra-loc{font-size:11px;color:var(--t3)}
+.empty{text-align:center;padding:48px;color:var(--t3);font-size:13px}
+select.fi{cursor:pointer}
+textarea.fi{resize:vertical;min-height:70px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:4px}
+.online-dot{width:8px;height:8px;border-radius:50%;background:#10b981;display:inline-block;margin-right:4px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+</style>
+</head>
+<body>
+<div class="sb">
+  <div class="logo">
+    <div class="logo-ic">📺</div>
+    <div>
+      <div class="logo-tx">MediaLoop</div>
+      <div class="logo-sub">DIGITAL SIGNAGE</div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">GESTÃO</div>
+    <button class="sb-item act" onclick="tab('dashboard',this)">📊 Dashboard</button>
+    <button class="sb-item" onclick="tab('ecras',this)">📺 Ecrãs <span class="sb-badge" id="badge-offline" style="display:none">!</span></button>
+    <button class="sb-item" onclick="tab('conteudos',this)">🎬 Conteúdos</button>
+    <button class="sb-item" onclick="tab('playlists',this)">📋 Playlists</button>
+    <button class="sb-item" onclick="tab('layouts',this)">🎨 Layouts</button>
+    <div class="sb-sec">PROGRAMAÇÃO</div>
+    <button class="sb-item" onclick="tab('programacao',this)">📅 Programação</button>
+    <button class="sb-item" onclick="tab('avisos',this)">📢 Avisos</button>
+    <div class="sb-sec">NEGÓCIO</div>
+    <button class="sb-item" onclick="tab('publicidade',this)">💰 Publicidade</button>
+    <button class="sb-item" onclick="tab('analytics',this)">📈 Analytics</button>
+    <div class="sb-sec">LINKS</div>
+    <a class="sb-item" href="/senhas-admin.html" style="text-decoration:none;color:rgba(255,255,255,.45)">🎫 Senhas</a>
+    <a class="sb-item" href="/" style="text-decoration:none;color:rgba(255,255,255,.45)">← ERP</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">📊 Dashboard MediaLoop</div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn btn-secondary" onclick="window.open('/medialoop-player.html','_blank')">👁 Preview Player</button>
+      <button class="btn btn-primary" onclick="modalNovoEcra()">+ Novo Ecrã</button>
+    </div>
+  </div>
+  <div class="content" id="conteudo"><div class="empty">A carregar...</div></div>
+</div>
+<div id="modal-area"></div>
+
+<script>
+const API = '/api/medialoop';
+let tabAtual = 'dashboard';
+
+function getToken() {
+  try {
+    const t = localStorage.getItem('access_token'); if(t) return t;
+    const r = localStorage.getItem('rh-auth'); if(r) return JSON.parse(r)?.state?.token;
+  } catch(e){}
+  return null;
+}
+
+async function apiFetch(path, opts={}) {
+  const token = getToken();
+  const r = await fetch((path.startsWith('http')||path.startsWith('/')?'':API+'/') + path, {
+    ...opts,
+    headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{}),...(opts.headers||{})}
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function fmtD(d){return d?new Date(d).toLocaleDateString('pt-PT'):'—';}
+function fmtDT(d){return d?new Date(d).toLocaleString('pt-PT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';}
+
+function tab(t, el) {
+  tabAtual=t;
+  document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('act'));
+  if(el) el.classList.add('act');
+  document.getElementById('conteudo').innerHTML='<div class="empty">⟳ A carregar...</div>';
+  carregar();
+}
+
+async function carregar() {
+  try {
+    if(tabAtual==='dashboard') await rDashboard();
+    else if(tabAtual==='ecras') await rEcras();
+    else if(tabAtual==='conteudos') await rConteudos();
+    else if(tabAtual==='playlists') await rPlaylists();
+    else if(tabAtual==='layouts') await rLayouts();
+    else if(tabAtual==='avisos') await rAvisos();
+    else if(tabAtual==='publicidade') await rPublicidade();
+    else if(tabAtual==='analytics') await rAnalytics();
+    else document.getElementById('conteudo').innerHTML='<div class="empty">Em breve...</div>';
+  } catch(e) {
+    document.getElementById('conteudo').innerHTML=`<div class="empty">⚠️ ${e.message}</div>`;
+  }
+}
+
+async function rDashboard() {
+  document.getElementById('topbar-title').textContent='📊 Dashboard MediaLoop';
+  const [analytics, ecras] = await Promise.all([
+    apiFetch(API+'/analytics'),
+    apiFetch(API+'/ecras'),
+  ]);
+  const online = ecras.filter(e=>e.online).length;
+  const offline = ecras.filter(e=>!e.online).length;
+  if(offline>0){const b=document.getElementById('badge-offline');b.style.display='';b.textContent=offline;}
+
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div class="kpi-grid">
+      <div class="kpi" style="border-top-color:#8b5cf6"><div class="kpi-val" style="color:#8b5cf6">${ecras.length}</div><div class="kpi-label">📺 Total Ecrãs</div></div>
+      <div class="kpi" style="border-top-color:#10b981"><div class="kpi-val" style="color:#10b981">${online}</div><div class="kpi-label">🟢 Online</div></div>
+      <div class="kpi" style="border-top-color:#ef4444"><div class="kpi-val" style="color:#ef4444">${offline}</div><div class="kpi-label">🔴 Offline</div></div>
+      <div class="kpi" style="border-top-color:#f59e0b"><div class="kpi-val" style="color:#f59e0b">${analytics.campanhas?.total_campanhas||0}</div><div class="kpi-label">💰 Campanhas Activas</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">📺 Ecrãs Recentes</div><button class="btn btn-secondary btn-sm" onclick="tab('ecras',null)">Ver todos</button></div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Ecrã</th><th>Localização</th><th>Playlist</th><th>Estado</th></tr></thead>
+          <tbody>${ecras.slice(0,6).map(e=>`<tr onclick="verEcra('${e.id}')">
+            <td><div style="font-weight:500">${e.nome}</div><div style="font-size:11px;color:var(--t3)">${e.tipo} · ${e.resolucao}</div></td>
+            <td style="font-size:12px">${e.localizacao_nome||'—'}</td>
+            <td style="font-size:12px">${e.playlist_nome||'<span style="color:var(--t3)">Sem playlist</span>'}</td>
+            <td><span class="badge" style="background:${e.online?'rgba(16,185,129,.12)':'rgba(239,68,68,.12)'};color:${e.online?'#10b981':'#ef4444'}">${e.online?'● Online':'● Offline'}</span></td>
+          </tr>`).join('')||'<tr><td colspan="4" class="empty">Sem ecrãs</td></tr>'}</tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">💡 Acções Rápidas</div></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn btn-primary" onclick="modalNovoEcra()" style="width:100%;justify-content:center">📺 Adicionar Ecrã</button>
+          <button class="btn btn-secondary" onclick="tab('conteudos',null)" style="width:100%">🎬 Gerir Conteúdos</button>
+          <button class="btn btn-secondary" onclick="tab('playlists',null)" style="width:100%">📋 Criar Playlist</button>
+          <button class="btn btn-secondary" onclick="tab('avisos',null)" style="width:100%">📢 Enviar Aviso</button>
+          <button class="btn btn-secondary" onclick="window.open('/senhas-admin.html')" style="width:100%">🎫 Gerir Senhas</button>
+          <button class="btn btn-secondary" onclick="window.open('/medialoop-player.html')" style="width:100%">👁 Preview Player</button>
+          <button class="btn btn-secondary" onclick="window.open('/quiosque.html')" style="width:100%">🖨 Quiosque Senhas</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function rEcras() {
+  document.getElementById('topbar-title').textContent='📺 Ecrãs';
+  const ecras = await apiFetch(API+'/ecras');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px;gap:8px">
+      <button class="btn btn-secondary" onclick="tab('ecras',null)">↺ Actualizar</button>
+      <button class="btn btn-primary" onclick="modalNovoEcra()">+ Novo Ecrã</button>
+    </div>
+    <div class="grid-3" id="ecras-grid">
+      ${ecras.map(e=>`
+        <div class="ecra-card" onclick="verEcra('${e.id}')">
+          <div class="ecra-preview">
+            <span style="font-size:40px">📺</span>
+            <div class="ecra-status" style="background:${e.online?'#10b981':'#ef4444'}"></div>
+          </div>
+          <div class="ecra-info">
+            <div class="ecra-nome">${e.nome}</div>
+            <div class="ecra-loc">${e.localizacao_nome||'Sem localização'} · ${e.tipo}</div>
+            <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+              <span class="badge" style="background:${e.online?'rgba(16,185,129,.12)':'rgba(239,68,68,.12)'};color:${e.online?'#10b981':'#ef4444'};font-size:10px">${e.online?'● Online':'● Offline'}</span>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();comandoEcra('${e.id}','reiniciar')">↺</button>
+                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();eliminarEcra('${e.id}')">×</button>
+              </div>
+            </div>
+            ${e.playlist_nome?`<div style="font-size:11px;color:var(--t3);margin-top:6px">▶ ${e.playlist_nome}</div>`:'<div style="font-size:11px;color:#f59e0b;margin-top:6px">⚠ Sem playlist</div>'}
+          </div>
+        </div>`).join('')||'<div class="empty" style="grid-column:span 3">Sem ecrãs. Adiciona o primeiro.</div>'}
+    </div>`;
+}
+
+async function rConteudos() {
+  document.getElementById('topbar-title').textContent='🎬 Conteúdos';
+  const conteudos = await apiFetch(API+'/conteudos');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="modalNovoConteudo()">+ Novo Conteúdo</button>
+    </div>
+    <div class="card">
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Nome</th><th>Tipo</th><th>Duração</th><th>URL</th><th>Estado</th><th>Acções</th></tr></thead>
+        <tbody>${conteudos.map(c=>`<tr>
+          <td style="font-weight:500">${c.nome}</td>
+          <td><span class="badge" style="background:rgba(99,102,241,.12);color:#6366f1">${tipoIcon(c.tipo)} ${c.tipo}</span></td>
+          <td style="font-size:12px">${c.duracao_seg}s</td>
+          <td style="font-size:11px;color:var(--t3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.url}</td>
+          <td><span class="badge" style="background:rgba(16,185,129,.12);color:#10b981">${c.estado}</span></td>
+          <td><button class="btn btn-sm btn-danger" onclick="eliminarConteudo('${c.id}')">Eliminar</button></td>
+        </tr>`).join('')||'<tr><td colspan="6" class="empty">Sem conteúdos</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+async function rPlaylists() {
+  document.getElementById('topbar-title').textContent='📋 Playlists';
+  const [playlists, conteudos, ecras] = await Promise.all([
+    apiFetch(API+'/playlists'),
+    apiFetch(API+'/conteudos'),
+    apiFetch(API+'/ecras'),
+  ]);
+  window._conteudos = conteudos;
+  window._ecras = ecras;
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="modalNovaPlaylist()">+ Nova Playlist</button>
+    </div>
+    <div class="card">
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Nome</th><th>Conteúdos</th><th>Ecrãs</th><th>Loop</th><th>Acções</th></tr></thead>
+        <tbody>${playlists.map(p=>{
+          const items = typeof p.conteudos==='string'?JSON.parse(p.conteudos):p.conteudos||[];
+          return `<tr>
+            <td style="font-weight:500">${p.nome}</td>
+            <td>${items.length} item${items.length!==1?'s':''}</td>
+            <td>${p.num_ecras||0} ecrã${p.num_ecras!==1?'s':''}</td>
+            <td>${p.loop?'✅':'—'}</td>
+            <td style="display:flex;gap:4px">
+              <button class="btn btn-sm btn-primary" onclick="publicarPlaylist('${p.id}')">Publicar</button>
+              <button class="btn btn-sm btn-danger" onclick="">×</button>
+            </td>
+          </tr>`;
+        }).join('')||'<tr><td colspan="5" class="empty">Sem playlists</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+async function rLayouts() {
+  document.getElementById('topbar-title').textContent='🎨 Layouts';
+  const layouts = await apiFetch(API+'/layouts');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="modalNovoLayout()">+ Novo Layout</button>
+    </div>
+    <div class="grid-3">
+      ${layouts.map(l=>{
+        const zonas = typeof l.zonas==='string'?JSON.parse(l.zonas):l.zonas||[];
+        return `<div class="card" style="cursor:pointer">
+          <div style="background:${l.fundo_cor||'#000'};aspect-ratio:16/9;position:relative;overflow:hidden">
+            ${zonas.map(z=>`<div style="position:absolute;left:${z.x}%;top:${z.y}%;width:${z.largura}%;height:${z.altura}%;background:rgba(139,92,246,.3);border:1px solid rgba(139,92,246,.5);display:flex;align-items:center;justify-content:center">
+              <span style="font-size:9px;color:#c4b5fd;font-weight:600">${z.tipo?.toUpperCase()||'ZONA'}</span>
+            </div>`).join('')}
+          </div>
+          <div style="padding:12px">
+            <div style="font-size:13px;font-weight:600">${l.nome}</div>
+            <div style="font-size:11px;color:var(--t3)">${zonas.length} zona${zonas.length!==1?'s':''} ${l.global?'· Global':''}</div>
+          </div>
+        </div>`;
+      }).join('')||'<div class="empty" style="grid-column:span 3">Sem layouts</div>'}
+    </div>`;
+}
+
+async function rAvisos() {
+  document.getElementById('topbar-title').textContent='📢 Avisos';
+  const avisos = await apiFetch(API+'/avisos');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="modalNovoAviso()">+ Novo Aviso</button>
+    </div>
+    <div class="card">
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Título</th><th>Mensagem</th><th>Prioridade</th><th>Válido até</th><th>Estado</th></tr></thead>
+        <tbody>${avisos.map(a=>`<tr>
+          <td style="font-weight:500">${a.titulo}</td>
+          <td style="font-size:12px;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.mensagem||'—'}</td>
+          <td><span class="badge" style="background:${a.prioridade==='urgente'?'rgba(239,68,68,.12)':'rgba(99,102,241,.12)'};color:${a.prioridade==='urgente'?'#ef4444':'#6366f1'}">${a.prioridade}</span></td>
+          <td style="font-size:12px">${fmtDT(a.data_fim)||'Sem limite'}</td>
+          <td><span class="badge" style="background:${a.activo?'rgba(16,185,129,.12)':'rgba(107,114,128,.12)'};color:${a.activo?'#10b981':'#6b7280'}">${a.activo?'Activo':'Inactivo'}</span></td>
+        </tr>`).join('')||'<tr><td colspan="5" class="empty">Sem avisos</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+async function rPublicidade() {
+  document.getElementById('topbar-title').textContent='💰 Publicidade';
+  const campanhas = await apiFetch(API+'/publicidade');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="modalNovaCampanha()">+ Nova Campanha</button>
+    </div>
+    <div class="card">
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Campanha</th><th>Cliente</th><th>Período</th><th>Frequência</th><th>Valor</th><th>Revenue Share</th><th>Estado</th></tr></thead>
+        <tbody>${campanhas.map(camp=>`<tr>
+          <td style="font-weight:500">${camp.nome}</td>
+          <td>${camp.cliente_nome||'—'}</td>
+          <td style="font-size:12px">${fmtD(camp.data_inicio)} → ${fmtD(camp.data_fim)}</td>
+          <td style="font-size:12px">1 em cada ${camp.frequencia_min}min</td>
+          <td style="font-weight:600;color:#10b981">${parseFloat(camp.valor_total||0).toFixed(2)}€</td>
+          <td>${camp.revenue_share_pct}%</td>
+          <td><span class="badge" style="background:rgba(16,185,129,.12);color:#10b981">${camp.estado}</span></td>
+        </tr>`).join('')||'<tr><td colspan="7" class="empty">Sem campanhas</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+async function rAnalytics() {
+  document.getElementById('topbar-title').textContent='📈 Analytics';
+  const [analytics, ecras] = await Promise.all([apiFetch(API+'/analytics'), apiFetch(API+'/ecras')]);
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div class="kpi-grid">
+      <div class="kpi" style="border-top-color:#8b5cf6"><div class="kpi-val" style="color:#8b5cf6">${ecras.length}</div><div class="kpi-label">Total Ecrãs</div></div>
+      <div class="kpi" style="border-top-color:#10b981"><div class="kpi-val" style="color:#10b981">${analytics.ecras?.online||0}</div><div class="kpi-label">Online Agora</div></div>
+      <div class="kpi" style="border-top-color:#f59e0b"><div class="kpi-val" style="color:#f59e0b">${analytics.campanhas?.total_campanhas||0}</div><div class="kpi-label">Campanhas Activas</div></div>
+      <div class="kpi" style="border-top-color:#10b981"><div class="kpi-val" style="color:#10b981">${parseFloat(analytics.campanhas?.receita_publicidade||0).toFixed(0)}€</div><div class="kpi-label">Receita Publicidade</div></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-title">Estado dos Ecrãs</div></div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Ecrã</th><th>Localização</th><th>Tipo</th><th>Playlist</th><th>Último Heartbeat</th><th>Estado</th></tr></thead>
+        <tbody>${ecras.map(e=>`<tr>
+          <td style="font-weight:500">${e.nome}</td>
+          <td>${e.localizacao_nome||'—'}</td>
+          <td style="text-transform:capitalize">${e.tipo}</td>
+          <td>${e.playlist_nome||'—'}</td>
+          <td style="font-size:12px">${fmtDT(e.ultimo_heartbeat)||'Nunca'}</td>
+          <td><span class="badge" style="background:${e.online?'rgba(16,185,129,.12)':'rgba(239,68,68,.12)'};color:${e.online?'#10b981':'#ef4444'}">${e.online?'● Online':'● Offline'}</span></td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </div>`;
+}
+
+// ── MODAIS ──
+function modalNovoEcra() {
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal">
+      <div class="modal-h"><div class="modal-title">Novo Ecrã</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Nome *</label><input class="fi" id="ne-nome" placeholder="TV Receção"/></div>
+        <div class="g2">
+          <div class="fg"><label class="fl">Tipo</label>
+            <select class="fi" id="ne-tipo">
+              <option value="tv">📺 TV</option><option value="monitor">🖥 Monitor</option>
+              <option value="tablet">📱 Tablet</option><option value="quiosque">🖨 Quiosque</option>
+              <option value="videowall">🎞 Videowall</option>
+            </select></div>
+          <div class="fg"><label class="fl">Orientação</label>
+            <select class="fi" id="ne-orient">
+              <option value="landscape">Landscape (horizontal)</option>
+              <option value="portrait">Portrait (vertical)</option>
+            </select></div>
+        </div>
+        <div class="g2">
+          <div class="fg"><label class="fl">Resolução</label>
+            <select class="fi" id="ne-res">
+              <option value="1920x1080">Full HD (1920×1080)</option>
+              <option value="3840x2160">4K (3840×2160)</option>
+              <option value="1280x720">HD (1280×720)</option>
+            </select></div>
+          <div class="fg"><label class="fl">Descrição</label><input class="fi" id="ne-desc" placeholder="Localização específica"/></div>
+        </div>
+        <div style="background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:14px;margin-top:8px">
+          <div style="font-size:12px;font-weight:600;color:#8b5cf6;margin-bottom:6px">ℹ Como activar o ecrã</div>
+          <div style="font-size:12px;color:var(--t2)">Após criar, recebes um código de 6 dígitos. Vai a <strong>medialoop-player.html</strong> na TV e insere o código para activar.</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarEcra()">Criar Ecrã</button>
+      </div>
+    </div></div>`;
+}
+
+async function criarEcra() {
+  const nome = document.getElementById('ne-nome')?.value?.trim();
+  if (!nome) return alert('Nome obrigatório');
+  try {
+    const r = await apiFetch(API+'/ecras', {method:'POST', body:JSON.stringify({
+      nome, tipo:document.getElementById('ne-tipo')?.value,
+      orientacao:document.getElementById('ne-orient')?.value,
+      resolucao:document.getElementById('ne-res')?.value,
+      descricao:document.getElementById('ne-desc')?.value||'',
+    })});
+    fecharModal();
+    alert(`✅ Ecrã criado!\n\nCódigo de activação: ${r.activation_code}\n\nVai à TV → medialoop-player.html e insere este código.`);
+    carregar();
+  } catch(e){alert('Erro: '+e.message);}
+}
+
+async function verEcra(id) {
+  const ecras = await apiFetch(API+'/ecras');
+  const e = ecras.find(x=>x.id===id);
+  if (!e) return;
+  const playlists = await apiFetch(API+'/playlists');
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal" style="max-width:520px">
+      <div class="modal-h">
+        <div><div class="modal-title">${e.nome}</div><div style="font-size:12px;color:var(--t3)">${e.tipo} · ${e.resolucao}</div></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="badge" style="background:${e.online?'rgba(16,185,129,.12)':'rgba(239,68,68,.12)'};color:${e.online?'#10b981':'#ef4444'}">${e.online?'● Online':'● Offline'}</span>
+          <button class="modal-close" onclick="fecharModal()">×</button>
+        </div>
+      </div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Playlist Activa</label>
+          <select class="fi" id="ecra-playlist" onchange="mudarPlaylist('${e.id}',this.value)">
+            <option value="">Sem playlist</option>
+            ${playlists.map(p=>`<option value="${p.id}" ${e.playlist_activa_id===p.id?'selected':''}>${p.nome}</option>`).join('')}
+          </select></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+          ${stat2('Localização',e.localizacao_nome||'—')}
+          ${stat2('IP Actual',e.ip_actual||'—')}
+          ${stat2('Versão Player',e.versao_player||'—')}
+          ${stat2('Activado em',fmtD(e.activado_em))}
+          ${stat2('Último Heartbeat',fmtDT(e.ultimo_heartbeat))}
+          ${stat2('Resolução',e.resolucao)}
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--t3);margin-bottom:8px;text-transform:uppercase">Comandos Remotos</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" onclick="cmdEcra('${e.id}','reiniciar')">↺ Reiniciar</button>
+          <button class="btn btn-secondary btn-sm" onclick="cmdEcra('${e.id}','actualizar')">⬇ Actualizar</button>
+          <button class="btn btn-secondary btn-sm" onclick="cmdEcra('${e.id}','screenshot')">📷 Screenshot</button>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-danger" onclick="eliminarEcra('${e.id}')">Eliminar</button>
+        <button class="btn btn-secondary" onclick="fecharModal()">Fechar</button>
+      </div>
+    </div></div>`;
+}
+
+async function mudarPlaylist(ecraId, playlistId) {
+  try {
+    await apiFetch(API+'/ecras/'+ecraId, {method:'PUT', body:JSON.stringify({playlist_activa_id:playlistId||null})});
+  } catch(e){alert('Erro: '+e.message);}
+}
+
+async function cmdEcra(id, cmd) {
+  try {
+    await apiFetch(API+'/ecras/'+id+'/comando', {method:'POST', body:JSON.stringify({comando:cmd})});
+    alert(`✅ Comando '${cmd}' enviado`);
+  } catch(e){alert('Erro: '+e.message);}
+}
+
+async function eliminarEcra(id) {
+  if (!confirm('Eliminar este ecrã?')) return;
+  try {
+    await apiFetch(API+'/ecras/'+id, {method:'DELETE'});
+    fecharModal(); carregar();
+  } catch(e){alert('Erro: '+e.message);}
+}
+
+function modalNovoConteudo() {
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal">
+      <div class="modal-h"><div class="modal-title">Novo Conteúdo</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Nome *</label><input class="fi" id="nc-nome" placeholder="Vídeo Institucional 2026"/></div>
+        <div class="g2">
+          <div class="fg"><label class="fl">Tipo</label>
+            <select class="fi" id="nc-tipo">
+              <option value="imagem">🖼 Imagem</option><option value="video">🎬 Vídeo</option>
+              <option value="url">🌐 Página Web</option><option value="html">📄 HTML</option>
+            </select></div>
+          <div class="fg"><label class="fl">Duração (segundos)</label><input class="fi" id="nc-dur" type="number" value="10" min="1"/></div>
+        </div>
+        <div class="fg"><label class="fl">URL do conteúdo *</label><input class="fi" id="nc-url" placeholder="https://... ou /uploads/ficheiro.mp4"/></div>
+        <div class="fg"><label class="fl">Thumbnail URL</label><input class="fi" id="nc-thumb" placeholder="https://... (opcional)"/></div>
+        <div class="fg"><label class="fl">Descrição</label><textarea class="fi" id="nc-desc"></textarea></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarConteudo()">Adicionar</button>
+      </div>
+    </div></div>`;
+}
+
+async function criarConteudo() {
+  const nome=document.getElementById('nc-nome')?.value?.trim();
+  const url=document.getElementById('nc-url')?.value?.trim();
+  if (!nome||!url) return alert('Nome e URL obrigatórios');
+  try {
+    await apiFetch(API+'/conteudos', {method:'POST', body:JSON.stringify({
+      nome, url, tipo:document.getElementById('nc-tipo')?.value||'imagem',
+      duracao_seg:parseInt(document.getElementById('nc-dur')?.value)||10,
+      thumbnail_url:document.getElementById('nc-thumb')?.value||null,
+      descricao:document.getElementById('nc-desc')?.value||'',
+    })});
+    fecharModal(); carregar();
+  } catch(e){alert('Erro: '+e.message);}
+}
+
+async function eliminarConteudo(id) {
+  if (!confirm('Eliminar este conteúdo?')) return;
+  try { await apiFetch(API+'/conteudos/'+id,{method:'DELETE'}); carregar(); }
+  catch(e){alert('Erro: '+e.message);}
+}
+
+function modalNovaPlaylist() {
+  const conteudos = window._conteudos||[];
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal">
+      <div class="modal-h"><div class="modal-title">Nova Playlist</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Nome *</label><input class="fi" id="np-nome"/></div>
+        <div class="fg"><label class="fl">Descrição</label><input class="fi" id="np-desc"/></div>
+        <div class="g2">
+          <div style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="np-loop" checked/><label for="np-loop" style="font-size:13px">Loop automático</label></div>
+          <div style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="np-aleatorio"/><label for="np-aleatorio" style="font-size:13px">Ordem aleatória</label></div>
+        </div>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--t3);margin:12px 0 8px">Conteúdos (seleccionar)</div>
+        <div style="max-height:200px;overflow-y:auto;border:1px solid var(--s3);border-radius:8px;padding:8px">
+          ${conteudos.map(c=>`
+            <label style="display:flex;align-items:center;gap:8px;padding:6px;border-radius:6px;cursor:pointer;hover:background:#f8fafc">
+              <input type="checkbox" class="nc-item" value="${c.id}" data-dur="${c.duracao_seg}"/>
+              <span style="font-size:13px">${tipoIcon(c.tipo)} ${c.nome}</span>
+              <span style="font-size:11px;color:var(--t3);margin-left:auto">${c.duracao_seg}s</span>
+            </label>`).join('')||'<div style="color:var(--t3);font-size:12px;text-align:center;padding:16px">Sem conteúdos. Adiciona conteúdos primeiro.</div>'}
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarPlaylist()">Criar Playlist</button>
+      </div>
+    </div></div>`;
+}
+
+async function criarPlaylist() {
+  const nome=document.getElementById('np-nome')?.value?.trim();
+  if (!nome) return alert('Nome obrigatório');
+  const selected = [...document.querySelectorAll('.nc-item:checked')].map((el,i)=>({conteudo_id:el.value,duracao_seg:parseInt(el.dataset.dur),ordem:i+1}));
+  try {
+    await apiFetch(API+'/playlists',{method:'POST',body:JSON.stringify({
+      nome, descricao:document.getElementById('np-desc')?.value||'',
+      conteudos:selected, loop:document.getElementById('np-loop')?.checked,
+      ordem_aleatoria:document.getElementById('np-aleatorio')?.checked,
+    })});
+    fecharModal(); carregar();
+  } catch(e){alert('Erro: '+e.message);}
+}
+
+async function publicarPlaylist(id) {
+  const ecras = window._ecras||await apiFetch(API+'/ecras');
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal" style="max-width:400px">
+      <div class="modal-h"><div class="modal-title">Publicar Playlist</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Publicar em</label>
+          <select class="fi" id="pub-ecra">
+            <option value="todos">Todos os ecrãs</option>
+            ${ecras.map(e=>`<option value="${e.id}">${e.nome}</option>`).join('')}
+          </select></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="confirmarPublicar('${id}')">Publicar</button>
+      </div>
+    </div></div>`;
+}
+
+async function confirmarPublicar(playlistId) {
+  const val = document.getElementById('pub-ecra')?.value;
+  try {
+    await apiFetch(API+'/playlists/'+playlistId+'/publicar', {method:'POST',
+      body:JSON.stringify(val==='todos'?{ecra_ids:'todos'}:{ecra_ids:[val]})});
+    fecharModal(); alert('✅ Playlist publicada!');
+  } catch(e){alert('Erro: '+e.message);}
+}
+
+function modalNovoLayout() {
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal">
+      <div class="modal-h"><div class="modal-title">Novo Layout</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Nome *</label><input class="fi" id="nl-nome"/></div>
+        <div class="fg"><label class="fl">Modelo Base</label>
+          <select class="fi" id="nl-modelo">
+            <option value="standard">Padrão (media 85% + ticker + info)</option>
+            <option value="fullscreen">Fullscreen (100% media)</option>
+            <option value="split">Split (media 70% + lateral 30%)</option>
+            <option value="senhas">Senhas (media + painel senhas)</option>
+          </select></div>
+        <div class="fg"><label class="fl">Cor de fundo</label><input class="fi" id="nl-cor" type="color" value="#000000" style="height:42px;padding:4px"/></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarLayout()">Criar Layout</button>
+      </div>
+    </div></div>`;
+}
+
+async function criarLayout() {
+  const nome=document.getElementById('nl-nome')?.value?.trim();
+  if (!nome) return alert('Nome obrigatório');
+  const modelo=document.getElementById('nl-modelo')?.value||'standard';
+  const cor=document.getElementById('nl-cor')?.value||'#000000';
+
+  const zonas = {
+    standard:[
+      {id:'principal',tipo:'media',x:0,y:0,largura:100,altura:85,zindex:1,config:{}},
+      {id:'ticker',tipo:'ticker',x:0,y:85,largura:70,altura:15,zindex:2,config:{velocidade:50}},
+      {id:'info',tipo:'widgets',x:70,y:85,largura:30,altura:15,zindex:2,config:{widgets:['hora','temperatura']}},
+    ],
+    fullscreen:[{id:'principal',tipo:'media',x:0,y:0,largura:100,altura:100,zindex:1,config:{}}],
+    split:[
+      {id:'principal',tipo:'media',x:0,y:0,largura:70,altura:100,zindex:1,config:{}},
+      {id:'lateral',tipo:'widgets',x:70,y:0,largura:30,altura:100,zindex:2,config:{widgets:['aniversarios','senhas','hora']}},
+    ],
+    senhas:[
+      {id:'media',tipo:'media',x:0,y:0,largura:65,altura:100,zindex:1,config:{}},
+      {id:'senhas',tipo:'senhas',x:65,y:0,largura:35,altura:100,zindex:2,config:{}},
+    ],
+  };
+
+  try {
+    await apiFetch(API+'/layouts',{method:'POST',body:JSON.stringify({nome,zonas:zonas[modelo],fundo_cor:cor})});
+    fecharModal(); carregar();
+  } catch(e){alert('Erro: '+e.message);}
+}
+
+function modalNovoAviso() {
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal">
+      <div class="modal-h"><div class="modal-title">Novo Aviso</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Título *</label><input class="fi" id="na-titulo" placeholder="Reunião geral às 15h"/></div>
+        <div class="fg"><label class="fl">Mensagem</label><textarea class="fi" id="na-msg"></textarea></div>
+        <div class="g2">
+          <div class="fg"><label class="fl">Prioridade</label>
+            <select class="fi" id="na-pri"><option value="normal">Normal</option><option value="alta">Alta</option><option value="urgente">🚨 Urgente</option></select></div>
+          <div class="fg"><label class="fl">Válido até</label><input class="fi" id="na-fim" type="datetime-local"/></div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarAviso()">Enviar para todos os ecrãs</button>
+      </div>
+    </div></div>`;
+}
+
+async function criarAviso() {
+  const titulo=document.getElementById('na-titulo')?.value?.trim();
+  if (!titulo) return alert('Título obrigatório');
+  try {
+    await apiFetch(API+'/avisos',{method:'POST',body:JSON.stringify({
+      titulo, mensagem:document.getElementById('na-msg')?.value||'',
+      prioridade:document.getElementById('na-pri')?.value||'normal',
+      data_fim:document.getElementById('na-fim')?.value||null,
+    })});
+    fecharModal(); carregar();
+  } catch(e){alert('Erro: '+e.message);}
+}
+
+function modalNovaCampanha() {
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal">
+      <div class="modal-h"><div class="modal-title">Nova Campanha Publicitária</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Nome da campanha *</label><input class="fi" id="cam-nome"/></div>
+        <div class="g2">
+          <div class="fg"><label class="fl">Data início</label><input class="fi" id="cam-ini" type="date"/></div>
+          <div class="fg"><label class="fl">Data fim</label><input class="fi" id="cam-fim" type="date"/></div>
+        </div>
+        <div class="g2">
+          <div class="fg"><label class="fl">Frequência (minutos)</label><input class="fi" id="cam-freq" type="number" value="10" min="1"/></div>
+          <div class="fg"><label class="fl">Valor total (€)</label><input class="fi" id="cam-valor" type="number" step="0.01"/></div>
+        </div>
+        <div class="fg"><label class="fl">Revenue Share para dono do ecrã (%)</label><input class="fi" id="cam-share" type="number" value="30" min="0" max="100"/></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarCampanha()">Criar Campanha</button>
+      </div>
+    </div></div>`;
+}
+
+async function criarCampanha() {
+  const nome=document.getElementById('cam-nome')?.value?.trim();
+  if (!nome) return alert('Nome obrigatório');
+  try {
+    await apiFetch(API+'/publicidade',{method:'POST',body:JSON.stringify({
+      nome, data_inicio:document.getElementById('cam-ini')?.value||null,
+      data_fim:document.getElementById('cam-fim')?.value||null,
+      frequencia_min:parseInt(document.getElementById('cam-freq')?.value)||10,
+      valor_total:parseFloat(document.getElementById('cam-valor')?.value)||0,
+      revenue_share_pct:parseInt(document.getElementById('cam-share')?.value)||30,
+    })});
+    fecharModal(); carregar();
+  } catch(e){alert('Erro: '+e.message);}
+}
+
+function fecharModal(){document.getElementById('modal-area').innerHTML='';}
+function tipoIcon(t){return {imagem:'🖼',video:'🎬',url:'🌐',html:'📄',ticker:'📰',widget:'🧩'}[t]||'📄';}
+function stat2(k,v){return `<div style="background:var(--s2);border-radius:8px;padding:10px 12px"><div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;margin-bottom:2px">${k}</div><div style="font-size:13px;font-weight:600">${v}</div></div>`;}
+
+carregar();
+setInterval(()=>{if(tabAtual==='dashboard'||tabAtual==='ecras')carregar();},30000);
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Quiosque — Senhas</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0F172A;--c1:#4F46E5;--c2:#7C3AED;--gr:#10B981;--t1:#F8FAFC;--t2:#94A3B8}
+html,body{height:100%;background:var(--bg);color:var(--t1);font-family:Inter,sans-serif;overflow:hidden}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.logo{font-size:16px;font-weight:700;color:var(--t2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.empresa-nome{font-size:28px;font-weight:800;margin-bottom:32px;text-align:center}
+.servicos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;width:100%;max-width:800px;margin-bottom:32px}
+.servico-btn{background:linear-gradient(135deg,rgba(79,70,229,.3),rgba(124,58,237,.3));border:2px solid rgba(99,102,241,.4);border-radius:20px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;color:#fff}
+.servico-btn:hover{transform:translateY(-4px);background:linear-gradient(135deg,rgba(79,70,229,.5),rgba(124,58,237,.5));border-color:#6366f1;box-shadow:0 12px 40px rgba(99,102,241,.3)}
+.servico-btn:active{transform:scale(.97)}
+.servico-icone{font-size:56px;margin-bottom:12px}
+.servico-nome{font-size:18px;font-weight:700;margin-bottom:4px}
+.servico-info{font-size:13px;color:var(--t2)}
+.info-bar{display:flex;gap:24px;color:var(--t2);font-size:13px;margin-top:8px}
+
+/* TICKET */
+.ticket-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:100;display:none}
+.ticket{background:linear-gradient(135deg,#1E1B4B,#2D1B69);border:2px solid rgba(139,92,246,.5);border-radius:24px;padding:48px;text-align:center;max-width:400px;width:100%;box-shadow:0 0 60px rgba(139,92,246,.3)}
+.ticket-label{font-size:13px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:#a78bfa;margin-bottom:8px}
+.ticket-numero{font-size:96px;font-weight:900;font-family:monospace;letter-spacing:4px;line-height:1;margin-bottom:16px;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ticket-servico{font-size:16px;font-weight:600;color:#e2e8f0;margin-bottom:8px}
+.ticket-espera{font-size:14px;color:#94a3b8;margin-bottom:4px}
+.ticket-posicao{font-size:13px;color:#64748b;margin-bottom:32px}
+.ticket-btn{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:12px;padding:14px 40px;font-size:16px;font-weight:600;cursor:pointer;width:100%;font-family:Inter,sans-serif;transition:all .15s}
+.ticket-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(99,102,241,.4)}
+.hora{font-size:64px;font-weight:800;color:#fff;text-align:center;letter-spacing:-2px;line-height:1}
+.data{font-size:18px;color:var(--t2);text-align:center;margin-bottom:24px}
+</style>
+</head>
+<body>
+
+<div class="logo">NEXEDGE</div>
+<div class="empresa-nome" id="empresa-nome">Bem-vindo</div>
+
+<div class="hora" id="hora-display">--:--</div>
+<div class="data" id="data-display">Carregando...</div>
+
+<div class="servicos-grid" id="servicos-grid">
+  <div style="text-align:center;color:var(--t2);grid-column:span 3;padding:40px">⟳ A carregar serviços...</div>
+</div>
+
+<div class="info-bar">
+  <span id="fila-info">⏳ A calcular...</span>
+</div>
+
+<div class="ticket-overlay" id="ticket-overlay">
+  <div class="ticket">
+    <div class="ticket-label">A TUA SENHA</div>
+    <div class="ticket-numero" id="t-numero">—</div>
+    <div class="ticket-servico" id="t-servico">—</div>
+    <div class="ticket-espera" id="t-espera">—</div>
+    <div class="ticket-posicao" id="t-posicao">—</div>
+    <button class="ticket-btn" onclick="fecharTicket()">✅ Obrigado — Aguarda ser chamado</button>
+  </div>
+</div>
+
+<script>
+const API = '/api/senhas';
+const EMPRESA_ID = localStorage.getItem('empresa_id') || 'f10a2feb-024d-4184-b221-f6b37fb754e2';
+
+function getToken(){
+  try{const t=localStorage.getItem('access_token');if(t)return t;const r=localStorage.getItem('rh-auth');if(r)return JSON.parse(r)?.state?.token;}catch(e){}return null;
+}
+
+async function apiFetch(path,opts={}){
+  const token=getToken();
+  const r=await fetch(path,{...opts,headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{}),...(opts.headers||{})}});
+  if(!r.ok)throw new Error(await r.text());
+  return r.json();
+}
+
+function atualizarRelogio(){
+  const agora=new Date();
+  document.getElementById('hora-display').textContent=agora.toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('data-display').textContent=agora.toLocaleDateString('pt-PT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+
+async function carregarServicos(){
+  try{
+    const [servicos,fila]=await Promise.all([
+      apiFetch(API+'/servicos'),
+      apiFetch(API+'/fila'),
+    ]);
+
+    const grid=document.getElementById('servicos-grid');
+    if(!servicos.length){
+      grid.innerHTML='<div style="text-align:center;color:var(--t2);grid-column:span 3;padding:40px">Sem serviços configurados.<br>Configure em Senhas → Serviços</div>';
+      return;
+    }
+
+    grid.innerHTML=servicos.map(s=>`
+      <div class="servico-btn" onclick="emitirSenha('${s.id}')" style="border-color:${s.cor||'rgba(99,102,241,.4)'}40;background:linear-gradient(135deg,${s.cor||'#4F46E5'}22,${s.cor||'#4F46E5'}11)">
+        <div class="servico-icone">${s.icone||'👤'}</div>
+        <div class="servico-nome">${s.nome}</div>
+        <div class="servico-info">Prefixo: <strong style="color:${s.cor||'#a78bfa'}">${s.prefixo}</strong> · ~${s.tempo_medio_min}min</div>
+      </div>`).join('');
+
+    const total=parseInt(fila.stats?.aguarda||0);
+    document.getElementById('fila-info').textContent=`⏳ ${total} pessoa${total!==1?'s':''} em espera · Tempo médio: ${fila.stats?.tempo_espera_medio||'—'}min`;
+  }catch(e){
+    document.getElementById('servicos-grid').innerHTML=`<div style="text-align:center;color:#ef4444;grid-column:span 3;padding:40px">⚠️ ${e.message}</div>`;
+  }
+}
+
+async function emitirSenha(servicoId){
+  try{
+    const r=await apiFetch(API+'/emitir',{method:'POST',body:JSON.stringify({servico_id:servicoId})});
+    mostrarTicket(r);
+  }catch(e){alert('Erro ao emitir senha: '+e.message);}
+}
+
+function mostrarTicket(dados){
+  document.getElementById('t-numero').textContent=dados.numero;
+  document.getElementById('t-servico').textContent=dados.servico?.nome||'Serviço';
+  document.getElementById('t-espera').textContent=dados.espera_estimada_min?`⏱ Tempo de espera estimado: ${dados.espera_estimada_min} minutos`:'Aguarda ser chamado';
+  document.getElementById('t-posicao').textContent=dados.posicao_fila?`Posição ${dados.posicao_fila} na fila`:'';
+  document.getElementById('ticket-overlay').style.display='flex';
+
+  // Imprimir automaticamente (se tiver impressora)
+  setTimeout(()=>window.print(), 500);
+
+  // Fechar automaticamente após 8 segundos
+  setTimeout(fecharTicket, 8000);
+}
+
+function fecharTicket(){
+  document.getElementById('ticket-overlay').style.display='none';
+  carregarServicos();
+}
+
+atualizarRelogio();
+setInterval(atualizarRelogio,1000);
+carregarServicos();
+setInterval(carregarServicos,30000);
+</script>
+</body>
+</html>

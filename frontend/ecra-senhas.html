@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Ecrã Senhas — NexEdge</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0F172A;color:#F8FAFC;font-family:Inter,sans-serif;overflow:hidden}
+body{display:grid;grid-template-rows:auto 1fr auto;min-height:100vh}
+.header{background:linear-gradient(135deg,#1E1B4B,#2D1B69);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(139,92,246,.2)}
+.header-logo{font-size:22px;font-weight:800;letter-spacing:-1px}
+.header-logo span{background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-info{display:flex;align-items:center;gap:24px}
+.hora{font-size:32px;font-weight:700;font-family:monospace}
+.main{display:grid;grid-template-columns:1fr 380px;gap:0;overflow:hidden}
+.col-chamadas{padding:32px;overflow-y:auto}
+.col-fila{background:rgba(15,23,42,.7);border-left:1px solid rgba(255,255,255,.05);padding:24px;overflow-y:auto}
+.col-title{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:20px}
+.chamada-principal{background:linear-gradient(135deg,#1E1B4B,#312E81);border:2px solid rgba(139,92,246,.4);border-radius:20px;padding:32px;text-align:center;margin-bottom:20px;animation:pulse-border 2s infinite}
+@keyframes pulse-border{0%,100%{border-color:rgba(139,92,246,.4)}50%{border-color:rgba(139,92,246,.8)}}
+.c-label{font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#a78bfa;margin-bottom:8px}
+.c-numero{font-size:100px;font-weight:900;font-family:monospace;line-height:1;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:fadeNum .5s ease-out}
+@keyframes fadeNum{from{transform:scale(1.2);opacity:0}to{transform:scale(1);opacity:1}}
+.c-balcao{font-size:22px;font-weight:700;margin-top:12px}
+.c-balcao span{font-size:36px;font-weight:900;color:#fbbf24}
+.c-servico{font-size:14px;color:#94a3b8;margin-top:6px}
+.outras-chamadas{display:flex;flex-direction:column;gap:12px}
+.outra-card{background:rgba(30,27,75,.5);border:1px solid rgba(139,92,246,.2);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+.outra-num{font-size:32px;font-weight:800;font-family:monospace;color:#a78bfa;min-width:80px}
+.outra-info{flex:1}
+.outra-balcao{font-size:13px;font-weight:600;color:#e2e8f0}
+.outra-servico{font-size:12px;color:#64748b;margin-top:2px}
+.fila-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.fila-num{font-size:20px;font-weight:700;font-family:monospace;color:#a78bfa;min-width:60px}
+.fila-info{flex:1}
+.fila-servico{font-size:12px;color:#94a3b8}
+.fila-espera{font-size:11px;color:#64748b}
+.footer{background:rgba(15,23,42,.9);border-top:1px solid rgba(255,255,255,.05);padding:10px 32px;display:flex;align-items:center;justify-content:space-between}
+.ticker{font-size:13px;color:#64748b;overflow:hidden;white-space:nowrap}
+.stats-bar{display:flex;gap:24px}
+.stat{font-size:12px;color:#475569;text-align:center}
+.stat-val{font-size:18px;font-weight:700;color:#94a3b8}
+.sem-chamadas{text-align:center;padding:60px 32px;color:#334155}
+.sem-chamadas-num{font-size:80px;margin-bottom:12px}
+.sem-chamadas-txt{font-size:16px}
+.aniversario{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">Nexedge <span>Senhas</span></div>
+  <div class="header-info">
+    <div id="data-header" style="font-size:14px;color:#94a3b8"></div>
+    <div class="hora" id="hora-header">--:--</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="col-chamadas">
+    <div class="col-title">🔔 A Ser Atendido</div>
+    <div id="chamadas-area">
+      <div class="sem-chamadas">
+        <div class="sem-chamadas-num">🔕</div>
+        <div class="sem-chamadas-txt">Sem chamadas activas</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-fila">
+    <div class="col-title">⏳ Em Espera</div>
+    <div id="fila-area"></div>
+    <div style="margin-top:20px" id="aniversarios-area"></div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="ticker" id="ticker-text">NexEdge — Sistema de Gestão de Filas Premium</div>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-val" id="stat-atendidas">0</div>Atendidas</div>
+    <div class="stat"><div class="stat-val" id="stat-espera">—</div>Espera Média</div>
+    <div class="stat"><div class="stat-val" id="stat-fila">0</div>Em Fila</div>
+  </div>
+</div>
+
+<script>
+const EMPRESA_ID = localStorage.getItem('empresa_id') || 'f10a2feb-024d-4184-b221-f6b37fb754e2';
+let ultimaSenha = null;
+
+function getToken(){
+  try{const t=localStorage.getItem('access_token');if(t)return t;const r=localStorage.getItem('rh-auth');if(r)return JSON.parse(r)?.state?.token;}catch(e){}return null;
+}
+
+async function apiFetch(path){
+  const token=getToken();
+  const r=await fetch(path,{headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{})}});
+  if(!r.ok)throw new Error(await r.text());
+  return r.json();
+}
+
+function atualizarRelogio(){
+  const agora=new Date();
+  document.getElementById('hora-header').textContent=agora.toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('data-header').textContent=agora.toLocaleDateString('pt-PT',{weekday:'long',day:'numeric',month:'long'});
+}
+
+async function atualizarFila(){
+  try{
+    const fila=await apiFetch('/api/senhas/fila');
+    const chamadas=fila.chamadas_activas||[];
+    const emEspera=fila.fila||[];
+    const stats=fila.stats||{};
+
+    // Detectar nova chamada e anunciar voz
+    if(chamadas.length>0){
+      const primeira=chamadas[0];
+      if(ultimaSenha&&ultima !== primeira.numero){
+        anunciarVoz(primeira);
+      }
+      ultimaSenha=primeira.numero;
+    }
+
+    // Área de chamadas
+    const chamArea=document.getElementById('chamadas-area');
+    if(!chamadas.length){
+      chamArea.innerHTML='<div class="sem-chamadas"><div class="sem-chamadas-num">🔕</div><div class="sem-chamadas-txt">Sem chamadas activas</div></div>';
+    }else{
+      const [principal,...outras]=chamadas;
+      chamArea.innerHTML=`
+        <div class="chamada-principal">
+          <div class="c-label">CHAMADO</div>
+          <div class="c-numero">${principal.numero}</div>
+          <div class="c-balcao">Balcão <span>${principal.balcao_numero||'?'}</span></div>
+          <div class="c-servico">${principal.servico_nome||''}</div>
+        </div>
+        <div class="outras-chamadas">
+          ${outras.slice(0,4).map(s=>`
+            <div class="outra-card">
+              <div class="outra-num">${s.numero}</div>
+              <div class="outra-info">
+                <div class="outra-balcao">Balcão ${s.balcao_numero||'?'}</div>
+                <div class="outra-servico">${s.servico_nome||''}</div>
+              </div>
+            </div>`).join('')}
+        </div>`;
+    }
+
+    // Fila de espera
+    const filaArea=document.getElementById('fila-area');
+    filaArea.innerHTML=emEspera.slice(0,12).map((s,i)=>`
+      <div class="fila-item">
+        <div class="fila-num">${s.numero}</div>
+        <div class="fila-info">
+          <div style="font-size:13px;font-weight:500">${s.servico_nome||''} ${s.prioridade_vip?'⭐':''}</div>
+          <div class="fila-espera">~${s.espera_estimada_min||'?'}min · #${i+1}</div>
+        </div>
+      </div>`).join('')||'<div style="text-align:center;color:#334155;padding:24px;font-size:13px">Fila vazia 🎉</div>';
+
+    // Stats
+    document.getElementById('stat-atendidas').textContent=stats.atendidas_hoje||0;
+    document.getElementById('stat-espera').textContent=stats.tempo_espera_medio?(stats.tempo_espera_medio+'min'):'—';
+    document.getElementById('stat-fila').textContent=emEspera.length;
+
+  }catch(e){console.error('[Ecrã Senhas]',e.message);}
+}
+
+async function carregarAniversarios(){
+  try{
+    const anivs=await apiFetch(`/api/medialoop/widgets/${EMPRESA_ID}`).catch(()=>null);
+    if(!anivs?.aniversarios?.length)return;
+    document.getElementById('aniversarios-area').innerHTML=`
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:10px">🎂 Aniversários</div>
+      ${anivs.aniversarios.map(a=>`
+        <div class="aniversario">
+          <span style="font-size:24px">🎂</span>
+          <div>
+            <div style="font-size:13px;font-weight:600">${a.nome_completo}</div>
+            <div style="font-size:11px;color:#92400e">${a.departamento||''}</div>
+          </div>
+        </div>`).join('')}`;
+  }catch(e){}
+}
+
+function anunciarVoz(senha){
+  if(!window.speechSynthesis)return;
+  const texto=`Senha ${senha.numero.split('').join(' ')}, balcão ${senha.balcao_numero}`;
+  const u=new SpeechSynthesisUtterance(texto);
+  u.lang='pt-PT'; u.rate=0.9; u.volume=1;
+  // Tocar som de campainha primeiro
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator(); const gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880,ctx.currentTime);
+    osc.frequency.setValueAtTime(660,ctx.currentTime+0.1);
+    gain.gain.setValueAtTime(0.3,ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0,ctx.currentTime+0.3);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+0.3);
+    setTimeout(()=>speechSynthesis.speak(u),400);
+  }catch(e){speechSynthesis.speak(u);}
+}
+
+atualizarRelogio();
+setInterval(atualizarRelogio,1000);
+atualizarFila();
+setInterval(atualizarFila,3000);
+carregarAniversarios();
+setInterval(carregarAniversarios,60000);
+</script>
+</body>
+</html>

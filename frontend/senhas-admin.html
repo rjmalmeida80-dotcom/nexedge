@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NexEdge — Gestão de Senhas</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F1F5F9;--s1:#fff;--s2:#F8FAFC;--s3:#E2E8F0;--b1:rgba(0,0,0,.07);--t1:#0F172A;--t2:#475569;--t3:#94A3B8;--in:#4F46E5}
+body{font-family:Inter,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex}
+.sb{width:220px;background:linear-gradient(180deg,#0A0A18,#1A1A2E);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;bottom:0;left:0}
+.logo{padding:16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
+.logo-ic{width:32px;height:32px;background:linear-gradient(135deg,#10b981,#059669);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.logo-tx{color:#fff;font-weight:700;font-size:13px}
+.logo-sub{font-size:9px;background:rgba(16,185,129,.3);color:#6ee7b7;padding:1px 6px;border-radius:4px}
+.sb-nav{flex:1;padding:8px 6px;overflow-y:auto}
+.sb-sec{font-size:9px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.2);padding:10px 8px 4px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.45);font-size:12px;border:none;border-left:2px solid transparent;background:none;width:100%;text-align:left;font-family:inherit;transition:all .12s;margin:1px 0}
+.sb-item:hover{background:rgba(16,185,129,.12);color:rgba(255,255,255,.85)}
+.sb-item.act{background:rgba(16,185,129,.2);border-left-color:#10b981;color:#fff;font-weight:600}
+.main{margin-left:220px;flex:1;display:flex;flex-direction:column}
+.topbar{height:54px;background:#fff;border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:10}
+.topbar-title{font-size:15px;font-weight:700}
+.content{padding:22px;flex:1}
+.card{background:#fff;border:1px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.card-h{padding:14px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:13px;font-weight:600}
+.card-body{padding:18px}
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid var(--b1);border-radius:12px;padding:14px;text-align:center}
+.kpi-val{font-size:28px;font-weight:800;letter-spacing:-1px}
+.kpi-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;margin-top:2px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1px solid var(--b1);background:var(--s2)}
+td{padding:10px 14px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:9999px;font-size:10px;font-weight:600}
+.btn{padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.btn-primary{background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 2px 8px rgba(16,185,129,.3)}
+.btn-secondary{background:var(--s2);color:var(--t2);border:1px solid var(--s3)}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-danger{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
+.fi{padding:8px 12px;border:1.5px solid var(--s3);border-radius:8px;font-size:13px;color:var(--t1);outline:none;font-family:inherit;background:#fff;width:100%}
+.fi:focus{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.1)}
+.fl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);display:block;margin-bottom:4px}
+.fg{margin-bottom:12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:540px;overflow:hidden;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.modal-h{padding:16px 22px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center;background:var(--s2)}
+.modal-title{font-size:14px;font-weight:700}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--t3);font-size:20px}
+.modal-b{padding:22px;max-height:65vh;overflow-y:auto}
+.modal-f{padding:12px 22px;border-top:1px solid var(--b1);display:flex;gap:8px;justify-content:flex-end;background:var(--s2)}
+.empty{text-align:center;padding:40px;color:var(--t3);font-size:13px}
+.fila-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--b1);transition:background .1s}
+.fila-item:hover{background:var(--s2)}
+.fila-num{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;flex-shrink:0}
+.balcao-card{background:#fff;border:1px solid var(--b1);border-radius:12px;padding:16px;text-align:center}
+.balcao-num{font-size:32px;font-weight:800;margin-bottom:4px}
+.balcao-senha{font-size:24px;font-weight:700;color:#4f46e5;margin:8px 0}
+.balcao-estado{font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:12px}
+select.fi{cursor:pointer}
+</style>
+</head>
+<body>
+<div class="sb">
+  <div class="logo">
+    <div class="logo-ic">🎫</div>
+    <div>
+      <div class="logo-tx">Senhas</div>
+      <div class="logo-sub">GESTÃO DE FILAS</div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">OPERAÇÕES</div>
+    <button class="sb-item act" onclick="tab('operador',this)">👨‍💼 Operador</button>
+    <button class="sb-item" onclick="tab('fila',this)">📋 Fila Actual</button>
+    <button class="sb-item" onclick="tab('analytics',this)">📊 Analytics</button>
+    <div class="sb-sec">CONFIGURAÇÃO</div>
+    <button class="sb-item" onclick="tab('servicos',this)">⚙️ Serviços</button>
+    <button class="sb-item" onclick="tab('balcoes',this)">🪑 Balcões</button>
+    <div class="sb-sec">LINKS</div>
+    <a class="sb-item" href="/quiosque.html" target="_blank" style="text-decoration:none;color:rgba(255,255,255,.45)">🖨 Quiosque</a>
+    <a class="sb-item" href="/ecra-senhas.html" target="_blank" style="text-decoration:none;color:rgba(255,255,255,.45)">📺 Ecrã TV</a>
+    <a class="sb-item" href="/medialoop-admin.html" style="text-decoration:none;color:rgba(255,255,255,.45)">📺 MediaLoop</a>
+    <a class="sb-item" href="/" style="text-decoration:none;color:rgba(255,255,255,.45)">← ERP</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">👨‍💼 Painel do Operador</div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <select class="fi" id="sel-balcao" style="width:160px" onchange="selecionarBalcao(this.value)">
+        <option value="">Seleccionar balcão</option>
+      </select>
+      <button class="btn btn-primary" id="btn-chamar" onclick="chamarProxima()" disabled>🔔 Chamar Próxima</button>
+    </div>
+  </div>
+  <div class="content" id="conteudo"><div class="empty">A carregar...</div></div>
+</div>
+<div id="modal-area"></div>
+
+<script>
+const API_S = '/api/senhas';
+const API_M = '/api/medialoop';
+let tabAtual='operador', balcaoActual=null, intervalFila=null;
+
+function getToken(){
+  try{const t=localStorage.getItem('access_token');if(t)return t;const r=localStorage.getItem('rh-auth');if(r)return JSON.parse(r)?.state?.token;}catch(e){}return null;
+}
+
+async function apiFetch(path,opts={}){
+  const token=getToken();
+  const r=await fetch(path,{...opts,headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{}),...(opts.headers||{})}});
+  if(!r.ok)throw new Error(await r.text());
+  return r.json();
+}
+
+function fmtDT(d){return d?new Date(d).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}):'—';}
+
+async function init() {
+  try {
+    const balcoes = await apiFetch(API_S+'/balcoes');
+    const sel = document.getElementById('sel-balcao');
+    balcoes.forEach(b=>{
+      const o=document.createElement('option');
+      o.value=b.id; o.textContent=`Balcão ${b.numero} — ${b.nome||b.servico_nome||'Geral'}`;
+      sel.appendChild(o);
+    });
+    window._balcoes = balcoes;
+  } catch(e){}
+  carregar();
+}
+
+function tab(t,el){
+  tabAtual=t;
+  document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('act'));
+  if(el)el.classList.add('act');
+  document.getElementById('conteudo').innerHTML='<div class="empty">⟳ A carregar...</div>';
+  if(intervalFila){clearInterval(intervalFila);intervalFila=null;}
+  carregar();
+}
+
+async function carregar(){
+  try{
+    if(tabAtual==='operador') await rOperador();
+    else if(tabAtual==='fila') await rFila();
+    else if(tabAtual==='analytics') await rAnalytics();
+    else if(tabAtual==='servicos') await rServicos();
+    else if(tabAtual==='balcoes') await rBalcoes();
+  }catch(e){document.getElementById('conteudo').innerHTML=`<div class="empty">⚠️ ${e.message}</div>`;}
+}
+
+function selecionarBalcao(id){
+  balcaoActual=id;
+  document.getElementById('btn-chamar').disabled=!id;
+  carregar();
+}
+
+async function rOperador(){
+  document.getElementById('topbar-title').textContent='👨‍💼 Painel do Operador';
+  const fila = await apiFetch(API_S+'/fila');
+  const c=document.getElementById('conteudo');
+
+  const em_atendimento = fila.chamadas_activas?.filter(s=>s.estado==='em_atendimento')||[];
+  const chamadas = fila.chamadas_activas?.filter(s=>s.estado==='chamada')||[];
+
+  c.innerHTML=`
+    <div class="kpi-grid">
+      <div class="kpi" style="border-top:3px solid #4f46e5"><div class="kpi-val" style="color:#4f46e5">${fila.stats?.aguarda||0}</div><div class="kpi-label">⏳ Em Espera</div></div>
+      <div class="kpi" style="border-top:3px solid #f59e0b"><div class="kpi-val" style="color:#f59e0b">${chamadas.length}</div><div class="kpi-label">🔔 Chamadas</div></div>
+      <div class="kpi" style="border-top:3px solid #10b981"><div class="kpi-val" style="color:#10b981">${em_atendimento.length}</div><div class="kpi-label">👤 Em Atendimento</div></div>
+      <div class="kpi" style="border-top:3px solid #6b7280"><div class="kpi-val" style="color:#6b7280">${fila.stats?.atendidas_hoje||0}</div><div class="kpi-label">✅ Atendidas Hoje</div></div>
+      <div class="kpi" style="border-top:3px solid #3b82f6"><div class="kpi-val" style="color:#3b82f6">${fila.stats?.tempo_espera_medio||'—'}</div><div class="kpi-label">⏱ Espera Média (min)</div></div>
+      <div class="kpi" style="border-top:3px solid #ef4444"><div class="kpi-val" style="color:#ef4444">${fila.stats?.desistencias_hoje||0}</div><div class="kpi-label">❌ Desistências</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">🔔 Senhas Chamadas / Em Atendimento</div></div>
+        ${fila.chamadas_activas?.length ? fila.chamadas_activas.map(s=>`
+          <div class="fila-item">
+            <div class="fila-num" style="background:${s.cor||'#4f46e5'}15;color:${s.cor||'#4f46e5'}">${s.numero}</div>
+            <div style="flex:1">
+              <div style="font-size:14px;font-weight:700">${s.numero} <span style="font-size:11px;font-weight:400;color:var(--t3)">→ Balcão ${s.balcao_numero}</span></div>
+              <div style="font-size:12px;color:var(--t3)">${s.servico_nome||''} · ${fmtDT(s.chamada_em)}</div>
+            </div>
+            <div style="display:flex;gap:4px">
+              ${s.estado==='chamada'?`<button class="btn btn-sm" style="background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.2)" onclick="iniciarAtendimento('${s.id}')">Iniciar</button>`:''}
+              ${s.estado==='em_atendimento'?`<button class="btn btn-sm btn-primary" onclick="concluirAtendimento('${s.id}')">Concluir</button>`:''}
+              <button class="btn btn-sm btn-secondary" onclick="rechamar('${s.id}')">↺</button>
+            </div>
+          </div>`).join('') : '<div class="empty" style="padding:24px">Sem senhas chamadas</div>'}
+      </div>
+
+      <div class="card">
+        <div class="card-h"><div class="card-title">⏳ Próximas em Fila</div></div>
+        ${fila.fila?.slice(0,8).map((s,i)=>`
+          <div class="fila-item">
+            <div class="fila-num" style="background:${s.cor||'#4f46e5'}15;color:${s.cor||'#4f46e5'}">${s.numero}</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600">${s.numero} ${s.prioridade_vip?'⭐':''}</div>
+              <div style="font-size:11px;color:var(--t3)">${s.servico_nome||''} · ${fmtDT(s.criado_em)}</div>
+            </div>
+            <div style="font-size:12px;color:var(--t3)">#${i+1}</div>
+          </div>`).join('')||'<div class="empty" style="padding:24px">Fila vazia 🎉</div>'}
+      </div>
+    </div>`;
+
+  // Auto-refresh
+  if(!intervalFila) intervalFila=setInterval(()=>{if(tabAtual==='operador')rOperador();},5000);
+}
+
+async function chamarProxima(){
+  if(!balcaoActual){alert('Selecciona um balcão primeiro');return;}
+  try{
+    const r=await apiFetch(API_S+'/chamar-proxima',{method:'POST',body:JSON.stringify({balcao_id:balcaoActual})});
+    if(r.senha){
+      anunciarVoz(r.anuncio_voz);
+      carregar();
+    }else{alert('Sem senhas em espera');}
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+async function iniciarAtendimento(id){
+  try{await apiFetch(API_S+'/iniciar/'+id,{method:'POST',body:'{}'}); carregar();}
+  catch(e){alert('Erro: '+e.message);}
+}
+
+async function concluirAtendimento(id){
+  try{await apiFetch(API_S+'/concluir/'+id,{method:'POST',body:JSON.stringify({resultado:'concluido'})}); carregar();}
+  catch(e){alert('Erro: '+e.message);}
+}
+
+async function rechamar(id){
+  try{
+    const r=await apiFetch(API_S+'/rechamar/'+id,{method:'POST',body:'{}'});
+    anunciarVoz(r.anuncio_voz);
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+function anunciarVoz(texto){
+  if(!texto||!window.speechSynthesis)return;
+  const u=new SpeechSynthesisUtterance(texto);
+  u.lang='pt-PT'; u.rate=0.9; u.volume=1;
+  speechSynthesis.speak(u);
+}
+
+async function rFila(){
+  document.getElementById('topbar-title').textContent='📋 Fila Actual';
+  const fila=await apiFetch(API_S+'/fila');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div class="card">
+      <div class="card-h"><div class="card-title">Fila de Espera (${fila.fila?.length||0})</div><button class="btn btn-sm btn-secondary" onclick="carregar()">↺</button></div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>#</th><th>Senha</th><th>Serviço</th><th>VIP</th><th>Espera Estimada</th><th>Emitida</th><th>Acção</th></tr></thead>
+        <tbody>${fila.fila?.map((s,i)=>`<tr>
+          <td style="font-weight:600;color:var(--t3)">${i+1}</td>
+          <td><span style="font-size:16px;font-weight:700;font-family:monospace;color:${s.cor||'#4f46e5'}">${s.numero}</span></td>
+          <td>${s.servico_nome||'—'}</td>
+          <td>${s.prioridade_vip?'⭐ VIP':'—'}</td>
+          <td style="font-size:12px">${s.espera_estimada_min||'—'}min</td>
+          <td style="font-size:12px">${fmtDT(s.criado_em)}</td>
+          <td><button class="btn btn-sm btn-danger" onclick="desistir('${s.id}')">Desistir</button></td>
+        </tr>`).join('')||'<tr><td colspan="7" class="empty">Fila vazia</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+
+async function desistir(id){
+  if(!confirm('Marcar como desistência?'))return;
+  try{await apiFetch(API_S+'/desistir/'+id,{method:'POST',body:'{}'});carregar();}
+  catch(e){alert('Erro: '+e.message);}
+}
+
+async function rServicos(){
+  document.getElementById('topbar-title').textContent='⚙️ Serviços';
+  const servicos=await apiFetch(API_S+'/servicos');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="modalNovoServico()">+ Novo Serviço</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      ${servicos.map(s=>`<div class="card">
+        <div class="card-body" style="text-align:center">
+          <div style="font-size:40px;margin-bottom:8px">${s.icone||'👤'}</div>
+          <div style="font-size:24px;font-weight:800;color:${s.cor||'#4f46e5'}">${s.prefixo}</div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:4px">${s.nome}</div>
+          <div style="font-size:12px;color:var(--t3)">${s.num_balcoes||0} balcões · ${s.tempo_medio_min}min médio</div>
+        </div>
+      </div>`).join('')||'<div class="empty" style="grid-column:span 3">Sem serviços configurados</div>'}
+    </div>`;
+}
+
+async function rBalcoes(){
+  document.getElementById('topbar-title').textContent='🪑 Balcões';
+  const balcoes=await apiFetch(API_S+'/balcoes');
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="modalNovoBalcao()">+ Novo Balcão</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      ${balcoes.map(b=>`<div class="balcao-card">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--t3)">BALCÃO</div>
+        <div class="balcao-num">${b.numero}</div>
+        <div class="balcao-estado" style="color:${b.estado==='aberto'?'#10b981':b.estado==='pausa'?'#f59e0b':'#6b7280'}">${b.estado.toUpperCase()}</div>
+        ${b.senha_actual?`<div class="balcao-senha">${b.senha_actual}</div>`:'<div style="color:var(--t3);font-size:12px;margin:8px 0">Livre</div>'}
+        <div style="font-size:11px;color:var(--t3)">${b.servico_nome||'Todos os serviços'}</div>
+        ${b.operador_nome?`<div style="font-size:11px;color:var(--t3);margin-top:2px">👤 ${b.operador_nome}</div>`:''}
+        <div style="margin-top:10px;display:flex;gap:4px;justify-content:center">
+          <button class="btn btn-sm" style="background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.2)" onclick="abrirBalcao('${b.id}')">Abrir</button>
+          <button class="btn btn-sm btn-danger" onclick="fecharBalcao('${b.id}')">Fechar</button>
+        </div>
+      </div>`).join('')||'<div class="empty" style="grid-column:span 4">Sem balcões</div>'}
+    </div>`;
+}
+
+async function rAnalytics(){
+  document.getElementById('topbar-title').textContent='📊 Analytics';
+  const data=new Date().toISOString().slice(0,10);
+  const d=await apiFetch(API_S+'/analytics?data='+data);
+  const c=document.getElementById('conteudo');
+  c.innerHTML=`
+    <div class="kpi-grid">
+      <div class="kpi" style="border-top:3px solid #4f46e5"><div class="kpi-val" style="color:#4f46e5">${d.resumo?.total||0}</div><div class="kpi-label">Total</div></div>
+      <div class="kpi" style="border-top:3px solid #10b981"><div class="kpi-val" style="color:#10b981">${d.resumo?.atendidas||0}</div><div class="kpi-label">Atendidas</div></div>
+      <div class="kpi" style="border-top:3px solid #ef4444"><div class="kpi-val" style="color:#ef4444">${d.resumo?.desistencias||0}</div><div class="kpi-label">Desistências</div></div>
+      <div class="kpi" style="border-top:3px solid #f59e0b"><div class="kpi-val" style="color:#f59e0b">${d.resumo?.tempo_espera_medio||'—'}</div><div class="kpi-label">Espera Média (min)</div></div>
+      <div class="kpi" style="border-top:3px solid #3b82f6"><div class="kpi-val" style="color:#3b82f6">${d.resumo?.tempo_atendimento_medio||'—'}</div><div class="kpi-label">Atend. Médio (min)</div></div>
+      <div class="kpi" style="border-top:3px solid #8b5cf6"><div class="kpi-val" style="color:#8b5cf6">${d.resumo?.tempo_espera_max||'—'}</div><div class="kpi-label">Espera Máx (min)</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-h"><div class="card-title">Por Serviço</div></div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Serviço</th><th>Total</th><th>Espera Média</th></tr></thead>
+          <tbody>${d.por_servico?.map(s=>`<tr>
+            <td><span style="color:${s.cor||'#4f46e5'};font-weight:600">${s.prefixo}</span> ${s.nome}</td>
+            <td>${s.total}</td><td>${s.tempo_espera_medio||'—'}min</td>
+          </tr>`).join('')||'<tr><td colspan="3" class="empty">Sem dados</td></tr>'}</tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="card-title">Por Balcão</div></div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Balcão</th><th>Atendimentos</th><th>Tempo Médio</th></tr></thead>
+          <tbody>${d.por_balcao?.map(b=>`<tr>
+            <td>Balcão ${b.numero} — ${b.nome}</td>
+            <td>${b.total_atendimentos||0}</td><td>${b.tempo_medio||'—'}min</td>
+          </tr>`).join('')||'<tr><td colspan="3" class="empty">Sem dados</td></tr>'}</tbody>
+        </table></div>
+      </div>
+    </div>`;
+}
+
+function modalNovoServico(){
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal">
+      <div class="modal-h"><div class="modal-title">Novo Serviço</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="fg"><label class="fl">Nome *</label><input class="fi" id="ns-nome" placeholder="Atendimento Geral"/></div>
+        <div class="g2">
+          <div class="fg"><label class="fl">Prefixo *</label><input class="fi" id="ns-pref" placeholder="A" maxlength="3" style="text-transform:uppercase"/></div>
+          <div class="fg"><label class="fl">Ícone</label><input class="fi" id="ns-ico" placeholder="👤" value="👤"/></div>
+        </div>
+        <div class="g2">
+          <div class="fg"><label class="fl">Cor</label><input class="fi" id="ns-cor" type="color" value="#4F46E5" style="height:42px;padding:4px"/></div>
+          <div class="fg"><label class="fl">Tempo médio (min)</label><input class="fi" id="ns-tempo" type="number" value="5" min="1"/></div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarServico()">Criar Serviço</button>
+      </div>
+    </div></div>`;
+}
+
+async function criarServico(){
+  const nome=document.getElementById('ns-nome')?.value?.trim();
+  const prefixo=document.getElementById('ns-pref')?.value?.trim()?.toUpperCase();
+  if(!nome||!prefixo)return alert('Nome e prefixo obrigatórios');
+  try{
+    await apiFetch(API_S+'/servicos',{method:'POST',body:JSON.stringify({
+      nome,prefixo,icone:document.getElementById('ns-ico')?.value||'👤',
+      cor:document.getElementById('ns-cor')?.value||'#4F46E5',
+      tempo_medio_min:parseInt(document.getElementById('ns-tempo')?.value)||5,
+    })});
+    fecharModal();carregar();
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+function modalNovoBalcao(){
+  const servicos=window._balcoes||[];
+  document.getElementById('modal-area').innerHTML=`
+    <div class="modal-ov"><div class="modal">
+      <div class="modal-h"><div class="modal-title">Novo Balcão</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+      <div class="modal-b">
+        <div class="g2">
+          <div class="fg"><label class="fl">Número *</label><input class="fi" id="nb-num" type="number" min="1" placeholder="1"/></div>
+          <div class="fg"><label class="fl">Nome</label><input class="fi" id="nb-nome" placeholder="Balcão 1"/></div>
+        </div>
+        <div class="fg"><label class="fl">Localização</label><input class="fi" id="nb-loc" placeholder="Piso 1, Sala A"/></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="criarBalcao()">Criar Balcão</button>
+      </div>
+    </div></div>`;
+}
+
+async function criarBalcao(){
+  const num=document.getElementById('nb-num')?.value;
+  if(!num)return alert('Número obrigatório');
+  try{
+    await apiFetch(API_S+'/balcoes',{method:'POST',body:JSON.stringify({
+      numero:parseInt(num),nome:document.getElementById('nb-nome')?.value||`Balcão ${num}`,
+      localizacao:document.getElementById('nb-loc')?.value||'',
+    })});
+    fecharModal();carregar();
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+async function abrirBalcao(id){
+  try{await apiFetch(API_S+'/balcoes/'+id+'/estado',{method:'PUT',body:JSON.stringify({estado:'aberto',operador_id:null})});carregar();}
+  catch(e){alert('Erro: '+e.message);}
+}
+async function fecharBalcao(id){
+  try{await apiFetch(API_S+'/balcoes/'+id+'/estado',{method:'PUT',body:JSON.stringify({estado:'fechado'})});carregar();}
+  catch(e){alert('Erro: '+e.message);}
+}
+
+function fecharModal(){document.getElementById('modal-area').innerHTML='';}
+init();
+</script>
+</body>
+</html>
