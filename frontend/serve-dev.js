@@ -31,6 +31,7 @@ const ESPECIAIS = {
   '/logistica': path.join(__dirname, 'logistica.html'),
   '/wms': path.join(__dirname, 'wms.html'),
   '/torre-controlo': path.join(__dirname, 'torre-controlo.html'),
+  '/motorista-app': path.join(__dirname, 'motorista-app.html'),
   '/wms/': path.join(__dirname, 'wms.html'),
   '/medialoop-admin': path.join(__dirname, 'medialoop-admin.html'),
   '/senhas-admin': path.join(__dirname, 'senhas-admin.html'),
